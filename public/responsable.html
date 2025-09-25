@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel del Responsable a Cargo - Gestión de Escuelas y Docentes">
+    <meta name="theme-color" content="#8b4513">
+    <title>Zephia - Panel Responsable a Cargo</title>
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="stylesheet" href="styles-r.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="img/logo.png" alt="Zephia Logo" class="logo">
+                <h2>Zephia</h2>
+                <p class="user-role">Responsable a Cargo</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showSection('messaging')">
+                    <i class="fas fa-envelope"></i>
+                    <span>Mensajería</span>
+                </li>
+                <li class="nav-item" onclick="showSection('schools')">
+                    <i class="fas fa-school"></i>
+                    <span>Mis Escuelas</span>
+                </li>
+                <li class="nav-item" onclick="showSection('teachers')">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Mis Docentes</span>
+                </li>
+                <li class="nav-item" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" onclick="showSection('reports')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="breadcrumb">
+                    <h2 id="section-title">Dashboard</h2>
+                    <p id="section-description">Panel del Responsable a Cargo</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section" style="display: none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-schools">0</h3>
+                            <p class="stat-label">Mis Escuelas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-teachers">0</h3>
+                            <p class="stat-label">Mis Docentes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-messages">0</h3>
+                            <p class="stat-label">Mensajes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-reports">0</h3>
+                            <p class="stat-label">Reportes</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schools Section -->
+            <section id="schools-section" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3>Mis Escuelas</h3>
+                    <button class="btn-primary" onclick="openModal('school-modal')">
+                        <i class="fas fa-plus"></i> Agregar Escuela
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Dirección</th>
+                                <th>Teléfono</th>
+                                <th>Nivel Educativo</th>
+                                <th>Docentes</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schools-table-body">
+                            <!-- Los datos se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Teachers Section -->
+            <section id="teachers-section" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3>Mis Docentes</h3>
+                    <button class="btn-primary" onclick="openModal('teacher-modal')">
+                        <i class="fas fa-plus"></i> Agregar Docente
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Nombre</th>
+                                <th>Rol</th>
+                                <th>Correo</th>
+                                <th>Teléfono</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachers-table-body">
+                            <!-- Los datos se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Messaging Section -->
+            <section id="messaging-section" class="section" style="display: none;">
+                <div class="messaging-container">
+                    <div class="conversations-sidebar">
+                        <div class="conversations-header">
+                            <h3>Conversaciones</h3>
+                            <button class="btn-primary" onclick="openModal('new-message-modal')">
+                                <i class="fas fa-plus"></i> Nuevo Mensaje
+                            </button>
+                        </div>
+                        <div class="conversations-search">
+                            <input type="text" id="conversation-search" placeholder="Buscar conversaciones...">
+                        </div>
+                        <div class="conversations-list" id="conversations-list">
+                            <!-- Las conversaciones se cargarán aquí -->
+                        </div>
+                    </div>
+
+                    <div class="chat-container">
+                        <div class="empty-chat">
+                            <i class="fas fa-comments"></i>
+                            <h3>Selecciona una conversación</h3>
+                            <p>Elige una conversación de la lista para comenzar a chatear</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3>Reportes</h3>
+                    <div class="report-filters">
+                        <select id="report-period">
+                            <option value="week">Esta Semana</option>
+                            <option value="month">Este Mes</option>
+                            <option value="quarter">Este Trimestre</option>
+                            <option value="year">Este Año</option>
+                        </select>
+                        <button class="btn-primary" onclick="generateReport()">
+                            <i class="fas fa-download"></i> Generar Reporte
+                        </button>
+                    </div>
+                </div>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <h4>Resumen de Escuelas</h4>
+                        <div class="report-content" id="schools-report">
+                            <!-- Contenido del reporte -->
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <h4>Resumen de Docentes</h4>
+                        <div class="report-content" id="teachers-report">
+                            <!-- Contenido del reporte -->
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <h4>Actividad de Mensajería</h4>
+                        <div class="report-content" id="messaging-report">
+                            <!-- Contenido del reporte -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Variables globales
+        window.schools = [];
+        window.teachers = [];
+        window.currentUser = {
+            id: 'current_responsable',
+            name: 'Responsable María García',
+            type: 'responsable',
+            schoolId: 'school1',
+            schoolName: 'Escuela San Martín'
+        };
+
+        // Función para mostrar secciones
+        function showSection(sectionName) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+            
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick') === `showSection('${sectionName}')`) {
+                    item.classList.add('active');
+                }
+            });
+            
+            const titles = {
+                dashboard: { title: 'Dashboard', desc: 'Panel del Responsable a Cargo' },
+                schools: { title: 'Mis Escuelas', desc: 'Gestionar las escuelas bajo tu responsabilidad' },
+                teachers: { title: 'Mis Docentes', desc: 'Gestionar los docentes de tus escuelas' },
+                messaging: { title: 'Mensajería', desc: 'Comunicarte con tu equipo' },
+                reports: { title: 'Reportes', desc: 'Ver estadísticas y reportes' }
+            };
+            
+            const titleInfo = titles[sectionName];
+            if (titleInfo) {
+                document.getElementById('section-title').textContent = titleInfo.title;
+                document.getElementById('section-description').textContent = titleInfo.desc;
+            }
+        }
+
+        // Función para abrir modales
+        function openModal(modalId) {
+            console.log('Abriendo modal:', modalId);
+        }
+
+        // Función para cargar datos
+        async function loadData() {
+            console.log('Cargando datos del responsable...');
+            window.schools = [
+                {
+                    id: 'school1',
+                    nombreInstitucion: 'Escuela San Martín',
+                    direccion: 'Av. Principal 123',
+                    telefonoContacto: '+54 11 1234-5678',
+                    nivelEducativo: ['primario', 'secundario'],
+                    cantidadDocentes: 15,
+                    estado: 'activa'
+                }
+            ];
+            
+            window.teachers = [
+                {
+                    id: 'teacher1',
+                    usuario: 'docente001',
+                    nombre: 'Juan',
+                    apellido: 'Pérez',
+                    rol: 'profesor',
+                    correo: 'juan.perez@escuela.com',
+                    telefono: '+54 11 9876-5432',
+                    estado: 'activo'
+                }
+            ];
+            
+            updateStats();
+            renderSchoolsTable();
+            renderTeachersTable();
+        }
+
+        // Función para actualizar estadísticas
+        function updateStats() {
+            document.getElementById('total-schools').textContent = window.schools ? window.schools.length : 0;
+            document.getElementById('total-teachers').textContent = window.teachers ? window.teachers.length : 0;
+            document.getElementById('total-messages').textContent = '12';
+            document.getElementById('total-reports').textContent = '5';
+        }
+
+        // Función para renderizar tabla de escuelas
+        function renderSchoolsTable() {
+            const tbody = document.getElementById('schools-table-body');
+            if (!tbody || !window.schools) return;
+            
+            tbody.innerHTML = '';
+            window.schools.forEach(school => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${school.nombreInstitucion}</td>
+                    <td>${school.direccion}</td>
+                    <td>${school.telefonoContacto}</td>
+                    <td>${Array.isArray(school.nivelEducativo) ? school.nivelEducativo.join(', ') : school.nivelEducativo}</td>
+                    <td>${school.cantidadDocentes || 0}</td>
+                    <td><span class="status-badge ${school.estado === 'activa' ? 'active' : 'inactive'}">${school.estado}</span></td>
+                    <td>
+                        <button class="btn-icon" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Función para renderizar tabla de docentes
+        function renderTeachersTable() {
+            const tbody = document.getElementById('teachers-table-body');
+            if (!tbody || !window.teachers) return;
+            
+            tbody.innerHTML = '';
+            window.teachers.forEach(teacher => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.usuario || 'N/A'}</td>
+                    <td>${teacher.nombre || ''} ${teacher.apellido || ''}</td>
+                    <td><span class="role-badge ${teacher.rol || ''}">${teacher.rol || 'Sin rol'}</span></td>
+                    <td>${teacher.correo || teacher.email || ''}</td>
+                    <td>${teacher.telefono || 'N/A'}</td>
+                    <td><span class="status-badge ${teacher.estado === 'activo' ? 'active' : 'inactive'}">${teacher.estado || 'activo'}</span></td>
+                    <td>
+                        <button class="btn-icon" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Función para generar reportes
+        function generateReport() {
+            console.log('Generando reporte...');
+        }
+
+        // Función para cerrar sesión
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Inicializar aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            showSection('dashboard');
+        });
+    </script>
+</body>
+</html>

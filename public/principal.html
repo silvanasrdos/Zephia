@@ -14,6 +14,43 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles-nuevo.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Estilos para usuarios con problemas de autenticación -->
+    <style>
+        .auth-issue-row {
+            background-color: #fff3cd !important;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .auth-issue-row:hover {
+            background-color: #ffeaa7 !important;
+        }
+        
+        .auth-issue-notification {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .btn-icon[style*="color: #ffc107"] {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+        }
+        
+        .btn-icon[style*="color: #ffc107"]:hover {
+            background-color: #ffc107;
+            color: #000 !important;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -535,9 +572,10 @@
                     <label for="user-type">Tipo de Usuario</label>
                     <select id="user-type" name="type" required>
                         <option value="">Seleccionar...</option>
-                        <option value="admin">Administrador</option>
-                        <option value="director">Director</option>
-                        <option value="teacher">Docente</option>
+                        <option value="soporte">Soporte</option>
+                        <option value="responsable">Responsable a cargo</option>
+                        <option value="docente">Docente</option>
+                        <option value="secretaria">Secretaria</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -824,7 +862,7 @@
     <script type="module">
         // Importar Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js';
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updateProfile } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js';
         import { getFirestore, collection, getDocs, addDoc, serverTimestamp, doc, deleteDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js';
         
         // Configuración de Firebase
@@ -855,6 +893,8 @@
         window.doc = doc;
         window.deleteDoc = deleteDoc;
         window.updateDoc = updateDoc;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.updateProfile = updateProfile;
         
         // Marcar Firebase como inicializado
         window.firebaseInitialized = true;
@@ -873,6 +913,7 @@
         function initializeAppData() {
             loadData();
             updateStats();
+            initializeUserPermissions();
         }
         
         // Función helper para verificar Firebase
@@ -939,9 +980,9 @@
             // Limpiar opciones existentes (excepto la primera)
             select.innerHTML = '<option value="">Seleccionar administrador</option>';
             
-            // Filtrar solo usuarios con rol de administrador
+            // Filtrar solo usuarios con rol de responsable a cargo
             const administrators = window.users.filter(user => 
-                user.type === 'admin' || user.type === 'Administrador' || user.type === 'administrador'
+                user.type === 'responsable' || user.type === 'Responsable a cargo' || user.type === 'responsable a cargo'
             );
             
             administrators.forEach(admin => {
@@ -1123,6 +1164,46 @@
             });
         }
 
+        // Función para mostrar usuarios con problemas de autenticación
+        function showUsersWithAuthIssues() {
+            const usersWithIssues = window.users.filter(user => 
+                user.authStatus === 'pending' || user.note?.includes('email ya existe')
+            );
+            
+            if (usersWithIssues.length > 0) {
+                console.warn('Usuarios con problemas de autenticación:', usersWithIssues);
+                
+                // Mostrar notificación en la interfaz
+                const notification = document.createElement('div');
+                notification.className = 'auth-issue-notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #ffc107;
+                    color: #000;
+                    padding: 15px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    max-width: 300px;
+                `;
+                notification.innerHTML = `
+                    <strong>⚠️ Usuarios con problemas de autenticación</strong><br>
+                    ${usersWithIssues.length} usuario(s) no pueden iniciar sesión.<br>
+                    <small>Revisa la sección de usuarios para más detalles.</small>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remover notificación después de 10 segundos
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 10000);
+            }
+        }
 
         // Cargar tabla de usuarios
         function loadUsersTable() {
@@ -1133,12 +1214,22 @@
 
             window.users.forEach(user => {
                 const row = document.createElement('tr');
+                
+                // Verificar si el usuario tiene problemas de autenticación
+                const hasAuthIssues = user.authStatus === 'pending' || user.note?.includes('email ya existe');
+                const rowClass = hasAuthIssues ? 'auth-issue-row' : '';
+                const authWarning = hasAuthIssues ? '<i class="fas fa-exclamation-triangle" style="color: #ffc107;" title="Problemas de autenticación"></i>' : '';
+                
+                row.className = rowClass;
                 row.innerHTML = `
-                    <td>${user.username || 'N/A'}</td>
+                    <td>${user.username || 'N/A'} ${authWarning}</td>
                     <td>${user.fullName || user.name || 'N/A'}</td>
                     <td>${user.email || 'N/A'}</td>
                     <td><span class="type-badge ${user.type || 'user'}">${user.type || 'Usuario'}</span></td>
-                    <td><span class="status-badge ${user.status === 'Activo' ? 'active' : 'inactive'}">${user.status || 'Activo'}</span></td>
+                    <td>
+                        <span class="status-badge ${user.status === 'Activo' ? 'active' : 'inactive'}">${user.status || 'Activo'}</span>
+                        ${hasAuthIssues ? '<br><small style="color: #ffc107;">⚠️ Sin credenciales</small>' : ''}
+                    </td>
                     <td class="actions">
                         <button class="btn-icon" onclick="viewUser('${user.id}')" title="Ver detalles">
                             <i class="fas fa-eye"></i>
@@ -1146,6 +1237,11 @@
                         <button class="btn-icon" onclick="editUser('${user.id}')" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
+                        ${hasAuthIssues ? 
+                            `<button class="btn-icon" onclick="fixUserAuth('${user.id}')" title="Resolver problema de autenticación" style="color: #ffc107;">
+                                <i class="fas fa-key"></i>
+                            </button>` : ''
+                        }
                         <button class="btn-icon" onclick="deleteUser('${user.id}')" title="Eliminar">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -1153,6 +1249,59 @@
                 `;
                 tbody.appendChild(row);
             });
+            
+            // Mostrar notificación si hay usuarios con problemas
+            showUsersWithAuthIssues();
+        }
+
+        // Función para resolver problemas de autenticación de usuarios
+        async function fixUserAuth(userId) {
+            const user = window.users.find(u => u.id === userId);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+
+            const newEmail = prompt(
+                `Usuario: ${user.username}\n` +
+                `Email actual: ${user.email}\n\n` +
+                `El email actual ya existe en el sistema de autenticación.\n` +
+                `Ingrese un nuevo email para este usuario:`,
+                user.email
+            );
+
+            if (!newEmail || newEmail === user.email) {
+                alert('No se realizaron cambios');
+                return;
+            }
+
+            // Verificar que el nuevo email no esté en uso
+            const emailExists = window.users.find(u => u.email === newEmail && u.id !== userId);
+            if (emailExists) {
+                alert('El nuevo email ya está en uso por otro usuario');
+                return;
+            }
+
+            try {
+                // Actualizar el email en Firestore
+                const userRef = window.doc(window.db, 'users', userId);
+                await window.updateDoc(userRef, {
+                    email: newEmail,
+                    authStatus: 'active', // Marcar como resuelto
+                    note: 'Problema de autenticación resuelto - email actualizado',
+                    updatedAt: window.serverTimestamp()
+                });
+
+                alert('Email actualizado correctamente. El usuario ahora puede iniciar sesión.');
+                
+                // Recargar datos
+                await window.loadUsers();
+                window.updateStats();
+                
+            } catch (error) {
+                console.error('Error actualizando usuario:', error);
+                alert('Error al actualizar el usuario: ' + error.message);
+            }
         }
 
         // Hacer funciones globales
@@ -1191,6 +1340,43 @@
                 return `${admin.fullName || admin.name || admin.username} (${admin.email})`;
             }
             return 'Administrador no encontrado';
+        }
+        
+        // Función para controlar permisos de navegación
+        function initializeUserPermissions() {
+            const currentUser = window.currentUser;
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // Definir permisos por tipo de usuario
+            const permissions = {
+                soporte: ['messaging', 'schools', 'teachers', 'users', 'dashboard', 'reports'],
+                responsable: ['messaging', 'schools', 'teachers', 'dashboard'],
+                docente: ['messaging', 'dashboard'],
+                secretaria: ['messaging', 'dashboard']
+            };
+            
+            const userPermissions = permissions[currentUser.type] || [];
+            
+            // Mostrar/ocultar elementos de navegación según permisos
+            navItems.forEach(item => {
+                const onclick = item.getAttribute('onclick');
+                if (onclick) {
+                    const sectionName = onclick.match(/showSection\('([^']+)'\)/);
+                    if (sectionName) {
+                        const section = sectionName[1];
+                        if (userPermissions.includes(section)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
+                }
+            });
+            
+            // Mostrar la primera sección permitida por defecto
+            if (userPermissions.length > 0) {
+                showSection(userPermissions[0]);
+            }
         }
         
         // Función para mostrar secciones
@@ -1561,15 +1747,77 @@
                             return;
                         }
 
-                    const usersRef = window.collection(window.db, 'users');
-                        await window.addDoc(usersRef, {
-                            ...userData,
-                            password: password, // En producción debería estar hasheada
-                            createdAt: window.serverTimestamp(),
-                            updatedAt: window.serverTimestamp()
-                        });
+                        // Verificar si el email ya existe en Firebase Auth
+                        const email = userData.email;
                         
-                        alert('Usuario agregado correctamente');
+                        // Verificar si el email ya existe en la base de datos local
+                        const existingEmail = window.users.find(u => u.email === email);
+                        if (existingEmail) {
+                            alert('Ya existe un usuario con este email. Por favor, use un email diferente.');
+                            return;
+                        }
+                        
+                        try {
+                            // Crear usuario en Firebase Auth primero
+                            const userCredential = await window.createUserWithEmailAndPassword(window.auth, email, password);
+                            const firebaseUser = userCredential.user;
+
+                            // Actualizar el perfil del usuario en Firebase Auth
+                            await window.updateProfile(firebaseUser, {
+                                displayName: userData.fullName
+                            });
+
+                            // Guardar datos adicionales en Firestore
+                            const usersRef = window.collection(window.db, 'users');
+                            await window.addDoc(usersRef, {
+                                ...userData,
+                                uid: firebaseUser.uid, // ID de Firebase Auth
+                                password: password, // En producción debería estar hasheada
+                                createdAt: window.serverTimestamp(),
+                                updatedAt: window.serverTimestamp()
+                            });
+                            
+                            alert('Usuario agregado correctamente y credenciales de autenticación creadas');
+                            
+                        } catch (authError) {
+                            console.error('Error de autenticación:', authError);
+                            
+                            if (authError.code === 'auth/email-already-in-use') {
+                                // El email ya existe en Firebase Auth
+                                const userChoice = confirm(
+                                    'El email ya está registrado en el sistema de autenticación.\n\n' +
+                                    '¿Desea continuar y crear el usuario solo en la base de datos local?\n\n' +
+                                    'SÍ: Crear usuario en base de datos (sin credenciales de login)\n' +
+                                    'NO: Cancelar y usar un email diferente'
+                                );
+                                
+                                if (userChoice) {
+                                    // Crear usuario solo en Firestore sin credenciales de Auth
+                                    const usersRef = window.collection(window.db, 'users');
+                                    await window.addDoc(usersRef, {
+                                        ...userData,
+                                        password: password, // En producción debería estar hasheada
+                                        createdAt: window.serverTimestamp(),
+                                        updatedAt: window.serverTimestamp(),
+                                        authStatus: 'pending', // Marcar que necesita credenciales
+                                        note: 'Usuario creado sin credenciales de autenticación - email ya existe'
+                                    });
+                                    
+                                    alert('Usuario agregado a la base de datos.\n\nNota: Este usuario no podrá iniciar sesión hasta que se resuelva el conflicto de email.');
+                                } else {
+                                    alert('Creación de usuario cancelada. Por favor, use un email diferente.');
+                                    return;
+                                }
+                            } else if (authError.code === 'auth/weak-password') {
+                                alert('La contraseña es muy débil. Por favor, use una contraseña más segura (mínimo 6 caracteres).');
+                                return;
+                            } else if (authError.code === 'auth/invalid-email') {
+                                alert('El email no es válido. Por favor, verifique el formato del email.');
+                                return;
+                            } else {
+                                throw authError; // Re-lanzar otros errores
+                            }
+                        }
                     }
                     
                     // Recargar datos
@@ -2055,11 +2303,11 @@ Esta acción no se puede deshacer.`;
         
         // Usuario actual (simulado - en producción vendría del login)
         window.currentUser = {
-            id: 'current_director',
-            name: 'Director Juan Pérez',
-            type: 'director', // director, teacher, admin
-            schoolId: 'school1',
-            schoolName: 'Escuela San Martín'
+            id: 'current_soporte',
+            name: 'Soporte Técnico',
+            type: 'soporte', // soporte, responsable, docente, secretaria
+            schoolId: 'all',
+            schoolName: 'Sistema'
         };
 
         // Función para refrescar conversaciones
@@ -2071,27 +2319,56 @@ Esta acción no se puede deshacer.`;
         function canSendMessageTo(recipient) {
             const currentUser = window.currentUser;
             
-            // Admin puede enviar a todos
-            if (currentUser.type === 'admin') {
+            // Soporte puede enviar a todos
+            if (currentUser.type === 'soporte') {
                 return true;
             }
             
-            // Director puede enviar a:
-            if (currentUser.type === 'director') {
-                // 1. Otros directores
-                if (recipient.userType === 'director') {
+            // Todos pueden enviar mensajes al soporte en caso de error
+            if (recipient.userType === 'soporte') {
+                return true;
+            }
+            
+            // Responsable a cargo puede enviar a:
+            if (currentUser.type === 'responsable') {
+                // 1. Otros responsables a cargo
+                if (recipient.userType === 'responsable') {
                     return true;
                 }
                 
                 // 2. Docentes de su escuela
-                if (recipient.userType === 'teacher' && recipient.schoolId === currentUser.schoolId) {
+                if (recipient.userType === 'docente' && recipient.schoolId === currentUser.schoolId) {
+                    return true;
+                }
+                
+                // 3. Secretarias de su escuela
+                if (recipient.userType === 'secretaria' && recipient.schoolId === currentUser.schoolId) {
                     return true;
                 }
             }
             
-            // Docente solo puede enviar a su director
-            if (currentUser.type === 'teacher') {
-                if (recipient.userType === 'director' && recipient.schoolId === currentUser.schoolId) {
+            // Docente puede enviar a:
+            if (currentUser.type === 'docente') {
+                // 1. Secretarias de su escuela
+                if (recipient.userType === 'secretaria' && recipient.schoolId === currentUser.schoolId) {
+                    return true;
+                }
+                
+                // 2. Su responsable a cargo
+                if (recipient.userType === 'responsable' && recipient.schoolId === currentUser.schoolId) {
+                    return true;
+                }
+            }
+            
+            // Secretaria puede enviar a:
+            if (currentUser.type === 'secretaria') {
+                // 1. Docentes de su escuela
+                if (recipient.userType === 'docente' && recipient.schoolId === currentUser.schoolId) {
+                    return true;
+                }
+                
+                // 2. Su responsable a cargo
+                if (recipient.userType === 'responsable' && recipient.schoolId === currentUser.schoolId) {
                     return true;
                 }
             }
@@ -2420,9 +2697,10 @@ Esta acción no se puede deshacer.`;
 
             console.log(`Mensaje enviado de ${window.currentUser.name} a ${window.currentConversation.name}`);
             console.log(`Permisos del usuario ${window.currentUser.type}:`, {
-                canSendToDirectors: window.currentUser.type === 'director' || window.currentUser.type === 'admin',
-                canSendToOwnTeachers: window.currentUser.type === 'director' || window.currentUser.type === 'admin',
-                canSendToOwnDirector: window.currentUser.type === 'teacher'
+                canSendToSoporte: true, // Todos pueden enviar a soporte
+                canSendToResponsables: window.currentUser.type === 'soporte' || window.currentUser.type === 'responsable' || window.currentUser.type === 'docente' || window.currentUser.type === 'secretaria',
+                canSendToDocentes: window.currentUser.type === 'soporte' || window.currentUser.type === 'responsable' || window.currentUser.type === 'secretaria',
+                canSendToSecretarias: window.currentUser.type === 'soporte' || window.currentUser.type === 'responsable' || window.currentUser.type === 'docente'
             });
         }
 
