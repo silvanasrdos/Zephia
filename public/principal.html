@@ -12,45 +12,9 @@
     <link rel="icon" type="image/png" href="img/logo.png">
     <link rel="apple-touch-icon" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="styles-nuevo.css">
+    <link rel="stylesheet" href="styles-principal.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Estilos para usuarios con problemas de autenticación -->
-    <style>
-        .auth-issue-row {
-            background-color: #fff3cd !important;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .auth-issue-row:hover {
-            background-color: #ffeaa7 !important;
-        }
-        
-        .auth-issue-notification {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .btn-icon[style*="color: #ffc107"] {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-        }
-        
-        .btn-icon[style*="color: #ffc107"]:hover {
-            background-color: #ffc107;
-            color: #000 !important;
-        }
-    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -1176,18 +1140,6 @@
                 // Mostrar notificación en la interfaz
                 const notification = document.createElement('div');
                 notification.className = 'auth-issue-notification';
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: #ffc107;
-                    color: #000;
-                    padding: 15px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                    z-index: 10000;
-                    max-width: 300px;
-                `;
                 notification.innerHTML = `
                     <strong>⚠️ Usuarios con problemas de autenticación</strong><br>
                     ${usersWithIssues.length} usuario(s) no pueden iniciar sesión.<br>
