@@ -62,10 +62,33 @@
     </div>
 
     <script>
-        // Redirigir automáticamente a la página de login después de 2 segundos
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 2000);
+        // Función para redirigir de forma compatible con GitHub Pages
+        function redirectToLogin() {
+            const currentPath = window.location.pathname;
+            const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
+            const loginUrl = basePath + '/login.html';
+            
+            // Evitar loops de redirección
+            if (!currentPath.includes('login.html')) {
+                window.location.replace(loginUrl);
+            }
+        }
+        
+        // Redirigir inmediatamente al cargar la página
+        redirectToLogin();
+        
+        // Redirigir después de 1.5 segundos como fallback
+        setTimeout(redirectToLogin, 1500);
+        
+        // Redirección inmediata si el usuario hace clic
+        document.addEventListener('click', redirectToLogin);
+        
+        // Redirección con tecla Enter o Espacio
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                redirectToLogin();
+            }
+        });
     </script>
 </body>
 </html>
