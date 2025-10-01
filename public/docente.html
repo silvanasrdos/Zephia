@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#8b4513">
     <title>Zephia - Panel de Docente</title>
     <link rel="icon" type="image/png" href="img/logo.png">
-    <link rel="stylesheet" href="styles-docente.css">
+    <link rel="stylesheet" href="styles-docente.css?v=2">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -44,27 +44,140 @@
 
             <!-- Messaging Section -->
             <section id="messaging-section" class="section">
-                <div class="messaging-container">
-                    <div class="conversations-sidebar">
+                <div class="messaging-wrapper">
+                    <!-- Panel Izquierdo: Lista de Conversaciones -->
+                    <div class="conversations-panel">
                         <div class="conversations-header">
-                            <h3>Conversaciones</h3>
-                            <button class="btn-primary" onclick="openModal('new-message-modal')">
-                                <i class="fas fa-plus"></i> Nuevo Mensaje
+                            <button class="header-icon-btn" title="Menu">
+                                <i class="fas fa-bars"></i>
                             </button>
+                            <h3>Mensajes</h3>
+                            <div class="header-actions">
+                                <button class="header-icon-btn" title="Nuevo mensaje" onclick="openNewMessageModal()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Actualizar">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
                         </div>
+                        
                         <div class="conversations-search">
-                            <input type="text" id="conversation-search" placeholder="Buscar conversaciones...">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="conversation-search" placeholder="Buscar conversaciones">
                         </div>
+                        
                         <div class="conversations-list" id="conversations-list">
-                            <!-- Las conversaciones se cargarán aquí -->
+                            <!-- Conversaciones de ejemplo -->
+                            <div class="conversation-item priority-alta active" onclick="selectConversation(1)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Responsable García</h4>
+                                        <span class="priority-badge alta">ALTA</span>
+                                    </div>
+                                    <p class="conversation-preview">¿Cómo va el proyecto?</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">11:30</span>
+                                </div>
+                            </div>
+                            
+                            <div class="conversation-item priority-media" onclick="selectConversation(2)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Secretaría Ana López</h4>
+                                        <span class="priority-badge media">MEDIA</span>
+                                    </div>
+                                    <p class="conversation-preview">Recordatorio: Reunión de coordinación</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">10:15</span>
+                                </div>
+                            </div>
+                            
+                            <div class="conversation-item priority-baja" onclick="selectConversation(3)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Docente María Rodríguez</h4>
+                                        <span class="priority-badge baja">BAJA</span>
+                                    </div>
+                                    <p class="conversation-preview">¿Podrías revisar el material?</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">09:45</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chat-container">
-                        <div class="empty-chat">
-                            <i class="fas fa-comments"></i>
-                            <h3>Selecciona una conversación</h3>
-                            <p>Elige una conversación de la lista para comenzar a chatear</p>
+                    <!-- Panel Derecho: Chat -->
+                    <div class="chat-panel">
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <div class="chat-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="chat-user-details">
+                                    <h3>Responsable García</h3>
+                                    <span class="user-status">En línea</span>
+                                </div>
+                            </div>
+                            <div class="chat-header-actions">
+                                <button class="header-icon-btn" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Mensajes -->
+                            <div class="message received">
+                                <div class="message-bubble">
+                                    <p>Hola Juan, ¿cómo va el proyecto?</p>
+                                    <span class="message-time">11:20</span>
+                                </div>
+                            </div>
+                            
+                            <div class="message sent">
+                                <div class="message-bubble">
+                                    <p>Todo va muy bien, gracias por preguntar</p>
+                                    <span class="message-time">11:25</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <button class="emoji-btn" title="Emojis">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+                            <select class="priority-selector-input normal" id="priority-selector" title="Prioridad" onchange="updatePriorityColor(this)">
+                                <option value="normal">Normal</option>
+                                <option value="baja">Baja</option>
+                                <option value="media">Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                            <button class="send-btn" title="Enviar">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -119,6 +232,20 @@
         function openModal(modalId) {
             console.log('Abriendo modal:', modalId);
             // Aquí se implementaría la lógica para abrir modales
+        }
+
+        // Función para abrir modal de nuevo mensaje
+        function openNewMessageModal() {
+            console.log('Abriendo modal de nuevo mensaje');
+        }
+
+        // Función para actualizar el color del selector de prioridad
+        function updatePriorityColor(selectElement) {
+            const value = selectElement.value;
+            // Remover todas las clases de prioridad
+            selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+            // Agregar la clase correspondiente al valor seleccionado
+            selectElement.classList.add(value);
         }
 
         // Función para cargar datos
@@ -177,42 +304,11 @@
             renderConversations();
         }
 
-        // Función para renderizar conversaciones
+        // Función para renderizar conversaciones (actualmente no se usa porque están hardcodeadas en HTML)
         function renderConversations() {
-            const conversationsList = document.getElementById('conversations-list');
-            if (!conversationsList || !window.conversations) return;
-            
-            conversationsList.innerHTML = '';
-            window.conversations.forEach(conversation => {
-                const conversationElement = document.createElement('div');
-                conversationElement.className = 'conversation-item';
-                
-                // Agregar clase según el rol para estilos diferentes
-                const roleClass = `conversation-${conversation.role}`;
-                conversationElement.classList.add(roleClass);
-                
-                conversationElement.innerHTML = `
-                    <div class="conversation-avatar">
-                        <img src="${conversation.avatar}" alt="${conversation.name}">
-                        ${conversation.unread > 0 ? `<span class="unread-badge">${conversation.unread}</span>` : ''}
-                        <div class="role-indicator ${conversation.role}">
-                            <i class="fas ${getRoleIcon(conversation.role)}"></i>
-                        </div>
-                    </div>
-                    <div class="conversation-content">
-                        <div class="conversation-header">
-                            <h4>${conversation.name}</h4>
-                            <span class="conversation-time">${conversation.timestamp}</span>
-                        </div>
-                        <p class="conversation-preview">${conversation.lastMessage}</p>
-                        <div class="conversation-role">
-                            <span class="role-badge ${conversation.role}">${getRoleLabel(conversation.role)}</span>
-                        </div>
-                    </div>
-                `;
-                conversationElement.onclick = () => selectConversation(conversation.id);
-                conversationsList.appendChild(conversationElement);
-            });
+            // Las conversaciones están hardcodeadas en el HTML
+            // Esta función se puede usar para cargar conversaciones dinámicamente desde Firebase
+            console.log('Conversaciones cargadas desde HTML');
         }
 
         // Función para obtener el icono según el rol
@@ -239,8 +335,15 @@
 
         // Función para seleccionar conversación
         function selectConversation(conversationId) {
-            console.log('Seleccionando conversación:', conversationId);
-            // Aquí se implementaría la lógica para mostrar los mensajes de la conversación
+            // Remover clase active de todas las conversaciones
+            const conversations = document.querySelectorAll('.conversation-item');
+            conversations.forEach(conv => conv.classList.remove('active'));
+            
+            // Agregar clase active a la conversación seleccionada
+            event.currentTarget.classList.add('active');
+            
+            // Aquí puedes cargar los mensajes de la conversación seleccionada
+            console.log('Conversación seleccionada:', conversationId);
         }
 
         // Función para cerrar sesión
