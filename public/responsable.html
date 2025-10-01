@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#8b4513">
     <title>Zephia - Panel Responsable a Cargo</title>
     <link rel="icon" type="image/png" href="img/logo.png">
-    <link rel="stylesheet" href="styles-r.css">
+    <link rel="stylesheet" href="styles-r.css?v=2">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -103,7 +103,6 @@
             <!-- Schools Section -->
             <section id="schools-section" class="section" style="display: none;">
                 <div class="section-header">
-                    <h3>Mis Escuelas</h3>
                     <button class="btn-primary" onclick="openModal('school-modal')">
                         <i class="fas fa-plus"></i> Agregar Escuela
                     </button>
@@ -131,7 +130,6 @@
             <!-- Teachers Section -->
             <section id="teachers-section" class="section" style="display: none;">
                 <div class="section-header">
-                    <h3>Mis Docentes</h3>
                     <button class="btn-primary" onclick="openModal('teacher-modal')">
                         <i class="fas fa-plus"></i> Agregar Docente
                     </button>
@@ -157,28 +155,141 @@
             </section>
 
             <!-- Messaging Section -->
-            <section id="messaging-section" class="section" style="display: none;">
-                <div class="messaging-container">
-                    <div class="conversations-sidebar">
+            <section id="messaging-section" class="section" style="display: block;">
+                <div class="messaging-wrapper">
+                    <!-- Panel Izquierdo: Lista de Conversaciones -->
+                    <div class="conversations-panel">
                         <div class="conversations-header">
-                            <h3>Conversaciones</h3>
-                            <button class="btn-primary" onclick="openModal('new-message-modal')">
-                                <i class="fas fa-plus"></i> Nuevo Mensaje
+                            <button class="header-icon-btn" title="Menu">
+                                <i class="fas fa-bars"></i>
                             </button>
+                            <h3>Mensajes</h3>
+                            <div class="header-actions">
+                                <button class="header-icon-btn" title="Nuevo mensaje" onclick="openNewMessageModal()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Actualizar">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
                         </div>
+                        
                         <div class="conversations-search">
-                            <input type="text" id="conversation-search" placeholder="Buscar conversaciones...">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="conversation-search" placeholder="Buscar conversaciones">
                         </div>
+                        
                         <div class="conversations-list" id="conversations-list">
-                            <!-- Las conversaciones se cargarán aquí -->
+                            <!-- Conversaciones de ejemplo -->
+                            <div class="conversation-item priority-alta active" onclick="selectConversation(1)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Lucas Ramírez (R.C)</h4>
+                                        <span class="priority-badge alta">ALTA</span>
+                                    </div>
+                                    <p class="conversation-preview">Calificaciones 5TO C</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">19:48</span>
+                                </div>
+                            </div>
+                            
+                            <div class="conversation-item priority-media" onclick="selectConversation(2)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Secretaría</h4>
+                                        <span class="priority-badge media">MEDIA</span>
+                                    </div>
+                                    <p class="conversation-preview">Enseguida te envío los papeles.</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">18:30</span>
+                                </div>
+                            </div>
+                            
+                            <div class="conversation-item priority-baja" onclick="selectConversation(3)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Maria Gonzalez (Docente)</h4>
+                                        <span class="priority-badge baja">BAJA</span>
+                                    </div>
+                                    <p class="conversation-preview">Necesito reportes.</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">18:16</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chat-container">
-                        <div class="empty-chat">
-                            <i class="fas fa-comments"></i>
-                            <h3>Selecciona una conversación</h3>
-                            <p>Elige una conversación de la lista para comenzar a chatear</p>
+                    <!-- Panel Derecho: Chat -->
+                    <div class="chat-panel">
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <div class="chat-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="chat-user-details">
+                                    <h3>Maria Gonzalez (Docente)</h3>
+                                    <span class="user-status">En línea</span>
+                                </div>
+                            </div>
+                            <div class="chat-header-actions">
+                                <button class="header-icon-btn" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Mensajes -->
+                            <div class="message received">
+                                <div class="message-bubble">
+                                    <p>Confirmamos la reunión para mañana a las 14:00</p>
+                                    <span class="message-time">Ayer</span>
+                                </div>
+                            </div>
+                            
+                            <div class="message sent">
+                                <div class="message-bubble">
+                                    <p>Perfecto, estaré allí puntual. Gracias por confirmar</p>
+                                    <span class="message-time">Ayer</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <button class="emoji-btn" title="Emojis">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+                            <select class="priority-selector-input normal" id="priority-selector" title="Prioridad" onchange="updatePriorityColor(this)">
+                                <option value="normal">Normal</option>
+                                <option value="baja">Baja</option>
+                                <option value="media">Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                            <button class="send-btn" title="Enviar">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -187,7 +298,6 @@
             <!-- Reports Section -->
             <section id="reports-section" class="section" style="display: none;">
                 <div class="section-header">
-                    <h3>Reportes</h3>
                     <div class="report-filters">
                         <select id="report-period">
                             <option value="week">Esta Semana</option>
@@ -273,6 +383,33 @@
         // Función para abrir modales
         function openModal(modalId) {
             console.log('Abriendo modal:', modalId);
+        }
+
+        // Función para seleccionar conversación
+        function selectConversation(conversationId) {
+            // Remover clase active de todas las conversaciones
+            const conversations = document.querySelectorAll('.conversation-item');
+            conversations.forEach(conv => conv.classList.remove('active'));
+            
+            // Agregar clase active a la conversación seleccionada
+            event.currentTarget.classList.add('active');
+            
+            // Aquí puedes cargar los mensajes de la conversación seleccionada
+            console.log('Conversación seleccionada:', conversationId);
+        }
+
+        // Función para abrir modal de nuevo mensaje
+        function openNewMessageModal() {
+            console.log('Abriendo modal de nuevo mensaje');
+        }
+
+        // Función para actualizar el color del selector de prioridad
+        function updatePriorityColor(selectElement) {
+            const value = selectElement.value;
+            // Remover todas las clases de prioridad
+            selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+            // Agregar la clase correspondiente al valor seleccionado
+            selectElement.classList.add(value);
         }
 
         // Función para cargar datos
@@ -390,7 +527,7 @@
         // Inicializar aplicación
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
-            showSection('dashboard');
+            showSection('messaging');
         });
     </script>
 </body>

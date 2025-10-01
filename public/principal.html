@@ -12,45 +12,9 @@
     <link rel="icon" type="image/png" href="img/logo.png">
     <link rel="apple-touch-icon" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="styles-nuevo.css">
+    <link rel="stylesheet" href="styles-principal.css?v=2">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Estilos para usuarios con problemas de autenticación -->
-    <style>
-        .auth-issue-row {
-            background-color: #fff3cd !important;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .auth-issue-row:hover {
-            background-color: #ffeaa7 !important;
-        }
-        
-        .auth-issue-notification {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .btn-icon[style*="color: #ffc107"] {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-        }
-        
-        .btn-icon[style*="color: #ffc107"]:hover {
-            background-color: #ffc107;
-            color: #000 !important;
-        }
-    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -151,11 +115,10 @@
             <!-- Schools Section -->
             <section id="schools-section" class="section" style="display: none;">
                 <div class="section-header">
-                    <h3>Gestión de Escuelas</h3>
                     <button class="btn-primary" onclick="openModal('school-modal')">
                         <i class="fas fa-plus"></i> Agregar Escuela
                     </button>
-                                </div>
+                </div>
                 <div class="table-container">
                     <table class="data-table">
                                 <thead>
@@ -181,11 +144,10 @@
             <!-- Teachers Section -->
             <section id="teachers-section" class="section" style="display: none;">
                 <div class="section-header">
-                    <h3>Gestión de Docentes</h3>
                     <button class="btn-primary" onclick="openModal('teacher-modal')">
                         <i class="fas fa-plus"></i> Agregar Docente
                     </button>
-                            </div>
+                </div>
                 <div class="table-container">
                     <table class="data-table">
                                 <thead>
@@ -211,11 +173,10 @@
             <!-- Users Section -->
             <section id="users-section" class="section" style="display: none;">
                 <div class="section-header">
-                    <h3>Gestión de Usuarios</h3>
                     <button class="btn-primary" onclick="openModal('user-modal')">
                         <i class="fas fa-plus"></i> Agregar Usuario
                     </button>
-                            </div>
+                </div>
                 <div class="table-container">
                     <table class="data-table">
                                 <thead>
@@ -237,123 +198,114 @@
 
             <!-- Messaging Section -->
             <section id="messaging-section" class="section">
-                <div class="whatsapp-container">
+                <div class="messaging-container">
                     <!-- Sidebar de conversaciones -->
-                    <div class="whatsapp-sidebar">
+                    <div class="conversations-sidebar">
                         <!-- Header del sidebar -->
-                        <div class="whatsapp-sidebar-header">
-                            <div class="current-user-info">
-                                <div class="user-avatar">
-                                    <i class="fas fa-user-circle"></i>
-                                </div>
-                                <div class="user-details">
-                                    <div class="user-name" id="current-user-name">Cargando...</div>
-                                    <div class="user-role" id="current-user-role">Cargando...</div>
-                                </div>
+                        <div class="sidebar-header">
+                            <div class="header-left">
+                                <button class="menu-btn">
+                                    <i class="fas fa-bars"></i>
+                                </button>
+                                <h2>Mensajes</h2>
                             </div>
-                            <div class="sidebar-actions">
-                                <button class="sidebar-btn" onclick="openModal('new-message-modal')" title="Nuevo chat">
+                            <div class="header-actions">
+                                <button class="action-btn" onclick="openModal('new-message-modal')" title="Nuevo chat">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                                <button class="sidebar-btn" onclick="refreshConversations()" title="Actualizar">
+                                <button class="action-btn" onclick="refreshConversations()" title="Actualizar">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
-                                <button class="sidebar-btn" title="Más opciones">
+                                <button class="action-btn" title="Más opciones">
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                             </div>
                         </div>
                         
                         <!-- Barra de búsqueda -->
-                        <div class="search-container">
+                        <div class="search-bar">
                             <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Buscar o empezar un nuevo chat" id="conversation-search">
+                            <input type="text" placeholder="Buscar conversaciones" id="conversation-search">
                         </div>
                         
                         <!-- Lista de conversaciones -->
                         <div class="conversations-list" id="conversations-list">
                             <!-- Las conversaciones se cargarán aquí -->
-                            <div class="empty-state">
-                                <i class="fas fa-comments"></i>
-                                <p>No hay conversaciones</p>
-                                <button class="btn-primary" onclick="openModal('new-message-modal')">
-                                    <i class="fas fa-plus"></i> Nuevo Chat
-                                </button>
-                            </div>
                         </div>
                     </div>
                     
                     <!-- Área de chat principal -->
-                    <div class="whatsapp-chat">
-                        <div class="empty-chat">
-                            <div class="empty-chat-icon">
+                    <div class="chat-area">
+                        <!-- Estado vacío -->
+                        <div class="empty-chat" id="empty-chat">
+                            <div class="empty-icon">
                                 <i class="fas fa-comments"></i>
                             </div>
                             <h3>Mensajería Zephia</h3>
                             <p>Selecciona una conversación para comenzar a chatear</p>
-                    <button class="btn-primary" onclick="openModal('new-message-modal')">
-                        <i class="fas fa-plus"></i> Nuevo Mensaje
+                            <button class="btn-primary" onclick="openModal('new-message-modal')">
+                                <i class="fas fa-plus"></i> Nuevo Mensaje
                             </button>
                         </div>
                         
-                        <!-- Chat activo (se mostrará cuando se seleccione una conversación) -->
+                        <!-- Chat activo -->
                         <div class="active-chat" id="active-chat" style="display: none;">
                             <!-- Header del chat -->
                             <div class="chat-header">
                                 <div class="chat-user-info">
-                                    <div class="chat-avatar">
+                                    <div class="user-avatar">
                                         <i class="fas fa-user-circle"></i>
                                     </div>
-                                    <div class="chat-details">
+                                    <div class="user-details">
                                         <h4 id="chat-user-name">Nombre del Usuario</h4>
                                         <span id="chat-user-status">En línea</span>
                                     </div>
                                 </div>
                                 <div class="chat-actions">
-                                    <button class="chat-btn" title="Más opciones">
+                                    <button class="chat-action-btn" title="Buscar">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="chat-action-btn" title="Más opciones">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
                                 </div>
                             </div>
                             
                             <!-- Área de mensajes -->
-                            <div class="messages-container" id="messages-container">
+                            <div class="messages-area" id="messages-container">
                                 <!-- Los mensajes se cargarán aquí -->
                             </div>
                             
                             <!-- Input de mensaje -->
-                            <div class="message-input-container">
-                                <button class="input-btn" title="Adjuntar archivo">
-                                    <i class="fas fa-paperclip"></i>
+                            <div class="message-input-area">
+                                <button class="input-action-btn" title="Emoji">
+                                    <i class="fas fa-smile"></i>
                                 </button>
-                                <div class="message-input-wrapper">
+                                <div class="message-input">
                                     <input type="text" placeholder="Escribe un mensaje..." id="message-input">
                                 </div>
                                 <div class="priority-selector">
                                     <select id="message-priority" title="Prioridad del mensaje">
-                                        <option value="normal">Normal</option>
-                                        <option value="high">Alta</option>
-                                        <option value="medium">Media</option>
-                                        <option value="low">Baja</option>
+                                        <option value="normal">📋 Normal</option>
+                                        <option value="baja">🟢 Baja</option>
+                                        <option value="media">🟡 Media</option>
+                                        <option value="alta">🔴 Alta</option>
                                     </select>
                                 </div>
-                                <button class="input-btn" title="Enviar mensaje" onclick="sendMessage()">
+                                <button class="input-action-btn send-btn" title="Enviar mensaje" onclick="sendMessage()">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>
                             </div>
                         </div>
-                        </div>
                     </div>
+                </div>
             </section>
 
             <!-- Reports Section -->
             <section id="reports-section" class="section" style="display: none;">
-                <div class="section-header">
-                    <h3>Reportes</h3>
-                </div>
                 <div class="reports-container">
                     <p>Aquí se mostrarán los reportes del sistema.</p>
-            </div>
+                </div>
             </section>
         </main>
     </div>
@@ -1176,18 +1128,6 @@
                 // Mostrar notificación en la interfaz
                 const notification = document.createElement('div');
                 notification.className = 'auth-issue-notification';
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: #ffc107;
-                    color: #000;
-                    padding: 15px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                    z-index: 10000;
-                    max-width: 300px;
-                `;
                 notification.innerHTML = `
                     <strong>⚠️ Usuarios con problemas de autenticación</strong><br>
                     ${usersWithIssues.length} usuario(s) no pueden iniciar sesión.<br>
@@ -2294,18 +2234,18 @@ Esta acción no se puede deshacer.`;
             }
         }
 
-        // ===== FUNCIONES DE MENSAJERÍA WHATSAPP =====
+        // ===== NUEVA MENSAJERÍA =====
         
         // Variables globales para mensajería
         window.conversations = [];
         window.currentConversation = null;
         window.messages = [];
         
-        // Usuario actual (simulado - en producción vendría del login)
+        // Usuario actual
         window.currentUser = {
-            id: 'current_soporte',
-            name: 'Soporte Técnico',
-            type: 'soporte', // soporte, responsable, docente, secretaria
+            id: 'current_user',
+            name: 'Usuario Actual',
+            type: 'soporte',
             schoolId: 'all',
             schoolName: 'Sistema'
         };
@@ -2315,172 +2255,46 @@ Esta acción no se puede deshacer.`;
             loadConversations();
         }
 
-        // Función para validar permisos de envío de mensajes
-        function canSendMessageTo(recipient) {
-            const currentUser = window.currentUser;
-            
-            // Soporte puede enviar a todos
-            if (currentUser.type === 'soporte') {
-                return true;
-            }
-            
-            // Todos pueden enviar mensajes al soporte en caso de error
-            if (recipient.userType === 'soporte') {
-                return true;
-            }
-            
-            // Responsable a cargo puede enviar a:
-            if (currentUser.type === 'responsable') {
-                // 1. Otros responsables a cargo
-                if (recipient.userType === 'responsable') {
-                    return true;
-                }
-                
-                // 2. Docentes de su escuela
-                if (recipient.userType === 'docente' && recipient.schoolId === currentUser.schoolId) {
-                    return true;
-                }
-                
-                // 3. Secretarias de su escuela
-                if (recipient.userType === 'secretaria' && recipient.schoolId === currentUser.schoolId) {
-                    return true;
-                }
-            }
-            
-            // Docente puede enviar a:
-            if (currentUser.type === 'docente') {
-                // 1. Secretarias de su escuela
-                if (recipient.userType === 'secretaria' && recipient.schoolId === currentUser.schoolId) {
-                    return true;
-                }
-                
-                // 2. Su responsable a cargo
-                if (recipient.userType === 'responsable' && recipient.schoolId === currentUser.schoolId) {
-                    return true;
-                }
-            }
-            
-            // Secretaria puede enviar a:
-            if (currentUser.type === 'secretaria') {
-                // 1. Docentes de su escuela
-                if (recipient.userType === 'docente' && recipient.schoolId === currentUser.schoolId) {
-                    return true;
-                }
-                
-                // 2. Su responsable a cargo
-                if (recipient.userType === 'responsable' && recipient.schoolId === currentUser.schoolId) {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-
-        // Función para filtrar conversaciones según permisos
-        function filterConversationsByPermissions(conversations) {
-            return conversations.filter(conv => canSendMessageTo(conv));
-        }
-
-        // Función para obtener lista de destinatarios disponibles
-        function getAvailableRecipients() {
-            const currentUser = window.currentUser;
-            const allUsers = window.conversations;
-            
-            return allUsers.filter(user => {
-                // No incluir al usuario actual
-                if (user.id === currentUser.id) {
-                    return false;
-                }
-                
-                // Verificar permisos
-                return canSendMessageTo(user);
-            });
-        }
-
-        // Función para actualizar información del usuario en el header
-        function updateCurrentUserInfo() {
-            const currentUser = window.currentUser;
-            
-            // Actualizar nombre del usuario
-            const userNameElement = document.getElementById('current-user-name');
-            if (userNameElement) {
-                userNameElement.textContent = currentUser.name;
-            }
-            
-            // Actualizar rol del usuario
-            const userRoleElement = document.getElementById('current-user-role');
-            if (userRoleElement) {
-                const roleLabels = {
-                    'director': 'Director',
-                    'teacher': 'Docente',
-                    'admin': 'Administrador'
-                };
-                const roleLabel = roleLabels[currentUser.type] || 'Usuario';
-                const schoolInfo = currentUser.schoolName ? ` - ${currentUser.schoolName}` : '';
-                userRoleElement.textContent = `${roleLabel}${schoolInfo}`;
-            }
-        }
-
         // Función para cargar conversaciones
         async function loadConversations() {
             try {
-                // Simular conversaciones de ejemplo con jerarquías y permisos
+                // Datos de ejemplo
                 window.conversations = [
                     {
                         id: 'conv1',
-                        name: 'Director Ana Martínez - Escuela San Martín',
-                        lastMessage: 'URGENTE: Necesitamos información sobre los nuevos docentes',
-                        time: '10:30',
-                        unread: 2,
-                        avatar: 'school',
-                        priority: 'high',
-                        priorityScore: 3,
-                        userType: 'director',
+                        name: 'Lucas Ramirez (R.C)',
+                        lastMessage: 'Calificaciones 5TO C',
+                        time: '19:48',
+                        unread: 1,
+                        avatar: 'brown',
+                        userType: 'responsable',
                         schoolId: 'school1',
                         schoolName: 'Escuela San Martín',
-                        canReceiveFrom: ['director', 'admin']
+                        priority: 'alta'
                     },
                     {
                         id: 'conv2',
-                        name: 'Prof. María González',
-                        lastMessage: '¿Podría enviarme los documentos requeridos?',
-                        time: '09:45',
-                        unread: 0,
-                        avatar: 'teacher',
-                        priority: 'normal',
-                        priorityScore: 1,
-                        userType: 'teacher',
+                        name: 'Secretaría',
+                        lastMessage: 'Enseguida te envio los papeles.',
+                        time: '18:30',
+                        unread: 2,
+                        avatar: 'green',
+                        userType: 'secretaria',
                         schoolId: 'school1',
                         schoolName: 'Escuela San Martín',
-                        canReceiveFrom: ['director', 'admin']
+                        priority: 'media'
                     },
                     {
                         id: 'conv3',
-                        name: 'Director Carlos Ruiz - Escuela Primaria Central',
-                        lastMessage: 'Confirmamos la reunión para mañana',
-                        time: 'Ayer',
-                        unread: 1,
-                        avatar: 'school',
-                        priority: 'medium',
-                        priorityScore: 2,
-                        userType: 'director',
-                        schoolId: 'school2',
-                        schoolName: 'Escuela Primaria Central',
-                        canReceiveFrom: ['director', 'admin']
-                    },
-                    {
-                        id: 'conv4',
-                        name: 'Prof. Carlos López',
-                        lastMessage: 'Gracias por la información',
-                        time: 'Lunes',
+                        name: 'Maria Gonzalez (Docente)',
+                        lastMessage: 'Necesito reportes.',
+                        time: '18:16',
                         unread: 0,
-                        avatar: 'teacher',
-                        priority: 'low',
-                        priorityScore: 0,
+                        avatar: 'purple',
                         userType: 'teacher',
                         schoolId: 'school1',
                         schoolName: 'Escuela San Martín',
-                        canReceiveFrom: ['director', 'admin']
+                        priority: 'baja'
                     }
                 ];
 
@@ -2507,42 +2321,16 @@ Esta acción no se puede deshacer.`;
                 return;
             }
 
-            // Filtrar conversaciones según permisos del usuario actual
-            const allowedConversations = filterConversationsByPermissions(window.conversations);
-            
-            if (allowedConversations.length === 0) {
-                conversationsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-user-shield"></i>
-                        <p>No tienes permisos para ver conversaciones</p>
-                        <small>Contacta al administrador si necesitas acceso</small>
-                    </div>
-                `;
-                return;
-            }
-
-            // Ordenar conversaciones por prioridad (alta -> media -> normal -> baja)
-            const sortedConversations = [...allowedConversations].sort((a, b) => {
-                // Primero por prioridad
-                if (a.priorityScore !== b.priorityScore) {
-                    return b.priorityScore - a.priorityScore;
-                }
-                // Luego por mensajes no leídos
-                if (a.unread !== b.unread) {
-                    return b.unread - a.unread;
-                }
-                // Finalmente por tiempo (más reciente primero)
-                return a.time.localeCompare(b.time);
-            });
-
-            conversationsList.innerHTML = sortedConversations.map(conv => `
-                <div class="conversation-item ${conv.priority}-priority" onclick="openConversation('${conv.id}')">
-                    <div class="conversation-priority"></div>
-                    <div class="conversation-avatar">
-                        <i class="fas fa-${conv.avatar === 'school' ? 'school' : 'chalkboard-teacher'}"></i>
+            conversationsList.innerHTML = window.conversations.map(conv => `
+                <div class="conversation-item ${conv.priority ? 'priority-' + conv.priority : ''}" onclick="openConversation('${conv.id}')">
+                    <div class="conversation-avatar ${conv.avatar}">
+                        <i class="fas fa-user"></i>
                     </div>
                     <div class="conversation-info">
-                        <h4 class="conversation-name">${conv.name}</h4>
+                        <div style="display: flex; align-items: center;">
+                            <h4 class="conversation-name">${conv.name}</h4>
+                            ${conv.priority && conv.priority !== 'normal' ? `<span class="priority-badge ${conv.priority}">${conv.priority.toUpperCase()}</span>` : ''}
+                        </div>
                         <p class="conversation-preview">${conv.lastMessage}</p>
                     </div>
                     <div class="conversation-meta">
@@ -2555,7 +2343,7 @@ Esta acción no se puede deshacer.`;
 
         // Función para abrir una conversación
         function openConversation(conversationId) {
-            // Actualizar estado activo en la lista
+            // Actualizar estado activo
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -2568,14 +2356,14 @@ Esta acción no se puede deshacer.`;
             window.currentConversation = conversation;
 
             // Mostrar el chat activo
-            document.querySelector('.empty-chat').style.display = 'none';
+            document.getElementById('empty-chat').style.display = 'none';
             document.getElementById('active-chat').style.display = 'flex';
 
             // Actualizar header del chat
             document.getElementById('chat-user-name').textContent = conversation.name;
             document.getElementById('chat-user-status').textContent = 'En línea';
 
-            // Cargar mensajes de la conversación
+            // Cargar mensajes
             loadMessages(conversationId);
 
             // Marcar como leída
@@ -2585,26 +2373,19 @@ Esta acción no se puede deshacer.`;
 
         // Función para cargar mensajes
         function loadMessages(conversationId) {
-            // Simular mensajes de ejemplo con prioridades
             const sampleMessages = {
                 'conv1': [
-                    { id: 1, text: 'URGENTE: Necesitamos información sobre los nuevos docentes', sender: 'received', time: '10:30', priority: 'high' },
-                    { id: 2, text: 'Hola! Claro, ¿qué información específica necesitan?', sender: 'sent', time: '10:32', priority: 'normal' },
-                    { id: 3, text: 'Necesitamos los nombres completos, DNI y materias que dictarán', sender: 'received', time: '10:35', priority: 'high' },
-                    { id: 4, text: 'Perfecto, les envío la información en unos minutos', sender: 'sent', time: '10:36', priority: 'high' }
+                    { id: 1, text: 'Hoy', sender: 'system', time: '', priority: 'normal' },
+                    { id: 2, text: 'Enseguida te envío las calificaciones de 5TO', sender: 'sent', time: '18:12', priority: 'normal' },
+                    { id: 3, text: 'Dale. Estoy a la espera.', sender: 'received', time: '18:16', priority: 'normal' }
                 ],
                 'conv2': [
                     { id: 1, text: '¿Podría enviarme los documentos requeridos?', sender: 'received', time: '09:45', priority: 'normal' },
-                    { id: 2, text: 'Por supuesto, ¿cuáles documentos necesita específicamente?', sender: 'sent', time: '09:47', priority: 'normal' },
-                    { id: 3, text: 'Los formularios de inscripción y los requisitos para el cargo', sender: 'received', time: '09:50', priority: 'normal' }
+                    { id: 2, text: 'Por supuesto, ¿cuáles documentos necesita específicamente?', sender: 'sent', time: '09:47', priority: 'normal' }
                 ],
                 'conv3': [
-                    { id: 1, text: 'Confirmamos la reunión para mañana a las 14:00', sender: 'received', time: 'Ayer', priority: 'medium' },
+                    { id: 1, text: 'Confirmamos la reunión para mañana a las 14:00', sender: 'received', time: 'Ayer', priority: 'normal' },
                     { id: 2, text: 'Perfecto, estaré allí puntual. Gracias por confirmar', sender: 'sent', time: 'Ayer', priority: 'normal' }
-                ],
-                'conv4': [
-                    { id: 1, text: 'Gracias por la información, fue muy útil', sender: 'received', time: 'Lunes', priority: 'low' },
-                    { id: 2, text: '¡De nada! Cualquier consulta adicional, no duden en escribirme', sender: 'sent', time: 'Lunes', priority: 'low' }
                 ]
             };
 
@@ -2617,15 +2398,23 @@ Esta acción no se puede deshacer.`;
             const messagesContainer = document.getElementById('messages-container');
             
             messagesContainer.innerHTML = window.messages.map(message => {
-                const priorityLabel = getPriorityLabel(message.priority);
-                const priorityBadge = message.priority !== 'normal' ? `<span class="priority-badge ${message.priority}">${priorityLabel}</span>` : '';
+                if (message.sender === 'system') {
+                    return `
+                        <div class="message-date">
+                            <span class="date-badge">${message.text}</span>
+                        </div>
+                    `;
+                }
+                
+                const priorityClass = message.priority && message.priority !== 'normal' ? `priority-${message.priority}` : '';
+                const priorityBadge = message.priority && message.priority !== 'normal' ? 
+                    `<span class="priority-badge ${message.priority}">${message.priority.toUpperCase()}</span>` : '';
                 
                 return `
                     <div class="message ${message.sender}">
-                        <div class="message-bubble ${message.priority}-priority">
-                            ${message.text}
-                            ${priorityBadge}
-                            <div class="message-time">${message.time}</div>
+                        <div class="message-bubble ${priorityClass}">
+                            <div class="message-text">${message.text}</div>
+                            <div class="message-time">${message.time} ${priorityBadge}</div>
                         </div>
                     </div>
                 `;
@@ -2635,31 +2424,16 @@ Esta acción no se puede deshacer.`;
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Función auxiliar para obtener etiqueta de prioridad
-        function getPriorityLabel(priority) {
-            const labels = {
-                'high': 'Alta',
-                'medium': 'Media', 
-                'low': 'Baja',
-                'normal': 'Normal'
-            };
-            return labels[priority] || 'Normal';
-        }
-
         // Función para enviar mensaje
         function sendMessage() {
             const messageInput = document.getElementById('message-input');
             const prioritySelect = document.getElementById('message-priority');
             const messageText = messageInput.value.trim();
-            const priority = prioritySelect.value;
 
             if (!messageText || !window.currentConversation) return;
 
-            // Validar permisos antes de enviar
-            if (!canSendMessageTo(window.currentConversation)) {
-                alert('No tienes permisos para enviar mensajes a este destinatario.');
-                return;
-            }
+            // Obtener prioridad seleccionada
+            const priority = prioritySelect ? prioritySelect.value : 'normal';
 
             // Crear nuevo mensaje
             const newMessage = {
@@ -2667,9 +2441,7 @@ Esta acción no se puede deshacer.`;
                 text: messageText,
                 sender: 'sent',
                 time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                priority: priority,
-                fromUserId: window.currentUser.id,
-                toUserId: window.currentConversation.id
+                priority: priority
             };
 
             // Agregar mensaje
@@ -2678,30 +2450,23 @@ Esta acción no se puede deshacer.`;
 
             // Limpiar input
             messageInput.value = '';
-            prioritySelect.value = 'normal'; // Resetear a normal
+            
+            // Resetear prioridad a normal
+            if (prioritySelect) {
+                prioritySelect.value = 'normal';
+            }
 
-            // Actualizar última conversación
+            // Actualizar última conversación con la prioridad
             const conversation = window.conversations.find(conv => conv.id === window.currentConversation.id);
             if (conversation) {
                 conversation.lastMessage = messageText;
                 conversation.time = newMessage.time;
-                
-                // Actualizar prioridad de la conversación si es alta o media
-                if (priority === 'high' || priority === 'medium') {
+                // Actualizar prioridad de la conversación si el mensaje tiene prioridad alta o media
+                if (priority === 'alta' || priority === 'media') {
                     conversation.priority = priority;
-                    conversation.priorityScore = priority === 'high' ? 3 : 2;
                 }
-                
                 renderConversations();
             }
-
-            console.log(`Mensaje enviado de ${window.currentUser.name} a ${window.currentConversation.name}`);
-            console.log(`Permisos del usuario ${window.currentUser.type}:`, {
-                canSendToSoporte: true, // Todos pueden enviar a soporte
-                canSendToResponsables: window.currentUser.type === 'soporte' || window.currentUser.type === 'responsable' || window.currentUser.type === 'docente' || window.currentUser.type === 'secretaria',
-                canSendToDocentes: window.currentUser.type === 'soporte' || window.currentUser.type === 'responsable' || window.currentUser.type === 'secretaria',
-                canSendToSecretarias: window.currentUser.type === 'soporte' || window.currentUser.type === 'responsable' || window.currentUser.type === 'docente'
-            });
         }
 
         // Event listener para enviar mensaje con Enter
@@ -2717,36 +2482,6 @@ Esta acción no se puede deshacer.`;
 
             // Cargar conversaciones al inicializar
             loadConversations();
-            
-            // Actualizar información del usuario actual
-            updateCurrentUserInfo();
-        });
-
-        // Función para búsqueda de conversaciones
-        function searchConversations() {
-            const searchInput = document.getElementById('conversation-search');
-            if (searchInput) {
-                searchInput.addEventListener('input', function(e) {
-                    const searchTerm = e.target.value.toLowerCase();
-                    const conversationItems = document.querySelectorAll('.conversation-item');
-                    
-                    conversationItems.forEach(item => {
-                        const name = item.querySelector('.conversation-name').textContent.toLowerCase();
-                        const preview = item.querySelector('.conversation-preview').textContent.toLowerCase();
-                        
-                        if (name.includes(searchTerm) || preview.includes(searchTerm)) {
-                            item.style.display = 'flex';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-                });
-            }
-        }
-
-        // Inicializar búsqueda cuando se carga la página
-        document.addEventListener('DOMContentLoaded', function() {
-            searchConversations();
         });
     </script>
 </body>
