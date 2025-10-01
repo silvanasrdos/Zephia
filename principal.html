@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel administrativo para gestión de escuelas y docentes">
+    <meta name="theme-color" content="#8b4513">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Zephia">
+    <title>Zephia - Panel Administrativo</title>
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="apple-touch-icon" href="img/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles-principal.css?v=2">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="img/logo.png" alt="Zephia Logo" class="logo">
+                <h2>Zephia</h2>
+                    </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showSection('messaging')">
+                    <i class="fas fa-envelope"></i>
+                    <span>Mensajería</span>
+                </li>
+                <li class="nav-item" onclick="showSection('schools')">
+                    <i class="fas fa-school"></i>
+                    <span>Escuelas</span>
+                </li>
+                <li class="nav-item" onclick="showSection('teachers')">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Docentes</span>
+                </li>
+                <li class="nav-item" onclick="showSection('users')">
+                    <i class="fas fa-users"></i>
+                    <span>Usuarios</span>
+                </li>
+                <li class="nav-item" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" onclick="showSection('reports')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="breadcrumb">
+                    <h2 id="section-title">Dashboard</h2>
+                    <p id="section-description">Panel principal del sistema administrativo</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn" id="add-btn" style="display: none;">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                    <button class="action-btn logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                                </button>
+                            </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section" style="display: none;">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-school"></i>
+                            </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-schools">0</h3>
+                            <p class="stat-label">Escuelas</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-teachers">0</h3>
+                            <p class="stat-label">Docentes</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-users">0</h3>
+                            <p class="stat-label">Usuarios</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                            <i class="fas fa-envelope"></i>
+                            </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="total-messages">0</h3>
+                            <p class="stat-label">Mensajes</p>
+                            </div>
+                        </div>
+                    </div>
+            </section>
+
+            <!-- Schools Section -->
+            <section id="schools-section" class="section" style="display: none;">
+                <div class="section-header">
+                    <button class="btn-primary" onclick="openModal('school-modal')">
+                        <i class="fas fa-plus"></i> Agregar Escuela
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Institución</th>
+                                        <th>Dirección</th>
+                                        <th>Nivel Educativo</th>
+                                        <th>Turnos</th>
+                                        <th>Teléfono</th>
+                                <th>Email</th>
+                                        <th>Docentes</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schools-table-body">
+                            <!-- Los datos se cargarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+            </section>
+
+            <!-- Teachers Section -->
+            <section id="teachers-section" class="section" style="display: none;">
+                <div class="section-header">
+                    <button class="btn-primary" onclick="openModal('teacher-modal')">
+                        <i class="fas fa-plus"></i> Agregar Docente
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Rol</th>
+                                        <th>Escuelas</th>
+                                        <th>Materias</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teachers-table-body">
+                            <!-- Los datos se cargarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="section" style="display: none;">
+                <div class="section-header">
+                    <button class="btn-primary" onclick="openModal('user-modal')">
+                        <i class="fas fa-plus"></i> Agregar Usuario
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Email</th>
+                                <th>Tipo</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                            <!-- Los datos se cargarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+            </section>
+
+            <!-- Messaging Section -->
+            <section id="messaging-section" class="section">
+                <div class="messaging-container">
+                    <!-- Sidebar de conversaciones -->
+                    <div class="conversations-sidebar">
+                        <!-- Header del sidebar -->
+                        <div class="sidebar-header">
+                            <div class="header-left">
+                                <button class="menu-btn">
+                                    <i class="fas fa-bars"></i>
+                                </button>
+                                <h2>Mensajes</h2>
+                            </div>
+                            <div class="header-actions">
+                                <button class="action-btn" onclick="openModal('new-message-modal')" title="Nuevo chat">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="action-btn" onclick="refreshConversations()" title="Actualizar">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="action-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Barra de búsqueda -->
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar conversaciones" id="conversation-search">
+                        </div>
+                        
+                        <!-- Lista de conversaciones -->
+                        <div class="conversations-list" id="conversations-list">
+                            <!-- Las conversaciones se cargarán aquí -->
+                        </div>
+                    </div>
+                    
+                    <!-- Área de chat principal -->
+                    <div class="chat-area">
+                        <!-- Estado vacío -->
+                        <div class="empty-chat" id="empty-chat">
+                            <div class="empty-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h3>Mensajería Zephia</h3>
+                            <p>Selecciona una conversación para comenzar a chatear</p>
+                            <button class="btn-primary" onclick="openModal('new-message-modal')">
+                                <i class="fas fa-plus"></i> Nuevo Mensaje
+                            </button>
+                        </div>
+                        
+                        <!-- Chat activo -->
+                        <div class="active-chat" id="active-chat" style="display: none;">
+                            <!-- Header del chat -->
+                            <div class="chat-header">
+                                <div class="chat-user-info">
+                                    <div class="user-avatar">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <div class="user-details">
+                                        <h4 id="chat-user-name">Nombre del Usuario</h4>
+                                        <span id="chat-user-status">En línea</span>
+                                    </div>
+                                </div>
+                                <div class="chat-actions">
+                                    <button class="chat-action-btn" title="Buscar">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="chat-action-btn" title="Más opciones">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Área de mensajes -->
+                            <div class="messages-area" id="messages-container">
+                                <!-- Los mensajes se cargarán aquí -->
+                            </div>
+                            
+                            <!-- Input de mensaje -->
+                            <div class="message-input-area">
+                                <button class="input-action-btn" title="Emoji">
+                                    <i class="fas fa-smile"></i>
+                                </button>
+                                <div class="message-input">
+                                    <input type="text" placeholder="Escribe un mensaje..." id="message-input">
+                                </div>
+                                <div class="priority-selector">
+                                    <select id="message-priority" title="Prioridad del mensaje">
+                                        <option value="normal">📋 Normal</option>
+                                        <option value="baja">🟢 Baja</option>
+                                        <option value="media">🟡 Media</option>
+                                        <option value="alta">🔴 Alta</option>
+                                    </select>
+                                </div>
+                                <button class="input-action-btn send-btn" title="Enviar mensaje" onclick="sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="section" style="display: none;">
+                <div class="reports-container">
+                    <p>Aquí se mostrarán los reportes del sistema.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para Agregar Escuela -->
+    <div id="school-modal" class="modal">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3>Agregar Escuela</h3>
+                <button class="modal-close" onclick="closeModal('school-modal')">&times;</button>
+            </div>
+            <form id="school-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- Columna Izquierda -->
+                    <div>
+                <div class="form-group">
+                            <label for="school-nombre">Nombre de la Institución *</label>
+                            <input type="text" id="school-nombre" name="nombreInstitucion" required placeholder="Ej: Escuela Primaria San Martín">
+                </div>
+                        
+                        <fieldset class="form-fieldset">
+                            <legend>Dirección *</legend>
+                <div class="form-group">
+                                <label for="school-calle">Calle y Número</label>
+                                <input type="text" id="school-calle" name="calle" required placeholder="Ej: Av. San Martín 1234">
+                </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                                    <label for="school-ciudad">Ciudad</label>
+                                    <input type="text" id="school-ciudad" name="ciudad" required placeholder="Ej: Buenos Aires">
+                </div>
+                <div class="form-group">
+                                    <label for="school-provincia">Provincia</label>
+                                    <input type="text" id="school-provincia" name="provincia" required placeholder="Ej: Buenos Aires">
+                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-group">
+                            <label for="school-telefono">Teléfono de Contacto *</label>
+                            <input type="tel" id="school-telefono" name="telefonoContacto" required placeholder="Ej: +54 11 1234-5678">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-correo">Correo Institucional *</label>
+                            <input type="email" id="school-correo" name="correoInstitucional" required placeholder="contacto@escuela.edu.ar">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-cue">CUE (Código Único de Establecimiento)</label>
+                            <input type="text" id="school-cue" name="cue" placeholder="Ej: 020001234">
+                            <small>Campo opcional</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Columna Derecha -->
+                    <div>
+                        <div class="form-group">
+                            <label for="school-nivel">Nivel Educativo *</label>
+                            <select id="school-nivel" name="nivelEducativo" multiple size="3" required>
+                                <option value="inicial">Inicial</option>
+                                <option value="primario">Primario</option>
+                                <option value="secundario">Secundario</option>
+                            </select>
+                            <small>Mantén Ctrl presionado para seleccionar múltiples niveles</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-turnos">Turnos *</label>
+                            <select id="school-turnos" name="turnos" multiple size="3" required>
+                                <option value="mañana">Mañana</option>
+                                <option value="tarde">Tarde</option>
+                                <option value="noche">Noche</option>
+                            </select>
+                            <small>Mantén Ctrl presionado para seleccionar múltiples turnos</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-admin">Administrador Responsable *</label>
+                            <select id="school-admin" name="administradorResponsable" required>
+                                <option value="">Seleccionar administrador</option>
+                                <!-- Se cargarán dinámicamente los administradores -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-estado">Estado</label>
+                            <select id="school-estado" name="estado">
+                                <option value="activa" selected>Activa</option>
+                                <option value="inactiva">Inactiva</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-docentes">Cantidad de Docentes (Estimada)</label>
+                            <input type="number" id="school-docentes" name="cantidadDocentes" min="0" placeholder="0">
+                            <small>Campo opcional - se actualizará automáticamente</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer" style="grid-column: 1 / -1; margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="closeModal('school-modal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Escuela</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Docente -->
+    <div id="teacher-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3>Agregar Docente</h3>
+                <button class="modal-close" onclick="closeModal('teacher-modal')">&times;</button>
+            </div>
+            <form id="teacher-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <!-- Columna Izquierda -->
+                    <div>
+                <div class="form-group">
+                            <label for="teacher-usuario">Usuario/ID Docente *</label>
+                            <input type="text" id="teacher-usuario" name="usuario" required placeholder="Ej: docente001">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-nombre">Nombre *</label>
+                            <input type="text" id="teacher-nombre" name="nombre" required placeholder="Nombre del docente">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-apellido">Apellido *</label>
+                            <input type="text" id="teacher-apellido" name="apellido" required placeholder="Apellido del docente">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-correo">Correo Electrónico *</label>
+                            <input type="email" id="teacher-correo" name="correo" required placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-contraseña">Contraseña *</label>
+                            <input type="password" id="teacher-contraseña" name="contraseña" required placeholder="Contraseña del docente">
+                </div>
+                        <div class="form-group">
+                            <label for="teacher-dni">DNI *</label>
+                            <input type="text" id="teacher-dni" name="dni" required placeholder="12345678" pattern="[0-9]{8,10}">
+                        </div>
+                    </div>
+                    
+                    <!-- Columna Derecha -->
+                    <div>
+                        <div class="form-group">
+                            <label for="teacher-rol">Rol *</label>
+                            <select id="teacher-rol" name="rol" required>
+                                <option value="">Seleccionar rol</option>
+                                <option value="profesor">Profesor</option>
+                                <option value="maestro">Maestro</option>
+                                <option value="coordinador">Coordinador</option>
+                                <option value="director_academico">Director Académico</option>
+                                <option value="subdirector">Subdirector</option>
+                                <option value="preceptor">Preceptor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-telefono">Teléfono de Contacto *</label>
+                            <input type="tel" id="teacher-telefono" name="telefono" required placeholder="Ej: +54 11 1234-5678">
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-escuelas">Escuelas Asignadas</label>
+                            <select id="teacher-escuelas" name="escuelasAsignadas" multiple size="4">
+                                <!-- Se cargarán dinámicamente las escuelas disponibles -->
+                            </select>
+                            <small>Mantén Ctrl presionado para seleccionar múltiples escuelas</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-materias">Materias/Asignaturas</label>
+                            <textarea id="teacher-materias" name="materias" rows="3" placeholder="Ingresa las materias separadas por comas. Ej: Matemáticas, Física, Química"></textarea>
+                            <small>Separa las materias con comas</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-estado">Estado</label>
+                            <select id="teacher-estado" name="estado">
+                                <option value="activo" selected>Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer" style="grid-column: 1 / -1; margin-top: 20px;">
+                    <button type="button" class="btn-secondary" onclick="closeModal('teacher-modal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Docente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Usuario -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Agregar Usuario</h3>
+                <button class="modal-close" onclick="closeModal('user-modal')">&times;</button>
+            </div>
+            <form id="user-form">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-fullname">Nombre Completo</label>
+                    <input type="text" id="user-fullname" name="fullname" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-email">Email</label>
+                    <input type="email" id="user-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-type">Tipo de Usuario</label>
+                    <select id="user-type" name="type" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="soporte">Soporte</option>
+                        <option value="responsable">Responsable a cargo</option>
+                        <option value="docente">Docente</option>
+                        <option value="secretaria">Secretaria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="user-password">Contraseña</label>
+                    <input type="password" id="user-password" name="password" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('user-modal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Nuevo Mensaje -->
+    <div id="new-message-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Mensaje</h3>
+                <button class="modal-close" onclick="closeModal('new-message-modal')">&times;</button>
+            </div>
+            <form id="new-message-form">
+                <div class="form-group">
+                    <label for="recipient-type">Tipo de Destinatario</label>
+                    <select id="recipient-type" name="recipient-type" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="school">Escuela</option>
+                        <option value="teacher">Docente</option>
+                        <option value="multiple">Múltiples</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message-subject">Asunto</label>
+                    <input type="text" id="message-subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="initial-message">Mensaje</label>
+                    <textarea id="initial-message" name="message" rows="4" required></textarea>
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('new-message-modal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Enviar Mensaje</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Detalles de Docente -->
+    <div id="teacher-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-graduate"></i> Detalles del Docente</h3>
+                <button class="modal-close" onclick="closeModal('teacher-details-modal')">&times;</button>
+            </div>
+            <div class="teacher-details-content">
+                <div class="detail-section">
+                    <h4><i class="fas fa-id-card"></i> Información Personal</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Usuario:</span>
+                            <span class="detail-value" id="detail-usuario">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Nombre Completo:</span>
+                            <span class="detail-value" id="detail-nombre">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">DNI:</span>
+                            <span class="detail-value" id="detail-dni">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Rol:</span>
+                            <span class="detail-value" id="detail-rol">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-envelope"></i> Información de Contacto</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Correo:</span>
+                            <span class="detail-value" id="detail-correo">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Teléfono:</span>
+                            <span class="detail-value" id="detail-telefono">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-school"></i> Información Académica</h4>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Escuelas Asignadas:</span>
+                        <div class="detail-value schools-list" id="detail-escuelas">
+                            <span class="no-data">Sin escuelas asignadas</span>
+                        </div>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Materias/Asignaturas:</span>
+                        <div class="detail-value subjects-list" id="detail-materias">
+                            <span class="no-data">Sin materias asignadas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-info-circle"></i> Estado y Fechas</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Estado:</span>
+                            <span class="detail-value" id="detail-estado">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Fecha de Alta:</span>
+                            <span class="detail-value" id="detail-fecha">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('teacher-details-modal')">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn-primary" onclick="editTeacherFromDetails()">
+                    <i class="fas fa-edit"></i> Editar Docente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Detalles de Escuela -->
+    <div id="school-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-school"></i> Detalles de la Escuela</h3>
+                <button class="modal-close" onclick="closeModal('school-details-modal')">&times;</button>
+            </div>
+            <div class="school-details-content">
+                <div class="detail-section">
+                    <h4><i class="fas fa-building"></i> Información Institucional</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Nombre de la Institución:</span>
+                            <span class="detail-value" id="detail-school-nombre">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">CUE:</span>
+                            <span class="detail-value" id="detail-school-cue">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Estado:</span>
+                            <span class="detail-value" id="detail-school-estado">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Cantidad de Docentes:</span>
+                            <span class="detail-value" id="detail-school-docentes">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-map-marker-alt"></i> Dirección</h4>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Dirección Completa:</span>
+                        <span class="detail-value" id="detail-school-direccion">-</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-phone"></i> Información de Contacto</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Teléfono:</span>
+                            <span class="detail-value" id="detail-school-telefono">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Correo Institucional:</span>
+                            <span class="detail-value" id="detail-school-correo">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-graduation-cap"></i> Información Académica</h4>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Niveles Educativos:</span>
+                        <div class="detail-value levels-list" id="detail-school-niveles">
+                            <span class="no-data">Sin niveles definidos</span>
+                        </div>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Turnos:</span>
+                        <div class="detail-value shifts-list" id="detail-school-turnos">
+                            <span class="no-data">Sin turnos definidos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-user-tie"></i> Administración</h4>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Administrador Responsable:</span>
+                        <span class="detail-value" id="detail-school-admin">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('school-details-modal')">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn-primary" onclick="editSchoolFromDetails()">
+                    <i class="fas fa-edit"></i> Editar Escuela
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Detalles de Usuario -->
+    <div id="user-details-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user"></i> Detalles del Usuario</h3>
+                <button class="modal-close" onclick="closeModal('user-details-modal')">&times;</button>
+            </div>
+            <div class="user-details-content">
+                <div class="detail-section">
+                    <h4><i class="fas fa-id-card"></i> Información Personal</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Usuario:</span>
+                            <span class="detail-value" id="detail-user-username">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Nombre Completo:</span>
+                            <span class="detail-value" id="detail-user-fullname">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value" id="detail-user-email">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tipo de Usuario:</span>
+                            <span class="detail-value" id="detail-user-type">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-info-circle"></i> Estado y Fechas</h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Estado:</span>
+                            <span class="detail-value" id="detail-user-status">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Fecha de Creación:</span>
+                            <span class="detail-value" id="detail-user-created">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Último Acceso:</span>
+                            <span class="detail-value" id="detail-user-access">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Última Actualización:</span>
+                            <span class="detail-value" id="detail-user-updated">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('user-details-modal')">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn-primary" onclick="editUserFromDetails()">
+                    <i class="fas fa-edit"></i> Editar Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updateProfile } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js';
+        import { getFirestore, collection, getDocs, addDoc, serverTimestamp, doc, deleteDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js';
+        
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAebJgE_34xBGfVeiLXUs9gnisoFbIPOn4",
+            authDomain: "zephia-51ad4.firebaseapp.com",
+            databaseURL: "https://zephia-51ad4-default-rtdb.firebaseio.com",
+            projectId: "zephia-51ad4",
+            storageBucket: "zephia-51ad4.firebasestorage.app",
+            messagingSenderId: "829322879330",
+            appId: "1:829322879330:web:f59f5389c7ead8a6440c3b",
+            measurementId: "G-75CDPLDSFX"
+        };
+        
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Hacer disponible globalmente
+        window.auth = auth;
+        window.db = db;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.addDoc = addDoc;
+        window.serverTimestamp = serverTimestamp;
+        window.signOut = signOut;
+        window.doc = doc;
+        window.deleteDoc = deleteDoc;
+        window.updateDoc = updateDoc;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.updateProfile = updateProfile;
+        
+        // Marcar Firebase como inicializado
+        window.firebaseInitialized = true;
+        
+        // Verificar autenticación
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('Usuario autenticado:', user.email);
+                initializeAppData();
+            } else {
+                console.log('Usuario no autenticado');
+                window.location.href = 'login.html';
+            }
+        });
+        
+        function initializeAppData() {
+            loadData();
+            updateStats();
+            initializeUserPermissions();
+        }
+        
+        // Función helper para verificar Firebase
+        window.ensureFirebaseInitialized = function() {
+            if (!window.firebaseInitialized) {
+                throw new Error('Firebase aún no está inicializado. Por favor, espera un momento.');
+            }
+        };
+        
+        // Cargar datos iniciales
+        async function loadData() {
+            try {
+                await loadSchools();
+                await loadTeachers();
+                await loadUsers();
+                console.log('Datos cargados correctamente');
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+            }
+        }
+        
+        // Cargar escuelas
+        async function loadSchools() {
+            try {
+                const schoolsRef = collection(db, 'schools');
+                const querySnapshot = await getDocs(schoolsRef);
+                window.schools = [];
+                
+                querySnapshot.forEach((doc) => {
+                    window.schools.push({
+                        id: doc.id,
+                        ...doc.data()
+            });
+        });
+
+                console.log('Escuelas cargadas:', window.schools.length);
+                loadSchoolsTable();
+                loadSchoolsInSelect(); // Cargar escuelas en el select del formulario de docentes
+            } catch (error) {
+                console.error('Error al cargar escuelas:', error);
+            }
+        }
+
+        // Cargar escuelas en el select del formulario de docentes
+        function loadSchoolsInSelect() {
+            const select = document.getElementById('teacher-escuelas');
+            if (!select || !window.schools) return;
+            
+            select.innerHTML = ''; // Limpiar opciones existentes
+            
+            window.schools.forEach(school => {
+                const option = document.createElement('option');
+                option.value = school.id;
+                option.textContent = school.nombreInstitucion || school.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Cargar administradores en el select del formulario de escuelas
+        function loadAdminsInSelect() {
+            const select = document.getElementById('school-admin');
+            if (!select || !window.users) return;
+            
+            // Limpiar opciones existentes (excepto la primera)
+            select.innerHTML = '<option value="">Seleccionar administrador</option>';
+            
+            // Filtrar solo usuarios con rol de responsable a cargo
+            const administrators = window.users.filter(user => 
+                user.type === 'responsable' || user.type === 'Responsable a cargo' || user.type === 'responsable a cargo'
+            );
+            
+            administrators.forEach(admin => {
+                const option = document.createElement('option');
+                option.value = admin.id;
+                option.textContent = `${admin.fullName || admin.name || admin.username} (${admin.email})`;
+                select.appendChild(option);
+            });
+            
+            // Si no hay administradores, mostrar mensaje
+            if (administrators.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No hay administradores disponibles';
+                option.disabled = true;
+                select.appendChild(option);
+            }
+        }
+        
+        // Cargar docentes
+        async function loadTeachers() {
+            try {
+                const teachersRef = collection(db, 'teachers');
+                const querySnapshot = await getDocs(teachersRef);
+                window.teachers = [];
+                
+                querySnapshot.forEach((doc) => {
+                    window.teachers.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                console.log('Docentes cargados:', window.teachers.length);
+                loadTeachersTable();
+            } catch (error) {
+                console.error('Error al cargar docentes:', error);
+            }
+        }
+        
+        // Cargar usuarios
+        async function loadUsers() {
+            try {
+                const usersRef = collection(db, 'users');
+                const querySnapshot = await getDocs(usersRef);
+                window.users = [];
+                
+                querySnapshot.forEach((doc) => {
+                    window.users.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                console.log('Usuarios cargados:', window.users.length);
+                loadUsersTable();
+                loadAdminsInSelect(); // Cargar administradores en el select de escuelas
+            } catch (error) {
+                console.error('Error al cargar usuarios:', error);
+            }
+        }
+        
+        // Actualizar estadísticas
+        function updateStats() {
+            document.getElementById('total-schools').textContent = window.schools ? window.schools.length : 0;
+            document.getElementById('total-teachers').textContent = window.teachers ? window.teachers.length : 0;
+            document.getElementById('total-users').textContent = window.users ? window.users.length : 0;
+            document.getElementById('total-messages').textContent = '0';
+        }
+        
+        // Cargar tabla de escuelas
+        function loadSchoolsTable() {
+            const tbody = document.getElementById('schools-table-body');
+            if (!tbody || !window.schools) return;
+            
+            tbody.innerHTML = '';
+
+            window.schools.forEach(school => {
+                // Formatear dirección completa
+                const direccionCompleta = school.direccion 
+                    ? `${school.direccion.calle || ''}, ${school.direccion.ciudad || ''}, ${school.direccion.provincia || ''}`.replace(/^,\s*|,\s*$/g, '').replace(/,\s*,/g, ',')
+                    : school.address || 'N/A'; // Fallback para datos antiguos
+
+                // Formatear niveles educativos
+                const nivelesText = school.nivelEducativo && school.nivelEducativo.length > 0 
+                    ? school.nivelEducativo.join(', ') 
+                    : 'N/A';
+
+                // Formatear turnos
+                const turnosText = school.turnos && school.turnos.length > 0 
+                    ? school.turnos.join(', ') 
+                    : 'N/A';
+
+                // Truncar textos largos para la tabla
+                const direccionShort = direccionCompleta.length > 30 
+                    ? direccionCompleta.substring(0, 30) + '...' 
+                    : direccionCompleta;
+
+                const nivelesShort = nivelesText.length > 20 
+                    ? nivelesText.substring(0, 20) + '...' 
+                    : nivelesText;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${school.nombreInstitucion || school.name || 'N/A'}</td>
+                    <td title="${direccionCompleta}">${direccionShort}</td>
+                    <td title="${nivelesText}">${nivelesShort}</td>
+                    <td>${turnosText}</td>
+                    <td>${school.telefonoContacto || school.phone || 'N/A'}</td>
+                    <td>${school.correoInstitucional || school.email || 'N/A'}</td>
+                    <td>${school.cantidadDocentes || school.teachers || 0}</td>
+                    <td><span class="status-badge ${(school.estado === 'activa' || school.status === 'Activa') ? 'active' : 'inactive'}">${school.estado || school.status || 'activa'}</span></td>
+                    <td class="actions">
+                        <button class="btn-icon" onclick="viewSchool('${school.id}')" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editSchool('${school.id}')" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" onclick="deleteSchool('${school.id}')" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Cargar tabla de docentes
+        function loadTeachersTable() {
+            const tbody = document.getElementById('teachers-table-body');
+            if (!tbody || !window.teachers) return;
+            
+            tbody.innerHTML = '';
+
+            window.teachers.forEach(teacher => {
+                // Formatear escuelas asignadas
+                const escuelasText = teacher.escuelasAsignadas && teacher.escuelasAsignadas.length > 0 
+                    ? getSchoolNames(teacher.escuelasAsignadas).join(', ') 
+                    : 'Sin asignar';
+
+                // Formatear materias
+                const materiasText = teacher.materias && teacher.materias.length > 0 
+                    ? teacher.materias.join(', ') 
+                    : 'Sin materias';
+
+                // Truncar textos largos
+                const materiasShort = materiasText.length > 30 
+                    ? materiasText.substring(0, 30) + '...' 
+                    : materiasText;
+
+                const escuelasShort = escuelasText.length > 25 
+                    ? escuelasText.substring(0, 25) + '...' 
+                    : escuelasText;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.usuario || 'N/A'}</td>
+                    <td>${teacher.nombre || ''} ${teacher.apellido || ''}</td>
+                    <td><span class="role-badge ${teacher.rol || ''}">${teacher.rol || 'Sin rol'}</span></td>
+                    <td title="${escuelasText}">${escuelasShort}</td>
+                    <td title="${materiasText}">${materiasShort}</td>
+                    <td>${teacher.correo || teacher.email || ''}</td>
+                    <td>${teacher.telefono || 'N/A'}</td>
+                    <td><span class="status-badge ${teacher.estado === 'activo' ? 'active' : 'inactive'}">${teacher.estado || 'activo'}</span></td>
+                    <td class="actions">
+                        <button class="btn-icon" onclick="viewTeacher('${teacher.id}')" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editTeacher('${teacher.id}')" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" onclick="deleteTeacher('${teacher.id}')" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Función para mostrar usuarios con problemas de autenticación
+        function showUsersWithAuthIssues() {
+            const usersWithIssues = window.users.filter(user => 
+                user.authStatus === 'pending' || user.note?.includes('email ya existe')
+            );
+            
+            if (usersWithIssues.length > 0) {
+                console.warn('Usuarios con problemas de autenticación:', usersWithIssues);
+                
+                // Mostrar notificación en la interfaz
+                const notification = document.createElement('div');
+                notification.className = 'auth-issue-notification';
+                notification.innerHTML = `
+                    <strong>⚠️ Usuarios con problemas de autenticación</strong><br>
+                    ${usersWithIssues.length} usuario(s) no pueden iniciar sesión.<br>
+                    <small>Revisa la sección de usuarios para más detalles.</small>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remover notificación después de 10 segundos
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 10000);
+            }
+        }
+
+        // Cargar tabla de usuarios
+        function loadUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            if (!tbody || !window.users) return;
+            
+            tbody.innerHTML = '';
+
+            window.users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                // Verificar si el usuario tiene problemas de autenticación
+                const hasAuthIssues = user.authStatus === 'pending' || user.note?.includes('email ya existe');
+                const rowClass = hasAuthIssues ? 'auth-issue-row' : '';
+                const authWarning = hasAuthIssues ? '<i class="fas fa-exclamation-triangle" style="color: #ffc107;" title="Problemas de autenticación"></i>' : '';
+                
+                row.className = rowClass;
+                row.innerHTML = `
+                    <td>${user.username || 'N/A'} ${authWarning}</td>
+                    <td>${user.fullName || user.name || 'N/A'}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td><span class="type-badge ${user.type || 'user'}">${user.type || 'Usuario'}</span></td>
+                    <td>
+                        <span class="status-badge ${user.status === 'Activo' ? 'active' : 'inactive'}">${user.status || 'Activo'}</span>
+                        ${hasAuthIssues ? '<br><small style="color: #ffc107;">⚠️ Sin credenciales</small>' : ''}
+                    </td>
+                    <td class="actions">
+                        <button class="btn-icon" onclick="viewUser('${user.id}')" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editUser('${user.id}')" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${hasAuthIssues ? 
+                            `<button class="btn-icon" onclick="fixUserAuth('${user.id}')" title="Resolver problema de autenticación" style="color: #ffc107;">
+                                <i class="fas fa-key"></i>
+                            </button>` : ''
+                        }
+                        <button class="btn-icon" onclick="deleteUser('${user.id}')" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Mostrar notificación si hay usuarios con problemas
+            showUsersWithAuthIssues();
+        }
+
+        // Función para resolver problemas de autenticación de usuarios
+        async function fixUserAuth(userId) {
+            const user = window.users.find(u => u.id === userId);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+
+            const newEmail = prompt(
+                `Usuario: ${user.username}\n` +
+                `Email actual: ${user.email}\n\n` +
+                `El email actual ya existe en el sistema de autenticación.\n` +
+                `Ingrese un nuevo email para este usuario:`,
+                user.email
+            );
+
+            if (!newEmail || newEmail === user.email) {
+                alert('No se realizaron cambios');
+                return;
+            }
+
+            // Verificar que el nuevo email no esté en uso
+            const emailExists = window.users.find(u => u.email === newEmail && u.id !== userId);
+            if (emailExists) {
+                alert('El nuevo email ya está en uso por otro usuario');
+                return;
+            }
+
+            try {
+                // Actualizar el email en Firestore
+                const userRef = window.doc(window.db, 'users', userId);
+                await window.updateDoc(userRef, {
+                    email: newEmail,
+                    authStatus: 'active', // Marcar como resuelto
+                    note: 'Problema de autenticación resuelto - email actualizado',
+                    updatedAt: window.serverTimestamp()
+                });
+
+                alert('Email actualizado correctamente. El usuario ahora puede iniciar sesión.');
+                
+                // Recargar datos
+                await window.loadUsers();
+                window.updateStats();
+                
+            } catch (error) {
+                console.error('Error actualizando usuario:', error);
+                alert('Error al actualizar el usuario: ' + error.message);
+            }
+        }
+
+        // Hacer funciones globales
+        window.loadSchools = loadSchools;
+        window.loadTeachers = loadTeachers;
+        window.loadUsers = loadUsers;
+        window.loadSchoolsTable = loadSchoolsTable;
+        window.loadTeachersTable = loadTeachersTable;
+        window.loadUsersTable = loadUsersTable;
+        window.updateStats = updateStats;
+    </script>
+
+    <!-- Script principal -->
+    <script>
+        // Variables globales
+        window.schools = [];
+        window.teachers = [];
+        window.users = [];
+        
+        // Función auxiliar para obtener nombres de escuelas por IDs
+        function getSchoolNames(schoolIds) {
+            if (!window.schools || !schoolIds) return [];
+            
+            return schoolIds.map(id => {
+                const school = window.schools.find(s => s.id === id);
+                return school ? (school.nombreInstitucion || school.name) : `Escuela ${id}`;
+            });
+        }
+
+        // Función auxiliar para obtener nombre del administrador por ID
+        function getAdminName(adminId) {
+            if (!adminId || !window.users) return 'No asignado';
+            
+            const admin = window.users.find(u => u.id === adminId);
+            if (admin) {
+                return `${admin.fullName || admin.name || admin.username} (${admin.email})`;
+            }
+            return 'Administrador no encontrado';
+        }
+        
+        // Función para controlar permisos de navegación
+        function initializeUserPermissions() {
+            const currentUser = window.currentUser;
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // Definir permisos por tipo de usuario
+            const permissions = {
+                soporte: ['messaging', 'schools', 'teachers', 'users', 'dashboard', 'reports'],
+                responsable: ['messaging', 'schools', 'teachers', 'dashboard'],
+                docente: ['messaging', 'dashboard'],
+                secretaria: ['messaging', 'dashboard']
+            };
+            
+            const userPermissions = permissions[currentUser.type] || [];
+            
+            // Mostrar/ocultar elementos de navegación según permisos
+            navItems.forEach(item => {
+                const onclick = item.getAttribute('onclick');
+                if (onclick) {
+                    const sectionName = onclick.match(/showSection\('([^']+)'\)/);
+                    if (sectionName) {
+                        const section = sectionName[1];
+                        if (userPermissions.includes(section)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    }
+                }
+            });
+            
+            // Mostrar la primera sección permitida por defecto
+            if (userPermissions.length > 0) {
+                showSection(userPermissions[0]);
+            }
+        }
+        
+        // Función para mostrar secciones
+        function showSection(sectionName) {
+            // Ocultar todas las secciones
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+            
+            // Mostrar la sección seleccionada
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            // Actualizar navegación activa
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick') === `showSection('${sectionName}')`) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Mostrar/ocultar botón de agregar según la sección
+            const addBtn = document.getElementById('add-btn');
+            // No mostrar botón en el header para ninguna sección
+                addBtn.style.display = 'none';
+            
+            // Actualizar título y descripción
+            const titles = {
+                dashboard: { title: 'Dashboard', desc: 'Panel principal del sistema administrativo' },
+                schools: { title: 'Gestión de Escuelas', desc: 'Administrar escuelas y sus datos' },
+                teachers: { title: 'Gestión de Docentes', desc: 'Gestionar información de docentes' },
+                users: { title: 'Gestión de Usuarios', desc: 'Administrar usuarios del sistema' },
+                messaging: { title: 'Mensajería', desc: 'Comunicación con escuelas y docentes' },
+                reports: { title: 'Reportes', desc: 'Generar reportes del sistema' }
+            };
+            
+            document.getElementById('section-title').textContent = titles[sectionName].title;
+            document.getElementById('section-description').textContent = titles[sectionName].desc;
+        }
+        
+        // Funciones de modal
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                
+                // Si es el modal de docentes y no estamos editando, resetear el formulario
+                if (modalId === 'teacher-modal' && !window.editingTeacherId) {
+                    resetTeacherForm();
+                }
+                
+                // Si es el modal de escuelas y no estamos editando, resetear el formulario
+                if (modalId === 'school-modal' && !window.editingSchoolId) {
+                    resetSchoolForm();
+                }
+                
+                // Si es el modal de usuarios y no estamos editando, resetear el formulario
+                if (modalId === 'user-modal' && !window.editingUserId) {
+                    resetUserForm();
+                }
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                
+                // Si es el modal de docentes, resetear el formulario al cerrar
+                if (modalId === 'teacher-modal') {
+                    resetTeacherForm();
+                }
+                
+                // Si es el modal de escuelas, resetear el formulario al cerrar
+                if (modalId === 'school-modal') {
+                    resetSchoolForm();
+                }
+                
+                // Si es el modal de usuarios, resetear el formulario al cerrar
+                if (modalId === 'user-modal') {
+                    resetUserForm();
+                }
+            }
+        }
+        
+        // Función de logout
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                window.signOut(window.auth).then(() => {
+                    window.location.href = 'login.html';
+                }).catch((error) => {
+                    console.error('Error al cerrar sesión:', error);
+                });
+            }
+        }
+        
+        // Event listeners cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+        // Event listener para el formulario de escuelas
+        document.getElementById('school-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Verificar que Firebase esté inicializado
+            try {
+                window.ensureFirebaseInitialized();
+                } catch (error) {
+                alert(error.message);
+                return;
+            }
+            
+            try {
+                // Obtener niveles educativos seleccionados
+                const nivelesSelect = document.getElementById('school-nivel');
+                const nivelesEducativos = Array.from(nivelesSelect.selectedOptions).map(option => option.value);
+                
+                // Obtener turnos seleccionados
+                const turnosSelect = document.getElementById('school-turnos');
+                const turnos = Array.from(turnosSelect.selectedOptions).map(option => option.value);
+                
+                // Validar campos requeridos
+                if (nivelesEducativos.length === 0) {
+                    alert('Debe seleccionar al menos un nivel educativo');
+                    return;
+                }
+                
+                if (turnos.length === 0) {
+                    alert('Debe seleccionar al menos un turno');
+                    return;
+                }
+
+                const schoolData = {
+                    nombreInstitucion: document.getElementById('school-nombre').value,
+                    direccion: {
+                        calle: document.getElementById('school-calle').value,
+                        ciudad: document.getElementById('school-ciudad').value,
+                        provincia: document.getElementById('school-provincia').value
+                    },
+                    telefonoContacto: document.getElementById('school-telefono').value,
+                    correoInstitucional: document.getElementById('school-correo').value,
+                    nivelEducativo: nivelesEducativos,
+                    administradorResponsable: document.getElementById('school-admin').value,
+                    estado: document.getElementById('school-estado').value || 'activa',
+                    turnos: turnos,
+                    cue: document.getElementById('school-cue').value || null,
+                    cantidadDocentes: parseInt(document.getElementById('school-docentes').value) || 0
+                };
+
+                // Verificar si estamos editando o creando
+                if (window.editingSchoolId) {
+                    // EDITAR escuela existente
+                    const schoolRef = window.doc(window.db, 'schools', window.editingSchoolId);
+                    await window.updateDoc(schoolRef, {
+                        ...schoolData,
+                        updatedAt: window.serverTimestamp()
+                    });
+                    
+                    alert('Escuela actualizada correctamente');
+                    delete window.editingSchoolId;
+                } else {
+                    // CREAR nueva escuela
+                    const schoolsRef = window.collection(window.db, 'schools');
+                    await window.addDoc(schoolsRef, {
+                        ...schoolData,
+                        createdAt: window.serverTimestamp(),
+                        updatedAt: window.serverTimestamp()
+                    });
+                    
+                    alert('Escuela agregada correctamente');
+                }
+                
+                // Recargar datos
+                    await window.loadSchools();
+                    window.updateStats();
+                closeModal('school-modal');
+                
+                // Resetear formulario
+                resetSchoolForm();
+                
+            } catch (error) {
+                console.error('Error al procesar escuela:', error);
+                alert('Error al procesar escuela: ' + error.message);
+            }
+        });
+        
+        // Event listener para el formulario de docentes
+        document.getElementById('teacher-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Verificar que Firebase esté inicializado
+            try {
+                window.ensureFirebaseInitialized();
+            } catch (error) {
+                alert(error.message);
+                return;
+            }
+            
+            try {
+                // Obtener escuelas seleccionadas
+                const escuelasSelect = document.getElementById('teacher-escuelas');
+                const escuelasAsignadas = Array.from(escuelasSelect.selectedOptions).map(option => option.value);
+                
+                // Procesar materias (separadas por comas)
+                const materiasText = document.getElementById('teacher-materias').value;
+                const materias = materiasText ? materiasText.split(',').map(m => m.trim()).filter(m => m) : [];
+                
+                // Validar campos requeridos
+                const usuario = document.getElementById('teacher-usuario').value;
+                if (!usuario) {
+                    alert('El campo Usuario/ID Docente es requerido');
+                    return;
+                }
+                
+                const teacherData = {
+                    usuario: usuario,
+                    nombre: document.getElementById('teacher-nombre').value,
+                    apellido: document.getElementById('teacher-apellido').value,
+                    correo: document.getElementById('teacher-correo').value,
+                    contraseña: document.getElementById('teacher-contraseña').value,
+                    rol: document.getElementById('teacher-rol').value,
+                    telefono: document.getElementById('teacher-telefono').value,
+                    dni: document.getElementById('teacher-dni').value,
+                    escuelasAsignadas: escuelasAsignadas,
+                    materias: materias,
+                    estado: document.getElementById('teacher-estado').value || 'activo'
+                };
+
+                // Verificar si estamos editando o creando
+                if (window.editingTeacherId) {
+                    // EDITAR docente existente
+                    const teacherRef = window.doc(window.db, 'teachers', window.editingTeacherId);
+                    
+                    // Preparar datos para actualización (sin contraseña si está vacía)
+                    const updateData = {
+                        escuelasAsignadas: teacherData.escuelasAsignadas,
+                        nombre: teacherData.nombre,
+                        apellido: teacherData.apellido,
+                        correo: teacherData.correo,
+                        rol: teacherData.rol,
+                        materias: teacherData.materias,
+                        telefono: teacherData.telefono,
+                        estado: teacherData.estado,
+                        dni: teacherData.dni,
+                    updatedAt: window.serverTimestamp()
+                };
+
+                    // Solo actualizar contraseña si se proporciona una nueva
+                    if (teacherData.contraseña && teacherData.contraseña.trim()) {
+                        updateData.contraseña = teacherData.contraseña;
+                    }
+                    
+                    await window.updateDoc(teacherRef, updateData);
+                    alert('Docente actualizado correctamente');
+                    
+                    // Limpiar variable de edición
+                    delete window.editingTeacherId;
+                } else {
+                    // CREAR nuevo docente
+                    // Verificar si el usuario ya existe
+                    const existingTeacher = window.teachers.find(t => t.usuario === usuario);
+                    if (existingTeacher) {
+                        alert('Ya existe un docente con este usuario. Por favor, elija otro.');
+                        return;
+                    }
+
+                    const teachersRef = window.collection(window.db, 'teachers');
+                    await window.addDoc(teachersRef, {
+                        usuario: teacherData.usuario,
+                        escuelasAsignadas: teacherData.escuelasAsignadas,
+                        nombre: teacherData.nombre,
+                        apellido: teacherData.apellido,
+                        correo: teacherData.correo,
+                        contraseña: teacherData.contraseña, // En producción debería estar hasheada
+                        rol: teacherData.rol,
+                        materias: teacherData.materias,
+                        telefono: teacherData.telefono,
+                        estado: teacherData.estado,
+                        fechaAlta: window.serverTimestamp(),
+                        dni: teacherData.dni,
+                        createdAt: window.serverTimestamp(),
+                        updatedAt: window.serverTimestamp()
+                    });
+                    
+                    alert('Docente agregado correctamente');
+                }
+                
+                // Recargar datos
+                    await window.loadTeachers();
+                    window.updateStats();
+                closeModal('teacher-modal');
+                
+                // Resetear formulario
+                resetTeacherForm();
+                
+            } catch (error) {
+                console.error('Error al procesar docente:', error);
+                alert('Error al procesar docente: ' + error.message);
+            }
+        });
+
+            // Event listener para el formulario de usuarios
+            document.getElementById('user-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Verificar que Firebase esté inicializado
+                try {
+                    window.ensureFirebaseInitialized();
+                } catch (error) {
+                    alert(error.message);
+                    return;
+                }
+                
+                try {
+                    // Validar campos requeridos
+                    const username = document.getElementById('username').value;
+                    if (!username) {
+                        alert('El campo Usuario es requerido');
+                        return;
+                    }
+
+                    const userData = {
+                        username: username,
+                        fullName: document.getElementById('user-fullname').value,
+                        email: document.getElementById('user-email').value,
+                        type: document.getElementById('user-type').value,
+                        status: 'Activo'
+                    };
+
+                    // Verificar si estamos editando o creando
+                    if (window.editingUserId) {
+                        // EDITAR usuario existente
+                        const userRef = window.doc(window.db, 'users', window.editingUserId);
+                        
+                        // Preparar datos para actualización
+                        const updateData = {
+                            fullName: userData.fullName,
+                            email: userData.email,
+                            type: userData.type,
+                            status: userData.status,
+                        updatedAt: window.serverTimestamp()
+                    };
+
+                        // Solo actualizar contraseña si se proporciona una nueva
+                        const newPassword = document.getElementById('user-password').value;
+                        if (newPassword && newPassword.trim()) {
+                            updateData.password = newPassword; // En producción debería estar hasheada
+                        }
+                        
+                        await window.updateDoc(userRef, updateData);
+                        alert('Usuario actualizado correctamente');
+                        
+                        // Limpiar variable de edición
+                        delete window.editingUserId;
+                    } else {
+                        // CREAR nuevo usuario
+                        // Verificar si el usuario ya existe
+                        const existingUser = window.users.find(u => u.username === username);
+                        if (existingUser) {
+                            alert('Ya existe un usuario con este nombre de usuario. Por favor, elija otro.');
+                            return;
+                        }
+
+                        // Validar contraseña para nuevo usuario
+                        const password = document.getElementById('user-password').value;
+                        if (!password) {
+                            alert('La contraseña es requerida para nuevos usuarios');
+                            return;
+                        }
+
+                        // Verificar si el email ya existe en Firebase Auth
+                        const email = userData.email;
+                        
+                        // Verificar si el email ya existe en la base de datos local
+                        const existingEmail = window.users.find(u => u.email === email);
+                        if (existingEmail) {
+                            alert('Ya existe un usuario con este email. Por favor, use un email diferente.');
+                            return;
+                        }
+                        
+                        try {
+                            // Crear usuario en Firebase Auth primero
+                            const userCredential = await window.createUserWithEmailAndPassword(window.auth, email, password);
+                            const firebaseUser = userCredential.user;
+
+                            // Actualizar el perfil del usuario en Firebase Auth
+                            await window.updateProfile(firebaseUser, {
+                                displayName: userData.fullName
+                            });
+
+                            // Guardar datos adicionales en Firestore
+                            const usersRef = window.collection(window.db, 'users');
+                            await window.addDoc(usersRef, {
+                                ...userData,
+                                uid: firebaseUser.uid, // ID de Firebase Auth
+                                password: password, // En producción debería estar hasheada
+                                createdAt: window.serverTimestamp(),
+                                updatedAt: window.serverTimestamp()
+                            });
+                            
+                            alert('Usuario agregado correctamente y credenciales de autenticación creadas');
+                            
+                        } catch (authError) {
+                            console.error('Error de autenticación:', authError);
+                            
+                            if (authError.code === 'auth/email-already-in-use') {
+                                // El email ya existe en Firebase Auth
+                                const userChoice = confirm(
+                                    'El email ya está registrado en el sistema de autenticación.\n\n' +
+                                    '¿Desea continuar y crear el usuario solo en la base de datos local?\n\n' +
+                                    'SÍ: Crear usuario en base de datos (sin credenciales de login)\n' +
+                                    'NO: Cancelar y usar un email diferente'
+                                );
+                                
+                                if (userChoice) {
+                                    // Crear usuario solo en Firestore sin credenciales de Auth
+                                    const usersRef = window.collection(window.db, 'users');
+                                    await window.addDoc(usersRef, {
+                                        ...userData,
+                                        password: password, // En producción debería estar hasheada
+                                        createdAt: window.serverTimestamp(),
+                                        updatedAt: window.serverTimestamp(),
+                                        authStatus: 'pending', // Marcar que necesita credenciales
+                                        note: 'Usuario creado sin credenciales de autenticación - email ya existe'
+                                    });
+                                    
+                                    alert('Usuario agregado a la base de datos.\n\nNota: Este usuario no podrá iniciar sesión hasta que se resuelva el conflicto de email.');
+                                } else {
+                                    alert('Creación de usuario cancelada. Por favor, use un email diferente.');
+                                    return;
+                                }
+                            } else if (authError.code === 'auth/weak-password') {
+                                alert('La contraseña es muy débil. Por favor, use una contraseña más segura (mínimo 6 caracteres).');
+                                return;
+                            } else if (authError.code === 'auth/invalid-email') {
+                                alert('El email no es válido. Por favor, verifique el formato del email.');
+                                return;
+                            } else {
+                                throw authError; // Re-lanzar otros errores
+                            }
+                        }
+                    }
+                    
+                    // Recargar datos
+                    await window.loadUsers();
+                    window.updateStats();
+                    closeModal('user-modal');
+
+                    // Resetear formulario
+                    resetUserForm();
+                    
+                } catch (error) {
+                    console.error('Error al procesar usuario:', error);
+                    alert('Error al procesar usuario: ' + error.message);
+                }
+            });
+        });
+
+        // Funciones de edición y eliminación (placeholder)
+        // Ver detalles de una escuela
+        function viewSchool(id) {
+            const school = window.schools.find(s => s.id === id);
+            if (!school) {
+                alert('Escuela no encontrada');
+                return;
+            }
+            
+            // Llenar los datos en el modal
+            document.getElementById('detail-school-nombre').textContent = school.nombreInstitucion || school.name || 'N/A';
+            document.getElementById('detail-school-cue').textContent = school.cue || 'No especificado';
+            document.getElementById('detail-school-docentes').textContent = school.cantidadDocentes || school.teachers || 0;
+            
+            // Estado con badge de color
+            const estadoElement = document.getElementById('detail-school-estado');
+            const estado = school.estado || school.status?.toLowerCase() || 'activa';
+            estadoElement.innerHTML = `<span class="status-badge ${estado === 'activa' ? 'active' : 'inactive'}">${estado}</span>`;
+            
+            // Dirección completa
+            const direccionCompleta = school.direccion 
+                ? `${school.direccion.calle || ''}, ${school.direccion.ciudad || ''}, ${school.direccion.provincia || ''}`.replace(/^,\s*|,\s*$/g, '').replace(/,\s*,/g, ',')
+                : school.address || 'N/A';
+            document.getElementById('detail-school-direccion').textContent = direccionCompleta;
+            
+            // Información de contacto
+            document.getElementById('detail-school-telefono').textContent = school.telefonoContacto || school.phone || 'N/A';
+            document.getElementById('detail-school-correo').textContent = school.correoInstitucional || school.email || 'N/A';
+            
+            // Niveles educativos
+            const nivelesElement = document.getElementById('detail-school-niveles');
+            if (school.nivelEducativo && school.nivelEducativo.length > 0) {
+                nivelesElement.innerHTML = school.nivelEducativo.map(nivel => 
+                    `<span class="level-tag"><i class="fas fa-graduation-cap"></i> ${nivel.charAt(0).toUpperCase() + nivel.slice(1)}</span>`
+                ).join('');
+            } else {
+                nivelesElement.innerHTML = '<span class="no-data">Sin niveles definidos</span>';
+            }
+            
+            // Turnos
+            const turnosElement = document.getElementById('detail-school-turnos');
+            if (school.turnos && school.turnos.length > 0) {
+                turnosElement.innerHTML = school.turnos.map(turno => 
+                    `<span class="shift-tag"><i class="fas fa-clock"></i> ${turno.charAt(0).toUpperCase() + turno.slice(1)}</span>`
+                ).join('');
+            } else {
+                turnosElement.innerHTML = '<span class="no-data">Sin turnos definidos</span>';
+            }
+            
+            // Administrador responsable
+            const adminName = getAdminName(school.administradorResponsable);
+            document.getElementById('detail-school-admin').textContent = adminName;
+            
+            // Guardar el ID de la escuela para la función de editar desde detalles
+            window.currentSchoolDetailsId = id;
+            
+            // Mostrar el modal
+            openModal('school-details-modal');
+        }
+        
+        // Función para editar desde el modal de detalles de escuela
+        function editSchoolFromDetails() {
+            if (window.currentSchoolDetailsId) {
+                closeModal('school-details-modal');
+                editSchool(window.currentSchoolDetailsId);
+            }
+        }
+
+        function editSchool(id) {
+            const school = window.schools.find(s => s.id === id);
+            if (!school) {
+                alert('Escuela no encontrada');
+                return;
+            }
+            
+            // Rellenar el formulario con los datos existentes
+            document.getElementById('school-nombre').value = school.nombreInstitucion || school.name || '';
+            document.getElementById('school-calle').value = school.direccion?.calle || '';
+            document.getElementById('school-ciudad').value = school.direccion?.ciudad || '';
+            document.getElementById('school-provincia').value = school.direccion?.provincia || '';
+            document.getElementById('school-telefono').value = school.telefonoContacto || school.phone || '';
+            document.getElementById('school-correo').value = school.correoInstitucional || school.email || '';
+            document.getElementById('school-cue').value = school.cue || '';
+            document.getElementById('school-docentes').value = school.cantidadDocentes || school.teachers || 0;
+            document.getElementById('school-estado').value = school.estado || school.status?.toLowerCase() || 'activa';
+            document.getElementById('school-admin').value = school.administradorResponsable || '';
+            
+            // Seleccionar niveles educativos
+            const nivelesSelect = document.getElementById('school-nivel');
+            if (school.nivelEducativo && nivelesSelect) {
+                Array.from(nivelesSelect.options).forEach(option => {
+                    option.selected = school.nivelEducativo.includes(option.value);
+                });
+            }
+            
+            // Seleccionar turnos
+            const turnosSelect = document.getElementById('school-turnos');
+            if (school.turnos && turnosSelect) {
+                Array.from(turnosSelect.options).forEach(option => {
+                    option.selected = school.turnos.includes(option.value);
+                });
+            }
+            
+            // Cambiar el título del modal y el botón
+            document.querySelector('#school-modal .modal-header h3').textContent = 'Editar Escuela';
+            document.querySelector('#school-modal .btn-primary').textContent = 'Actualizar Escuela';
+            
+            // Guardar el ID para la actualización
+            window.editingSchoolId = id;
+            
+            // Abrir el modal
+            openModal('school-modal');
+        }
+
+        // Función para resetear el formulario de escuelas
+        function resetSchoolForm() {
+            document.getElementById('school-form').reset();
+            document.querySelector('#school-modal .modal-header h3').textContent = 'Agregar Escuela';
+            document.querySelector('#school-modal .btn-primary').textContent = 'Guardar Escuela';
+            delete window.editingSchoolId;
+        }
+        
+        async function deleteSchool(id) {
+            const school = window.schools.find(s => s.id === id);
+            if (!school) {
+                alert('Escuela no encontrada');
+                return;
+            }
+            
+            const confirmMessage = `¿Estás seguro de que quieres eliminar la escuela "${school.nombreInstitucion || school.name}"?
+            
+Esta acción no se puede deshacer.`;
+            
+            if (confirm(confirmMessage)) {
+                try {
+                    // Eliminar de Firestore
+                    const schoolRef = window.doc(window.db, 'schools', id);
+                    await window.deleteDoc(schoolRef);
+                    
+                    // Recargar datos
+                    await window.loadSchools();
+                    window.updateStats();
+                    
+                    alert('Escuela eliminada correctamente');
+                } catch (error) {
+                    console.error('Error al eliminar escuela:', error);
+                    alert('Error al eliminar escuela: ' + error.message);
+                }
+            }
+        }
+
+        // Ver detalles de un docente
+        function viewTeacher(id) {
+            const teacher = window.teachers.find(t => t.id === id);
+            if (!teacher) {
+                alert('Docente no encontrado');
+                return;
+            }
+            
+            // Llenar los datos en el modal
+            document.getElementById('detail-usuario').textContent = teacher.usuario || 'N/A';
+            document.getElementById('detail-nombre').textContent = `${teacher.nombre || ''} ${teacher.apellido || ''}`.trim() || 'N/A';
+            document.getElementById('detail-dni').textContent = teacher.dni || 'N/A';
+            document.getElementById('detail-correo').textContent = teacher.correo || teacher.email || 'N/A';
+            document.getElementById('detail-telefono').textContent = teacher.telefono || 'N/A';
+            
+            // Rol con badge de color
+            const rolElement = document.getElementById('detail-rol');
+            const rol = teacher.rol || 'Sin rol';
+            rolElement.innerHTML = `<span class="role-badge ${rol.replace(' ', '_').toLowerCase()}">${rol}</span>`;
+            
+            // Estado con badge de color
+            const estadoElement = document.getElementById('detail-estado');
+            const estado = teacher.estado || 'activo';
+            estadoElement.innerHTML = `<span class="status-badge ${estado === 'activo' ? 'active' : 'inactive'}">${estado}</span>`;
+            
+            // Fecha de alta
+            const fechaAlta = teacher.fechaAlta 
+                ? new Date(teacher.fechaAlta.seconds * 1000).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })
+                : 'N/A';
+            document.getElementById('detail-fecha').textContent = fechaAlta;
+            
+            // Escuelas asignadas
+            const escuelasElement = document.getElementById('detail-escuelas');
+            if (teacher.escuelasAsignadas && teacher.escuelasAsignadas.length > 0) {
+                const escuelasNames = getSchoolNames(teacher.escuelasAsignadas);
+                escuelasElement.innerHTML = escuelasNames.map(name => 
+                    `<span class="school-tag"><i class="fas fa-school"></i> ${name}</span>`
+                ).join('');
+            } else {
+                escuelasElement.innerHTML = '<span class="no-data">Sin escuelas asignadas</span>';
+            }
+            
+            // Materias/Asignaturas
+            const materiasElement = document.getElementById('detail-materias');
+            if (teacher.materias && teacher.materias.length > 0) {
+                materiasElement.innerHTML = teacher.materias.map(materia => 
+                    `<span class="subject-tag"><i class="fas fa-book"></i> ${materia}</span>`
+                ).join('');
+            } else {
+                materiasElement.innerHTML = '<span class="no-data">Sin materias asignadas</span>';
+            }
+            
+            // Guardar el ID del docente para la función de editar desde detalles
+            window.currentTeacherDetailsId = id;
+            
+            // Mostrar el modal
+            openModal('teacher-details-modal');
+        }
+        
+        // Función para editar desde el modal de detalles
+        function editTeacherFromDetails() {
+            if (window.currentTeacherDetailsId) {
+                closeModal('teacher-details-modal');
+                editTeacher(window.currentTeacherDetailsId);
+            }
+        }
+        
+        function editTeacher(id) {
+            const teacher = window.teachers.find(t => t.id === id);
+            if (!teacher) {
+                alert('Docente no encontrado');
+                return;
+            }
+            
+            // Rellenar el formulario con los datos existentes
+            document.getElementById('teacher-usuario').value = teacher.usuario || '';
+            document.getElementById('teacher-nombre').value = teacher.nombre || '';
+            document.getElementById('teacher-apellido').value = teacher.apellido || '';
+            document.getElementById('teacher-correo').value = teacher.correo || teacher.email || '';
+            document.getElementById('teacher-contraseña').value = ''; // Por seguridad, no mostrar contraseña
+            document.getElementById('teacher-rol').value = teacher.rol || '';
+            document.getElementById('teacher-telefono').value = teacher.telefono || '';
+            document.getElementById('teacher-dni').value = teacher.dni || '';
+            document.getElementById('teacher-estado').value = teacher.estado || 'activo';
+            
+            // Seleccionar escuelas asignadas
+            const escuelasSelect = document.getElementById('teacher-escuelas');
+            if (teacher.escuelasAsignadas && escuelasSelect) {
+                Array.from(escuelasSelect.options).forEach(option => {
+                    option.selected = teacher.escuelasAsignadas.includes(option.value);
+                });
+            }
+            
+            // Rellenar materias
+            if (teacher.materias && teacher.materias.length > 0) {
+                document.getElementById('teacher-materias').value = teacher.materias.join(', ');
+            }
+            
+            // Cambiar el título del modal y el botón
+            document.querySelector('#teacher-modal .modal-header h3').textContent = 'Editar Docente';
+            document.querySelector('#teacher-modal .btn-primary').textContent = 'Actualizar Docente';
+            
+            // Deshabilitar el campo usuario para evitar duplicados
+            document.getElementById('teacher-usuario').disabled = true;
+            
+            // Guardar el ID para la actualización
+            window.editingTeacherId = id;
+            
+            // Abrir el modal
+            openModal('teacher-modal');
+        }
+
+        // Función para resetear el formulario de docentes
+        function resetTeacherForm() {
+            document.getElementById('teacher-form').reset();
+            document.getElementById('teacher-usuario').disabled = false;
+            document.querySelector('#teacher-modal .modal-header h3').textContent = 'Agregar Docente';
+            document.querySelector('#teacher-modal .btn-primary').textContent = 'Guardar Docente';
+            delete window.editingTeacherId;
+        }
+        
+        
+        async function deleteTeacher(id) {
+            const teacher = window.teachers.find(t => t.id === id);
+            if (!teacher) {
+                alert('Docente no encontrado');
+                return;
+            }
+            
+            const confirmMessage = `¿Estás seguro de que quieres eliminar al docente ${teacher.nombre} ${teacher.apellido} (${teacher.usuario})?
+            
+Esta acción no se puede deshacer.`;
+            
+            if (confirm(confirmMessage)) {
+                try {
+                    // Eliminar de Firestore
+                    const teacherRef = doc(window.db, 'teachers', id);
+                    await deleteDoc(teacherRef);
+                    
+                    // Recargar datos
+                    await window.loadTeachers();
+                    window.updateStats();
+                    
+                    alert('Docente eliminado correctamente');
+                } catch (error) {
+                    console.error('Error al eliminar docente:', error);
+                    alert('Error al eliminar docente: ' + error.message);
+                }
+            }
+        }
+        
+        // Ver detalles de un usuario
+        function viewUser(id) {
+            const user = window.users.find(u => u.id === id);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+            
+            // Llenar los datos en el modal
+            document.getElementById('detail-user-username').textContent = user.username || 'N/A';
+            document.getElementById('detail-user-fullname').textContent = user.fullName || user.name || 'N/A';
+            document.getElementById('detail-user-email').textContent = user.email || 'N/A';
+            
+            // Tipo de usuario con badge de color
+            const typeElement = document.getElementById('detail-user-type');
+            const userType = user.type || 'Usuario';
+            typeElement.innerHTML = `<span class="type-badge ${userType.toLowerCase()}">${userType}</span>`;
+            
+            // Estado con badge de color
+            const statusElement = document.getElementById('detail-user-status');
+            const status = user.status || 'Activo';
+            statusElement.innerHTML = `<span class="status-badge ${status === 'Activo' ? 'active' : 'inactive'}">${status}</span>`;
+            
+            // Fechas
+            const fechaCreacion = user.createdAt 
+                ? new Date(user.createdAt.seconds * 1000).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+                : 'N/A';
+            document.getElementById('detail-user-created').textContent = fechaCreacion;
+            
+            const fechaActualizacion = user.updatedAt 
+                ? new Date(user.updatedAt.seconds * 1000).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+                : 'N/A';
+            document.getElementById('detail-user-updated').textContent = fechaActualizacion;
+            
+            const ultimoAcceso = user.lastAccess 
+                ? new Date(user.lastAccess.seconds * 1000).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+                : 'Nunca';
+            document.getElementById('detail-user-access').textContent = ultimoAcceso;
+            
+            // Guardar el ID del usuario para la función de editar desde detalles
+            window.currentUserDetailsId = id;
+            
+            // Mostrar el modal
+            openModal('user-details-modal');
+        }
+        
+        function editUser(id) {
+            const user = window.users.find(u => u.id === id);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+            
+            // Rellenar el formulario con los datos existentes
+            document.getElementById('username').value = user.username || '';
+            document.getElementById('user-fullname').value = user.fullName || user.name || '';
+            document.getElementById('user-email').value = user.email || '';
+            document.getElementById('user-type').value = user.type || '';
+            // No mostrar la contraseña por seguridad
+            document.getElementById('user-password').value = '';
+            
+            // Cambiar el título del modal y el botón
+            document.querySelector('#user-modal .modal-header h3').textContent = 'Editar Usuario';
+            document.querySelector('#user-modal .btn-primary').textContent = 'Actualizar Usuario';
+            
+            // Deshabilitar el campo username para evitar duplicados
+            document.getElementById('username').disabled = true;
+            
+            // Hacer la contraseña opcional en edición
+            document.getElementById('user-password').required = false;
+            const passwordLabel = document.querySelector('label[for="user-password"]');
+            if (passwordLabel) {
+                passwordLabel.textContent = 'Nueva Contraseña (opcional)';
+            }
+            
+            // Guardar el ID para la actualización
+            window.editingUserId = id;
+            
+            // Abrir el modal
+            openModal('user-modal');
+        }
+
+        // Función para resetear el formulario de usuarios
+        function resetUserForm() {
+            document.getElementById('user-form').reset();
+            document.getElementById('username').disabled = false;
+            document.getElementById('user-password').required = true;
+            
+            const passwordLabel = document.querySelector('label[for="user-password"]');
+            if (passwordLabel) {
+                passwordLabel.textContent = 'Contraseña';
+            }
+            
+            document.querySelector('#user-modal .modal-header h3').textContent = 'Agregar Usuario';
+            document.querySelector('#user-modal .btn-primary').textContent = 'Guardar Usuario';
+            delete window.editingUserId;
+        }
+
+        // Función para editar desde el modal de detalles de usuario
+        function editUserFromDetails() {
+            if (window.currentUserDetailsId) {
+                closeModal('user-details-modal');
+                editUser(window.currentUserDetailsId);
+            }
+        }
+        
+        async function deleteUser(id) {
+            const user = window.users.find(u => u.id === id);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+            
+            const confirmMessage = `¿Estás seguro de que quieres eliminar al usuario "${user.fullName || user.name || user.username}"?
+            
+Esta acción no se puede deshacer.`;
+            
+            if (confirm(confirmMessage)) {
+                try {
+                    // Eliminar de Firestore
+                    const userRef = window.doc(window.db, 'users', id);
+                    await window.deleteDoc(userRef);
+                    
+                    // Recargar datos
+                    await window.loadUsers();
+                    window.updateStats();
+                    
+                    alert('Usuario eliminado correctamente');
+                } catch (error) {
+                    console.error('Error al eliminar usuario:', error);
+                    alert('Error al eliminar usuario: ' + error.message);
+                }
+            }
+        }
+
+        // ===== NUEVA MENSAJERÍA =====
+        
+        // Variables globales para mensajería
+        window.conversations = [];
+        window.currentConversation = null;
+        window.messages = [];
+        
+        // Usuario actual
+        window.currentUser = {
+            id: 'current_user',
+            name: 'Usuario Actual',
+            type: 'soporte',
+            schoolId: 'all',
+            schoolName: 'Sistema'
+        };
+
+        // Función para refrescar conversaciones
+        function refreshConversations() {
+            loadConversations();
+        }
+
+        // Función para cargar conversaciones
+        async function loadConversations() {
+            try {
+                // Datos de ejemplo
+                window.conversations = [
+                    {
+                        id: 'conv1',
+                        name: 'Lucas Ramirez (R.C)',
+                        lastMessage: 'Calificaciones 5TO C',
+                        time: '19:48',
+                        unread: 1,
+                        avatar: 'brown',
+                        userType: 'responsable',
+                        schoolId: 'school1',
+                        schoolName: 'Escuela San Martín',
+                        priority: 'alta'
+                    },
+                    {
+                        id: 'conv2',
+                        name: 'Secretaría',
+                        lastMessage: 'Enseguida te envio los papeles.',
+                        time: '18:30',
+                        unread: 2,
+                        avatar: 'green',
+                        userType: 'secretaria',
+                        schoolId: 'school1',
+                        schoolName: 'Escuela San Martín',
+                        priority: 'media'
+                    },
+                    {
+                        id: 'conv3',
+                        name: 'Maria Gonzalez (Docente)',
+                        lastMessage: 'Necesito reportes.',
+                        time: '18:16',
+                        unread: 0,
+                        avatar: 'purple',
+                        userType: 'teacher',
+                        schoolId: 'school1',
+                        schoolName: 'Escuela San Martín',
+                        priority: 'baja'
+                    }
+                ];
+
+                renderConversations();
+            } catch (error) {
+                console.error('Error al cargar conversaciones:', error);
+            }
+        }
+
+        // Función para renderizar conversaciones
+        function renderConversations() {
+            const conversationsList = document.getElementById('conversations-list');
+            
+            if (window.conversations.length === 0) {
+                conversationsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <p>No hay conversaciones</p>
+                        <button class="btn-primary" onclick="openModal('new-message-modal')">
+                            <i class="fas fa-plus"></i> Nuevo Chat
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            conversationsList.innerHTML = window.conversations.map(conv => `
+                <div class="conversation-item ${conv.priority ? 'priority-' + conv.priority : ''}" onclick="openConversation('${conv.id}')">
+                    <div class="conversation-avatar ${conv.avatar}">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="conversation-info">
+                        <div style="display: flex; align-items: center;">
+                            <h4 class="conversation-name">${conv.name}</h4>
+                            ${conv.priority && conv.priority !== 'normal' ? `<span class="priority-badge ${conv.priority}">${conv.priority.toUpperCase()}</span>` : ''}
+                        </div>
+                        <p class="conversation-preview">${conv.lastMessage}</p>
+                    </div>
+                    <div class="conversation-meta">
+                        <span class="conversation-time">${conv.time}</span>
+                        ${conv.unread > 0 ? `<span class="unread-badge">${conv.unread}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Función para abrir una conversación
+        function openConversation(conversationId) {
+            // Actualizar estado activo
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Encontrar la conversación
+            const conversation = window.conversations.find(conv => conv.id === conversationId);
+            if (!conversation) return;
+
+            window.currentConversation = conversation;
+
+            // Mostrar el chat activo
+            document.getElementById('empty-chat').style.display = 'none';
+            document.getElementById('active-chat').style.display = 'flex';
+
+            // Actualizar header del chat
+            document.getElementById('chat-user-name').textContent = conversation.name;
+            document.getElementById('chat-user-status').textContent = 'En línea';
+
+            // Cargar mensajes
+            loadMessages(conversationId);
+
+            // Marcar como leída
+            conversation.unread = 0;
+            renderConversations();
+        }
+
+        // Función para cargar mensajes
+        function loadMessages(conversationId) {
+            const sampleMessages = {
+                'conv1': [
+                    { id: 1, text: 'Hoy', sender: 'system', time: '', priority: 'normal' },
+                    { id: 2, text: 'Enseguida te envío las calificaciones de 5TO', sender: 'sent', time: '18:12', priority: 'normal' },
+                    { id: 3, text: 'Dale. Estoy a la espera.', sender: 'received', time: '18:16', priority: 'normal' }
+                ],
+                'conv2': [
+                    { id: 1, text: '¿Podría enviarme los documentos requeridos?', sender: 'received', time: '09:45', priority: 'normal' },
+                    { id: 2, text: 'Por supuesto, ¿cuáles documentos necesita específicamente?', sender: 'sent', time: '09:47', priority: 'normal' }
+                ],
+                'conv3': [
+                    { id: 1, text: 'Confirmamos la reunión para mañana a las 14:00', sender: 'received', time: 'Ayer', priority: 'normal' },
+                    { id: 2, text: 'Perfecto, estaré allí puntual. Gracias por confirmar', sender: 'sent', time: 'Ayer', priority: 'normal' }
+                ]
+            };
+
+            window.messages = sampleMessages[conversationId] || [];
+            renderMessages();
+        }
+
+        // Función para renderizar mensajes
+        function renderMessages() {
+            const messagesContainer = document.getElementById('messages-container');
+            
+            messagesContainer.innerHTML = window.messages.map(message => {
+                if (message.sender === 'system') {
+                    return `
+                        <div class="message-date">
+                            <span class="date-badge">${message.text}</span>
+                        </div>
+                    `;
+                }
+                
+                const priorityClass = message.priority && message.priority !== 'normal' ? `priority-${message.priority}` : '';
+                const priorityBadge = message.priority && message.priority !== 'normal' ? 
+                    `<span class="priority-badge ${message.priority}">${message.priority.toUpperCase()}</span>` : '';
+                
+                return `
+                    <div class="message ${message.sender}">
+                        <div class="message-bubble ${priorityClass}">
+                            <div class="message-text">${message.text}</div>
+                            <div class="message-time">${message.time} ${priorityBadge}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Scroll al final
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Función para enviar mensaje
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const prioritySelect = document.getElementById('message-priority');
+            const messageText = messageInput.value.trim();
+
+            if (!messageText || !window.currentConversation) return;
+
+            // Obtener prioridad seleccionada
+            const priority = prioritySelect ? prioritySelect.value : 'normal';
+
+            // Crear nuevo mensaje
+            const newMessage = {
+                id: Date.now(),
+                text: messageText,
+                sender: 'sent',
+                time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+                priority: priority
+            };
+
+            // Agregar mensaje
+            window.messages.push(newMessage);
+            renderMessages();
+
+            // Limpiar input
+            messageInput.value = '';
+            
+            // Resetear prioridad a normal
+            if (prioritySelect) {
+                prioritySelect.value = 'normal';
+            }
+
+            // Actualizar última conversación con la prioridad
+            const conversation = window.conversations.find(conv => conv.id === window.currentConversation.id);
+            if (conversation) {
+                conversation.lastMessage = messageText;
+                conversation.time = newMessage.time;
+                // Actualizar prioridad de la conversación si el mensaje tiene prioridad alta o media
+                if (priority === 'alta' || priority === 'media') {
+                    conversation.priority = priority;
+                }
+                renderConversations();
+            }
+        }
+
+        // Event listener para enviar mensaje con Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('message-input');
+            if (messageInput) {
+                messageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+
+            // Cargar conversaciones al inicializar
+            loadConversations();
+        });
+    </script>
+</body>
+</html>
