@@ -1734,3 +1734,741 @@ body {
 .btn-secondary:hover {
     background: var(--text-color);
 }
+
+/* Estilos específicos para formulario de escuelas */
+#school-modal .modal-content {
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.school-form-grid,
+.form-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 30px;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Mejorar los select múltiples */
+.form-group select[multiple] {
+    min-height: 100px;
+    padding: 8px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+}
+
+.form-group select[multiple] option {
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin: 2px 0;
+    cursor: pointer;
+}
+
+.form-group select[multiple] option:hover {
+    background: rgba(139, 69, 19, 0.1);
+}
+
+.form-group select[multiple] option:checked {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-weight: 500;
+}
+
+/* Mejorar el fieldset de dirección */
+.form-fieldset {
+    background: rgba(139, 69, 19, 0.02);
+    margin-bottom: 15px;
+}
+
+.form-fieldset legend {
+    font-size: 1rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 0 10px;
+}
+
+.form-fieldset .form-group {
+    margin-bottom: 15px;
+}
+
+/* Grid interno para ciudad y provincia */
+.form-inline-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* Mejorar inputs */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="number"] {
+    transition: all 0.3s ease;
+}
+
+.form-group input:hover {
+    border-color: var(--accent-color);
+}
+
+/* Estilos para el modal footer */
+#school-form .modal-footer {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+    padding: 20px 30px;
+    background: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: -30px;
+    margin-right: -30px;
+    margin-bottom: -30px;
+}
+
+/* Mejora visual de small text */
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-light);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+/* Iconos en labels */
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+/* Responsive para formulario de escuelas */
+@media (max-width: 768px) {
+    .school-form-grid,
+    .form-two-columns {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 20px;
+    }
+    
+    #school-form .modal-footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-bottom: -20px;
+        flex-direction: column;
+    }
+    
+    #school-form .modal-footer button {
+        width: 100%;
+    }
+    
+    .form-inline-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animación para campos con error */
+.form-group input:invalid:not(:focus):not(:placeholder-shown) {
+    border-color: var(--danger-color);
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Mejorar visualización de campos requeridos */
+.form-group label::after {
+    content: '';
+}
+
+.form-group:has(input[required]) label::after,
+.form-group:has(select[required]) label::after {
+    content: ' *';
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+/* Estilos específicos para formulario de docentes */
+#teacher-modal .modal-content {
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.teacher-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 30px;
+}
+
+/* Mejorar textarea */
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.5;
+}
+
+.form-group textarea:hover {
+    border-color: var(--accent-color);
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+/* Mejorar inputs de password */
+.form-group input[type="password"] {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 2px;
+}
+
+.form-group input[type="password"]::placeholder {
+    letter-spacing: normal;
+}
+
+/* Estilos para el select de rol */
+.form-group select:not([multiple]) {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b4513' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 35px;
+    cursor: pointer;
+}
+
+.form-group select:not([multiple]) option {
+    padding: 10px;
+}
+
+/* Responsive para formulario de docentes */
+@media (max-width: 768px) {
+    .teacher-form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 20px;
+    }
+    
+    #teacher-form .modal-footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-bottom: -20px;
+        flex-direction: column;
+    }
+    
+    #teacher-form .modal-footer button {
+        width: 100%;
+    }
+}
+
+/* Mejorar validación visual de DNI */
+.form-group input[pattern]:invalid:not(:focus):not(:placeholder-shown) {
+    border-color: var(--warning-color);
+}
+
+.form-group input[pattern]:valid:not(:placeholder-shown) {
+    border-color: var(--success-color);
+}
+
+/* Animación para select múltiple */
+.form-group select[multiple]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+    outline: none;
+}
+
+/* Mejorar el modal footer de docentes */
+#teacher-form .modal-footer {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+    padding: 20px 30px;
+    background: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: -30px;
+    margin-right: -30px;
+    margin-bottom: -30px;
+}
+
+/* Mensaje de auto-asignación de administrador */
+.admin-auto-assigned {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.08), rgba(205, 133, 63, 0.05));
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    box-shadow: 0 2px 6px rgba(139, 69, 19, 0.1);
+}
+
+.admin-auto-assigned i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.admin-auto-assigned:hover {
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.12), rgba(205, 133, 63, 0.08));
+    box-shadow: 0 3px 10px rgba(139, 69, 19, 0.15);
+}
+
+/* Estilos específicos para formulario de usuarios */
+#user-modal .modal-content {
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.user-form-container {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Mejorar el layout del formulario de usuario */
+#user-form .form-group {
+    margin-bottom: 20px;
+}
+
+#user-form .form-group:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Iconos en los labels del formulario de usuario */
+#user-form .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+#user-form .form-group label::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+#user-form label[for="username"]::before {
+    content: '\f007'; /* fa-user */
+}
+
+#user-form label[for="user-fullname"]::before {
+    content: '\f2bb'; /* fa-user-circle */
+}
+
+#user-form label[for="user-email"]::before {
+    content: '\f0e0'; /* fa-envelope */
+}
+
+#user-form label[for="user-type"]::before {
+    content: '\f0c0'; /* fa-users */
+}
+
+#user-form label[for="user-password"]::before {
+    content: '\f084'; /* fa-key */
+}
+
+/* Estilos especiales para el select de tipo de usuario */
+#user-type {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+#user-type option {
+    padding: 12px;
+    font-weight: 500;
+}
+
+#user-type option[value="soporte"] {
+    color: var(--info-color);
+}
+
+#user-type option[value="responsable"] {
+    color: var(--primary-color);
+}
+
+#user-type option[value="docente"] {
+    color: var(--success-color);
+}
+
+#user-type option[value="secretaria"] {
+    color: var(--warning-color);
+}
+
+/* Indicador de fortaleza de contraseña */
+.password-strength {
+    margin-top: 8px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.password-strength-bar {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.password-strength.weak .password-strength-bar {
+    width: 33%;
+    background: var(--danger-color);
+}
+
+.password-strength.medium .password-strength-bar {
+    width: 66%;
+    background: var(--warning-color);
+}
+
+.password-strength.strong .password-strength-bar {
+    width: 100%;
+    background: var(--success-color);
+}
+
+/* Mejorar el modal footer de usuarios */
+#user-form .modal-footer {
+    margin-top: 30px;
+    padding: 20px 30px;
+    background: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: -30px;
+    margin-right: -30px;
+    margin-bottom: -30px;
+}
+
+/* Animación para inputs de usuario */
+#user-form input:focus,
+#user-form select:focus {
+    transform: translateY(-1px);
+}
+
+/* Responsive para formulario de usuarios */
+@media (max-width: 768px) {
+    .user-form-container {
+        padding: 20px;
+    }
+    
+    #user-form .modal-footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-bottom: -20px;
+        flex-direction: column;
+    }
+    
+    #user-form .modal-footer button {
+        width: 100%;
+    }
+}
+
+/* ==========================
+   MODAL DE DETALLES DE USUARIO
+   ========================== */
+
+/* Modal de detalles de usuario */
+.user-details-modal {
+    max-width: 650px;
+}
+
+.user-details-content {
+    padding: 0;
+}
+
+/* Header del perfil de usuario */
+.user-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.08), rgba(205, 133, 63, 0.05));
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+    flex-shrink: 0;
+}
+
+.user-profile-info {
+    flex: 1;
+}
+
+.user-profile-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.user-profile-username {
+    margin: 0 0 10px 0;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.user-type-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
+}
+
+/* Secciones de detalles */
+.detail-section {
+    padding: 25px 30px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+}
+
+.detail-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.detail-section-header i {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+}
+
+.detail-section-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Grid de detalles */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: var(--background-color);
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+    background: rgba(139, 69, 19, 0.05);
+    border-left-color: var(--primary-color);
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.detail-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.1), rgba(205, 133, 63, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.detail-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+}
+
+.detail-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    word-break: break-word;
+}
+
+/* Estado especial */
+.detail-value.status-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.detail-value.status-value::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Colores de estado */
+.detail-value.status-value[data-status="Activo"]::before,
+.detail-value.status-value:contains("Activo")::before {
+    background: var(--success-color);
+}
+
+.detail-value.status-value[data-status="Inactivo"]::before,
+.detail-value.status-value:contains("Inactivo")::before {
+    background: var(--danger-color);
+}
+
+/* Estilos para el último acceso con colores según tiempo */
+#detail-user-access {
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Verde: muy reciente (menos de 1 hora) */
+#detail-user-access[data-time="recent"] {
+    background: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+}
+
+/* Azul: reciente (menos de 24 horas) */
+#detail-user-access[data-time="today"] {
+    background: rgba(23, 162, 184, 0.1);
+    color: var(--info-color);
+}
+
+/* Amarillo: hace unos días (menos de 7 días) */
+#detail-user-access[data-time="week"] {
+    background: rgba(255, 193, 7, 0.1);
+    color: var(--warning-color);
+}
+
+/* Gris: hace más tiempo */
+#detail-user-access[data-time="old"] {
+    background: rgba(108, 117, 125, 0.1);
+    color: var(--text-light);
+}
+
+/* Rojo: nunca */
+#detail-user-access[data-time="never"] {
+    background: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color);
+}
+
+/* Responsive para modal de detalles */
+@media (max-width: 768px) {
+    .user-profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .user-profile-avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+    }
+    
+    .detail-section {
+        padding: 20px;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .detail-icon {
+        align-self: center;
+    }
+    
+    .detail-content {
+        text-align: center;
+        align-items: center;
+    }
+}
+
+/* Animaciones para el modal de detalles */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-details-modal.modal-content {
+    animation: slideInDown 0.3s ease;
+}

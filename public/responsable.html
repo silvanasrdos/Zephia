@@ -334,6 +334,182 @@
         </main>
     </div>
 
+    <!-- Modal para Agregar Escuela -->
+    <div id="school-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Agregar Escuela</h3>
+                <button class="modal-close" onclick="closeModal('school-modal')">&times;</button>
+            </div>
+            <form id="school-form">
+                <div class="school-form-grid">
+                    <!-- Columna Izquierda -->
+                    <div class="form-column">
+                <div class="form-group">
+                            <label for="school-nombre">Nombre de la Institución</label>
+                            <input type="text" id="school-nombre" name="nombreInstitucion" required placeholder="Ej: Escuela Primaria San Martín">
+                </div>
+                        
+                        <fieldset class="form-fieldset">
+                            <legend>Dirección</legend>
+                <div class="form-group">
+                                <label for="school-calle">Calle y Número</label>
+                                <input type="text" id="school-calle" name="calle" required placeholder="Ej: Av. San Martín 1234">
+                </div>
+                            <div class="form-inline-grid">
+                <div class="form-group">
+                                    <label for="school-ciudad">Ciudad</label>
+                                    <input type="text" id="school-ciudad" name="ciudad" required placeholder="Ej: Buenos Aires">
+                </div>
+                <div class="form-group">
+                                    <label for="school-provincia">Provincia</label>
+                                    <input type="text" id="school-provincia" name="provincia" required placeholder="Ej: Buenos Aires">
+                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-group">
+                            <label for="school-telefono">Teléfono de Contacto</label>
+                            <input type="tel" id="school-telefono" name="telefonoContacto" required placeholder="Ej: +54 11 1234-5678">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-correo">Correo Institucional</label>
+                            <input type="email" id="school-correo" name="correoInstitucional" required placeholder="contacto@escuela.edu.ar">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-cue">CUE (Código Único de Establecimiento)</label>
+                            <input type="text" id="school-cue" name="cue" placeholder="Ej: 020001234">
+                            <small>Campo opcional</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Columna Derecha -->
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="school-nivel">Nivel Educativo</label>
+                            <select id="school-nivel" name="nivelEducativo" multiple size="3" required>
+                                <option value="inicial">Inicial</option>
+                                <option value="primario">Primario</option>
+                                <option value="secundario">Secundario</option>
+                            </select>
+                            <small>Mantén Ctrl presionado para seleccionar múltiples niveles</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-turnos">Turnos</label>
+                            <select id="school-turnos" name="turnos" multiple size="3" required>
+                                <option value="mañana">Mañana</option>
+                                <option value="tarde">Tarde</option>
+                                <option value="noche">Noche</option>
+                            </select>
+                            <small>Mantén Ctrl presionado para seleccionar múltiples turnos</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-estado">Estado</label>
+                            <select id="school-estado" name="estado">
+                                <option value="activa" selected>Activa</option>
+                                <option value="inactiva">Inactiva</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school-docentes">Cantidad de Docentes (Estimada)</label>
+                            <input type="number" id="school-docentes" name="cantidadDocentes" min="0" placeholder="0">
+                            <small>Campo opcional - se actualizará automáticamente</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('school-modal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Escuela</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Docente -->
+    <div id="teacher-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Agregar Docente</h3>
+                <button class="modal-close" onclick="closeModal('teacher-modal')">&times;</button>
+            </div>
+            <form id="teacher-form">
+                <div class="teacher-form-grid">
+                    <!-- Columna Izquierda -->
+                    <div class="form-column">
+                <div class="form-group">
+                            <label for="teacher-usuario">Usuario/ID Docente</label>
+                            <input type="text" id="teacher-usuario" name="usuario" required placeholder="Ej: docente001">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-nombre">Nombre</label>
+                            <input type="text" id="teacher-nombre" name="nombre" required placeholder="Nombre del docente">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-apellido">Apellido</label>
+                            <input type="text" id="teacher-apellido" name="apellido" required placeholder="Apellido del docente">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-correo">Correo Electrónico</label>
+                            <input type="email" id="teacher-correo" name="correo" required placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                            <label for="teacher-contraseña">Contraseña</label>
+                            <input type="password" id="teacher-contraseña" name="contraseña" required placeholder="Contraseña del docente">
+                </div>
+                        <div class="form-group">
+                            <label for="teacher-dni">DNI</label>
+                            <input type="text" id="teacher-dni" name="dni" required placeholder="12345678" pattern="[0-9]{8,10}">
+                            <small>Ingresa 8 a 10 dígitos numéricos</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Columna Derecha -->
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="teacher-rol">Rol</label>
+                            <select id="teacher-rol" name="rol" required>
+                                <option value="">Seleccionar rol</option>
+                                <option value="profesor">Profesor</option>
+                                <option value="maestro">Maestro</option>
+                                <option value="coordinador">Coordinador</option>
+                                <option value="director_academico">Director Académico</option>
+                                <option value="subdirector">Subdirector</option>
+                                <option value="preceptor">Preceptor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-telefono">Teléfono de Contacto</label>
+                            <input type="tel" id="teacher-telefono" name="telefono" required placeholder="Ej: +54 11 1234-5678">
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-materias">Materias/Asignaturas</label>
+                            <textarea id="teacher-materias" name="materias" rows="3" placeholder="Ingresa las materias separadas por comas. Ej: Matemáticas, Física, Química"></textarea>
+                            <small>Separa las materias con comas</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-estado">Estado</label>
+                            <select id="teacher-estado" name="estado">
+                                <option value="activo" selected>Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal('teacher-modal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Docente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // Variables globales
@@ -383,6 +559,46 @@
         // Función para abrir modales
         function openModal(modalId) {
             console.log('Abriendo modal:', modalId);
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                
+                // Si es el modal de docentes, resetear el formulario
+                if (modalId === 'teacher-modal') {
+                    resetTeacherForm();
+                }
+                
+                // Si es el modal de escuelas, resetear el formulario
+                if (modalId === 'school-modal') {
+                    resetSchoolForm();
+                }
+            } else {
+                console.error('Modal no encontrado:', modalId);
+            }
+        }
+        
+        // Función para cerrar modales
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Función para resetear el formulario de escuelas
+        function resetSchoolForm() {
+            const form = document.getElementById('school-form');
+            if (form) {
+                form.reset();
+            }
+        }
+        
+        // Función para resetear el formulario de docentes
+        function resetTeacherForm() {
+            const form = document.getElementById('teacher-form');
+            if (form) {
+                form.reset();
+            }
         }
 
         // Función para seleccionar conversación

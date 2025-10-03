@@ -185,7 +185,7 @@
                 
                 // Obtener información adicional del usuario desde Firestore
                 try {
-                    const { getFirestore, collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js');
+                    const { getFirestore, collection, query, where, getDocs, doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js');
                     const db = getFirestore();
                     const usersRef = collection(db, 'users');
                     const q = query(usersRef, where('uid', '==', user.uid));
@@ -210,6 +210,18 @@
                             fullName: userInfo.fullName,
                             status: userInfo.status
                         };
+                        
+                        // Actualizar el último acceso en Firestore
+                        try {
+                            const userDocRef = doc(db, 'users', userDoc.id);
+                            await updateDoc(userDocRef, {
+                                lastAccess: serverTimestamp()
+                            });
+                            console.log('Último acceso registrado correctamente');
+                        } catch (updateError) {
+                            console.error('Error al actualizar último acceso:', updateError);
+                            // No bloqueamos el login si falla esta actualización
+                        }
                     }
                     
                     // Guardar datos del usuario en localStorage
@@ -319,6 +331,26 @@
                 const user = userCredential.user;
                 
                 btn.innerHTML = '<i class="fas fa-check"></i> ¡Acceso concedido!';
+                
+                // Actualizar último acceso en Firestore
+                try {
+                    const { getFirestore, collection, query, where, getDocs, doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js');
+                    const db = getFirestore();
+                    const usersRef = collection(db, 'users');
+                    const q = query(usersRef, where('uid', '==', user.uid));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        const userDoc = querySnapshot.docs[0];
+                        const userDocRef = doc(db, 'users', userDoc.id);
+                        await updateDoc(userDocRef, {
+                            lastAccess: serverTimestamp()
+                        });
+                        console.log('Último acceso registrado correctamente');
+                    }
+                } catch (updateError) {
+                    console.error('Error al actualizar último acceso:', updateError);
+                }
                 
                 // Guardar datos del usuario en localStorage
                 localStorage.setItem('user', JSON.stringify({

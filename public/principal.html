@@ -312,15 +312,15 @@
 
     <!-- Modal para Agregar Escuela -->
     <div id="school-modal" class="modal">
-        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-content">
             <div class="modal-header">
                 <h3>Agregar Escuela</h3>
                 <button class="modal-close" onclick="closeModal('school-modal')">&times;</button>
             </div>
             <form id="school-form">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="school-form-grid">
                     <!-- Columna Izquierda -->
-                    <div>
+                    <div class="form-column">
                 <div class="form-group">
                             <label for="school-nombre">Nombre de la Institución *</label>
                             <input type="text" id="school-nombre" name="nombreInstitucion" required placeholder="Ej: Escuela Primaria San Martín">
@@ -332,7 +332,7 @@
                                 <label for="school-calle">Calle y Número</label>
                                 <input type="text" id="school-calle" name="calle" required placeholder="Ej: Av. San Martín 1234">
                 </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-inline-grid">
                 <div class="form-group">
                                     <label for="school-ciudad">Ciudad</label>
                                     <input type="text" id="school-ciudad" name="ciudad" required placeholder="Ej: Buenos Aires">
@@ -362,9 +362,9 @@
                     </div>
                     
                     <!-- Columna Derecha -->
-                    <div>
+                    <div class="form-column">
                         <div class="form-group">
-                            <label for="school-nivel">Nivel Educativo *</label>
+                            <label for="school-nivel">Nivel Educativo</label>
                             <select id="school-nivel" name="nivelEducativo" multiple size="3" required>
                                 <option value="inicial">Inicial</option>
                                 <option value="primario">Primario</option>
@@ -374,7 +374,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="school-turnos">Turnos *</label>
+                            <label for="school-turnos">Turnos</label>
                             <select id="school-turnos" name="turnos" multiple size="3" required>
                                 <option value="mañana">Mañana</option>
                                 <option value="tarde">Tarde</option>
@@ -384,7 +384,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="school-admin">Administrador Responsable *</label>
+                            <label for="school-admin">Administrador Responsable</label>
                             <select id="school-admin" name="administradorResponsable" required>
                                 <option value="">Seleccionar administrador</option>
                                 <!-- Se cargarán dinámicamente los administradores -->
@@ -407,7 +407,7 @@
                     </div>
                 </div>
                 
-                <div class="modal-footer" style="grid-column: 1 / -1; margin-top: 20px;">
+                <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeModal('school-modal')">Cancelar</button>
                     <button type="submit" class="btn-primary">Guardar Escuela</button>
                 </div>
@@ -417,45 +417,46 @@
 
     <!-- Modal para Agregar Docente -->
     <div id="teacher-modal" class="modal">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-content">
             <div class="modal-header">
                 <h3>Agregar Docente</h3>
                 <button class="modal-close" onclick="closeModal('teacher-modal')">&times;</button>
             </div>
             <form id="teacher-form">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="teacher-form-grid">
                     <!-- Columna Izquierda -->
-                    <div>
+                    <div class="form-column">
                 <div class="form-group">
-                            <label for="teacher-usuario">Usuario/ID Docente *</label>
+                            <label for="teacher-usuario">Usuario/ID Docente</label>
                             <input type="text" id="teacher-usuario" name="usuario" required placeholder="Ej: docente001">
                 </div>
                 <div class="form-group">
-                            <label for="teacher-nombre">Nombre *</label>
+                            <label for="teacher-nombre">Nombre</label>
                             <input type="text" id="teacher-nombre" name="nombre" required placeholder="Nombre del docente">
                 </div>
                 <div class="form-group">
-                            <label for="teacher-apellido">Apellido *</label>
+                            <label for="teacher-apellido">Apellido</label>
                             <input type="text" id="teacher-apellido" name="apellido" required placeholder="Apellido del docente">
                 </div>
                 <div class="form-group">
-                            <label for="teacher-correo">Correo Electrónico *</label>
+                            <label for="teacher-correo">Correo Electrónico</label>
                             <input type="email" id="teacher-correo" name="correo" required placeholder="correo@ejemplo.com">
                 </div>
                 <div class="form-group">
-                            <label for="teacher-contraseña">Contraseña *</label>
+                            <label for="teacher-contraseña">Contraseña</label>
                             <input type="password" id="teacher-contraseña" name="contraseña" required placeholder="Contraseña del docente">
                 </div>
                         <div class="form-group">
-                            <label for="teacher-dni">DNI *</label>
+                            <label for="teacher-dni">DNI</label>
                             <input type="text" id="teacher-dni" name="dni" required placeholder="12345678" pattern="[0-9]{8,10}">
+                            <small>Ingresa 8 a 10 dígitos numéricos</small>
                         </div>
                     </div>
                     
                     <!-- Columna Derecha -->
-                    <div>
+                    <div class="form-column">
                         <div class="form-group">
-                            <label for="teacher-rol">Rol *</label>
+                            <label for="teacher-rol">Rol</label>
                             <select id="teacher-rol" name="rol" required>
                                 <option value="">Seleccionar rol</option>
                                 <option value="profesor">Profesor</option>
@@ -467,7 +468,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="teacher-telefono">Teléfono de Contacto *</label>
+                            <label for="teacher-telefono">Teléfono de Contacto</label>
                             <input type="tel" id="teacher-telefono" name="telefono" required placeholder="Ej: +54 11 1234-5678">
                         </div>
                         <div class="form-group">
@@ -492,7 +493,7 @@
                     </div>
                 </div>
                 
-                <div class="modal-footer" style="grid-column: 1 / -1; margin-top: 20px;">
+                <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeModal('teacher-modal')">Cancelar</button>
                     <button type="submit" class="btn-primary">Guardar Docente</button>
                 </div>
@@ -508,31 +509,40 @@
                 <button class="modal-close" onclick="closeModal('user-modal')">&times;</button>
             </div>
             <form id="user-form">
-                <div class="form-group">
-                    <label for="username">Usuario</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="user-fullname">Nombre Completo</label>
-                    <input type="text" id="user-fullname" name="fullname" required>
-                </div>
-                <div class="form-group">
-                    <label for="user-email">Email</label>
-                    <input type="email" id="user-email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="user-type">Tipo de Usuario</label>
-                    <select id="user-type" name="type" required>
-                        <option value="">Seleccionar...</option>
-                        <option value="soporte">Soporte</option>
-                        <option value="responsable">Responsable a cargo</option>
-                        <option value="docente">Docente</option>
-                        <option value="secretaria">Secretaria</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="user-password">Contraseña</label>
-                    <input type="password" id="user-password" name="password" required>
+                <div class="user-form-container">
+                    <div class="form-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" id="username" name="username" required placeholder="Ej: jperez">
+                        <small>Nombre de usuario único para acceder al sistema</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-fullname">Nombre Completo</label>
+                        <input type="text" id="user-fullname" name="fullname" required placeholder="Ej: Juan Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label for="user-email">Email</label>
+                        <input type="email" id="user-email" name="email" required placeholder="correo@ejemplo.com">
+                        <small>Se usará para recuperación de contraseña</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-type">Tipo de Usuario</label>
+                        <select id="user-type" name="type" required>
+                            <option value="">Seleccionar tipo de usuario...</option>
+                            <option value="soporte">Soporte</option>
+                            <option value="responsable">Responsable a cargo</option>
+                            <option value="docente">Docente</option>
+                            <option value="secretaria">Secretaria</option>
+                        </select>
+                        <small>Define los permisos y accesos del usuario</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-password">Contraseña</label>
+                        <input type="password" id="user-password" name="password" required placeholder="Mínimo 6 caracteres" minlength="6">
+                        <div class="password-strength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                        <small>Debe tener al menos 6 caracteres</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeModal('user-modal')">Cancelar</button>
@@ -749,52 +759,112 @@
 
     <!-- Modal para Ver Detalles de Usuario -->
     <div id="user-details-modal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content user-details-modal">
             <div class="modal-header">
-                <h3><i class="fas fa-user"></i> Detalles del Usuario</h3>
+                <h3><i class="fas fa-user-circle"></i> Detalles del Usuario</h3>
                 <button class="modal-close" onclick="closeModal('user-details-modal')">&times;</button>
             </div>
             <div class="user-details-content">
+                <!-- Avatar y nombre destacado -->
+                <div class="user-profile-header">
+                    <div class="user-profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-profile-info">
+                        <h3 id="detail-user-fullname-header">-</h3>
+                        <p class="user-profile-username">@<span id="detail-user-username-header">-</span></p>
+                        <span class="user-type-badge" id="detail-user-type-badge">-</span>
+                    </div>
+                </div>
+
+                <!-- Información Personal -->
                 <div class="detail-section">
-                    <h4><i class="fas fa-id-card"></i> Información Personal</h4>
+                    <div class="detail-section-header">
+                        <i class="fas fa-id-card"></i>
+                        <h4>Información Personal</h4>
+                    </div>
                     <div class="detail-grid">
                         <div class="detail-item">
-                            <span class="detail-label">Usuario:</span>
-                            <span class="detail-value" id="detail-user-username">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Usuario</span>
+                                <span class="detail-value" id="detail-user-username">-</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Nombre Completo:</span>
-                            <span class="detail-value" id="detail-user-fullname">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-signature"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Nombre Completo</span>
+                                <span class="detail-value" id="detail-user-fullname">-</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Email:</span>
-                            <span class="detail-value" id="detail-user-email">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value" id="detail-user-email">-</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Tipo de Usuario:</span>
-                            <span class="detail-value" id="detail-user-type">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-users-cog"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Tipo de Usuario</span>
+                                <span class="detail-value" id="detail-user-type">-</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Estado y Fechas -->
                 <div class="detail-section">
-                    <h4><i class="fas fa-info-circle"></i> Estado y Fechas</h4>
+                    <div class="detail-section-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>Estado y Actividad</h4>
+                    </div>
                     <div class="detail-grid">
                         <div class="detail-item">
-                            <span class="detail-label">Estado:</span>
-                            <span class="detail-value" id="detail-user-status">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-circle"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Estado</span>
+                                <span class="detail-value status-value" id="detail-user-status">-</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Fecha de Creación:</span>
-                            <span class="detail-value" id="detail-user-created">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-calendar-plus"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Fecha de Creación</span>
+                                <span class="detail-value" id="detail-user-created">-</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Último Acceso:</span>
-                            <span class="detail-value" id="detail-user-access">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Último Acceso</span>
+                                <span class="detail-value" id="detail-user-access">-</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Última Actualización:</span>
-                            <span class="detail-value" id="detail-user-updated">-</span>
+                            <div class="detail-icon">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Última Actualización</span>
+                                <span class="detail-value" id="detail-user-updated">-</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -925,9 +995,54 @@
         }
 
         // Cargar administradores en el select del formulario de escuelas
-        function loadAdminsInSelect() {
+        async function loadAdminsInSelect(isEditing = false) {
             const select = document.getElementById('school-admin');
+            const formGroup = select?.closest('.form-group');
             if (!select || !window.users) return;
+            
+            // Obtener el usuario actual autenticado
+            const currentUser = auth.currentUser;
+            let currentUserData = null;
+            
+            // Buscar datos del usuario actual en la colección users
+            if (currentUser) {
+                currentUserData = window.users.find(user => 
+                    user.uid === currentUser.uid || user.email === currentUser.email
+                );
+            }
+            
+            // Si el usuario actual es un responsable a cargo y NO está editando, auto-asignar
+            if (!isEditing && currentUserData && (currentUserData.type === 'responsable' || 
+                currentUserData.type === 'Responsable a cargo' || 
+                currentUserData.type === 'responsable a cargo')) {
+                
+                // Auto-seleccionar al responsable actual
+                select.innerHTML = `<option value="${currentUserData.id}" selected>${currentUserData.fullName || currentUserData.name || currentUserData.username}</option>`;
+                
+                // Ocultar el select y mostrar info
+                select.style.display = 'none';
+                
+                // Crear mensaje informativo si no existe
+                let infoMsg = formGroup?.querySelector('.admin-auto-assigned');
+                if (!infoMsg) {
+                    infoMsg = document.createElement('div');
+                    infoMsg.className = 'admin-auto-assigned';
+                    infoMsg.innerHTML = `<i class="fas fa-info-circle"></i><span>Serás asignado automáticamente como administrador de esta escuela</span>`;
+                    formGroup?.appendChild(infoMsg);
+                }
+                
+                console.log('Responsable auto-asignado:', currentUserData.fullName);
+                return;
+            }
+            
+            // Si es soporte u otro tipo de usuario, o está editando, mostrar todos los responsables
+            select.style.display = 'block';
+            
+            // Eliminar mensaje informativo si existe
+            const infoMsg = formGroup?.querySelector('.admin-auto-assigned');
+            if (infoMsg) {
+                infoMsg.remove();
+            }
             
             // Limpiar opciones existentes (excepto la primera)
             select.innerHTML = '<option value="">Seleccionar administrador</option>';
@@ -1618,6 +1733,50 @@
             }
         });
 
+            // Indicador de fortaleza de contraseña
+            const passwordInput = document.getElementById('user-password');
+            const passwordStrength = document.querySelector('.password-strength');
+            
+            if (passwordInput && passwordStrength) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    const strength = calculatePasswordStrength(password);
+                    
+                    // Remover clases previas
+                    passwordStrength.classList.remove('weak', 'medium', 'strong');
+                    
+                    // Agregar clase según fortaleza
+                    if (password.length > 0) {
+                        passwordStrength.classList.add(strength);
+                    }
+                });
+            }
+            
+            // Función para calcular la fortaleza de la contraseña
+            function calculatePasswordStrength(password) {
+                if (password.length === 0) return '';
+                
+                let strength = 0;
+                
+                // Longitud
+                if (password.length >= 6) strength++;
+                if (password.length >= 10) strength++;
+                
+                // Contiene números
+                if (/\d/.test(password)) strength++;
+                
+                // Contiene minúsculas y mayúsculas
+                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+                
+                // Contiene caracteres especiales
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                // Clasificar fortaleza
+                if (strength <= 2) return 'weak';
+                if (strength <= 3) return 'medium';
+                return 'strong';
+            }
+
             // Event listener para el formulario de usuarios
             document.getElementById('user-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -1843,50 +2002,75 @@
             }
         }
 
-        function editSchool(id) {
+        async function editSchool(id) {
             const school = window.schools.find(s => s.id === id);
             if (!school) {
                 alert('Escuela no encontrada');
                 return;
             }
             
-            // Rellenar el formulario con los datos existentes
-            document.getElementById('school-nombre').value = school.nombreInstitucion || school.name || '';
-            document.getElementById('school-calle').value = school.direccion?.calle || '';
-            document.getElementById('school-ciudad').value = school.direccion?.ciudad || '';
-            document.getElementById('school-provincia').value = school.direccion?.provincia || '';
-            document.getElementById('school-telefono').value = school.telefonoContacto || school.phone || '';
-            document.getElementById('school-correo').value = school.correoInstitucional || school.email || '';
-            document.getElementById('school-cue').value = school.cue || '';
-            document.getElementById('school-docentes').value = school.cantidadDocentes || school.teachers || 0;
-            document.getElementById('school-estado').value = school.estado || school.status?.toLowerCase() || 'activa';
-            document.getElementById('school-admin').value = school.administradorResponsable || '';
+            console.log('Editando escuela:', school);
             
-            // Seleccionar niveles educativos
-            const nivelesSelect = document.getElementById('school-nivel');
-            if (school.nivelEducativo && nivelesSelect) {
-                Array.from(nivelesSelect.options).forEach(option => {
-                    option.selected = school.nivelEducativo.includes(option.value);
-                });
-            }
+            // Guardar el ID para la actualización ANTES de cualquier otra cosa
+            window.editingSchoolId = id;
+            console.log('ID de edición guardado:', window.editingSchoolId);
             
-            // Seleccionar turnos
-            const turnosSelect = document.getElementById('school-turnos');
-            if (school.turnos && turnosSelect) {
-                Array.from(turnosSelect.options).forEach(option => {
-                    option.selected = school.turnos.includes(option.value);
-                });
-            }
+            // Cargar administradores ANTES de abrir el modal
+            await loadAdminsInSelect(true);
+            console.log('Administradores cargados');
+            
+            // Ahora abrir el modal (no se reseteará porque editingSchoolId ya está definido)
+            openModal('school-modal');
+            console.log('Modal abierto');
             
             // Cambiar el título del modal y el botón
             document.querySelector('#school-modal .modal-header h3').textContent = 'Editar Escuela';
             document.querySelector('#school-modal .btn-primary').textContent = 'Actualizar Escuela';
             
-            // Guardar el ID para la actualización
-            window.editingSchoolId = id;
-            
-            // Abrir el modal
-            openModal('school-modal');
+            // Usar setTimeout para asegurar que el DOM está listo
+            setTimeout(() => {
+                console.log('Llenando campos del formulario...');
+                
+                // Rellenar el formulario con los datos existentes
+                document.getElementById('school-nombre').value = school.nombreInstitucion || school.name || '';
+                document.getElementById('school-calle').value = school.direccion?.calle || '';
+                document.getElementById('school-ciudad').value = school.direccion?.ciudad || '';
+                document.getElementById('school-provincia').value = school.direccion?.provincia || '';
+                document.getElementById('school-telefono').value = school.telefonoContacto || school.phone || '';
+                document.getElementById('school-correo').value = school.correoInstitucional || school.email || '';
+                document.getElementById('school-cue').value = school.cue || '';
+                document.getElementById('school-docentes').value = school.cantidadDocentes || school.teachers || 0;
+                document.getElementById('school-estado').value = school.estado || school.status?.toLowerCase() || 'activa';
+                
+                console.log('Campos básicos llenados');
+                
+                // Seleccionar el administrador responsable
+                const adminSelect = document.getElementById('school-admin');
+                if (adminSelect && school.administradorResponsable) {
+                    adminSelect.value = school.administradorResponsable;
+                    console.log('Administrador seleccionado:', school.administradorResponsable);
+                }
+                
+                // Seleccionar niveles educativos
+                const nivelesSelect = document.getElementById('school-nivel');
+                if (school.nivelEducativo && nivelesSelect) {
+                    Array.from(nivelesSelect.options).forEach(option => {
+                        option.selected = school.nivelEducativo.includes(option.value);
+                    });
+                    console.log('Niveles educativos seleccionados:', school.nivelEducativo);
+                }
+                
+                // Seleccionar turnos
+                const turnosSelect = document.getElementById('school-turnos');
+                if (school.turnos && turnosSelect) {
+                    Array.from(turnosSelect.options).forEach(option => {
+                        option.selected = school.turnos.includes(option.value);
+                    });
+                    console.log('Turnos seleccionados:', school.turnos);
+                }
+                
+                console.log('✅ Formulario completamente llenado');
+            }, 50);
         }
 
         // Función para resetear el formulario de escuelas
@@ -1895,6 +2079,9 @@
             document.querySelector('#school-modal .modal-header h3').textContent = 'Agregar Escuela';
             document.querySelector('#school-modal .btn-primary').textContent = 'Guardar Escuela';
             delete window.editingSchoolId;
+            
+            // Recargar el select de administradores para aplicar la lógica de auto-asignación
+            loadAdminsInSelect();
         }
         
         async function deleteSchool(id) {
@@ -2081,6 +2268,47 @@ Esta acción no se puede deshacer.`;
             }
         }
         
+        // Función helper para formatear tiempo relativo
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSeconds = Math.floor(diffMs / 1000);
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            const diffHours = Math.floor(diffMinutes / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            
+            let text, timeClass;
+            
+            if (diffSeconds < 60) {
+                text = 'Hace unos segundos';
+                timeClass = 'recent'; // Verde
+            } else if (diffMinutes < 60) {
+                text = `Hace ${diffMinutes} minuto${diffMinutes !== 1 ? 's' : ''}`;
+                timeClass = 'recent'; // Verde
+            } else if (diffHours < 1) {
+                text = 'Hace menos de 1 hora';
+                timeClass = 'recent'; // Verde
+            } else if (diffHours < 24) {
+                text = `Hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
+                timeClass = 'today'; // Azul
+            } else if (diffDays < 7) {
+                text = `Hace ${diffDays} día${diffDays !== 1 ? 's' : ''}`;
+                timeClass = 'week'; // Amarillo
+            } else {
+                // Si es más de 7 días, mostrar fecha completa
+                text = date.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                timeClass = 'old'; // Gris
+            }
+            
+            return { text, timeClass };
+        }
+        
         // Ver detalles de un usuario
         function viewUser(id) {
             const user = window.users.find(u => u.id === id);
@@ -2089,20 +2317,22 @@ Esta acción no se puede deshacer.`;
                 return;
             }
             
+            // Llenar datos del header del perfil
+            document.getElementById('detail-user-fullname-header').textContent = user.fullName || user.name || 'Usuario';
+            document.getElementById('detail-user-username-header').textContent = user.username || 'N/A';
+            document.getElementById('detail-user-type-badge').textContent = user.type || 'Usuario';
+            
             // Llenar los datos en el modal
             document.getElementById('detail-user-username').textContent = user.username || 'N/A';
             document.getElementById('detail-user-fullname').textContent = user.fullName || user.name || 'N/A';
             document.getElementById('detail-user-email').textContent = user.email || 'N/A';
+            document.getElementById('detail-user-type').textContent = user.type || 'Usuario';
             
-            // Tipo de usuario con badge de color
-            const typeElement = document.getElementById('detail-user-type');
-            const userType = user.type || 'Usuario';
-            typeElement.innerHTML = `<span class="type-badge ${userType.toLowerCase()}">${userType}</span>`;
-            
-            // Estado con badge de color
+            // Estado con indicador visual
             const statusElement = document.getElementById('detail-user-status');
             const status = user.status || 'Activo';
-            statusElement.innerHTML = `<span class="status-badge ${status === 'Activo' ? 'active' : 'inactive'}">${status}</span>`;
+            statusElement.textContent = status;
+            statusElement.setAttribute('data-status', status);
             
             // Fechas
             const fechaCreacion = user.createdAt 
@@ -2127,16 +2357,16 @@ Esta acción no se puede deshacer.`;
                 : 'N/A';
             document.getElementById('detail-user-updated').textContent = fechaActualizacion;
             
-            const ultimoAcceso = user.lastAccess 
-                ? new Date(user.lastAccess.seconds * 1000).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
-                : 'Nunca';
-            document.getElementById('detail-user-access').textContent = ultimoAcceso;
+            const accessElement = document.getElementById('detail-user-access');
+            if (user.lastAccess) {
+                const accessDate = new Date(user.lastAccess.seconds * 1000);
+                const { text, timeClass } = formatTimeAgo(accessDate);
+                accessElement.textContent = text;
+                accessElement.setAttribute('data-time', timeClass);
+            } else {
+                accessElement.textContent = 'Nunca';
+                accessElement.setAttribute('data-time', 'never');
+            }
             
             // Guardar el ID del usuario para la función de editar desde detalles
             window.currentUserDetailsId = id;
@@ -2190,6 +2420,12 @@ Esta acción no se puede deshacer.`;
             const passwordLabel = document.querySelector('label[for="user-password"]');
             if (passwordLabel) {
                 passwordLabel.textContent = 'Contraseña';
+            }
+            
+            // Resetear indicador de fortaleza de contraseña
+            const passwordStrength = document.querySelector('.password-strength');
+            if (passwordStrength) {
+                passwordStrength.classList.remove('weak', 'medium', 'strong');
             }
             
             document.querySelector('#user-modal .modal-header h3').textContent = 'Agregar Usuario';

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zephia - Sistema Administrativo</title>
-    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="icon" type="image/png" href="public/img/logo.png">
     <!-- Font Awesome para el icono -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -66,7 +66,7 @@
         function redirectToLogin() {
             const currentPath = window.location.pathname;
             const basePath = window.location.pathname.split('/').slice(0, -1).join('/') || '';
-            const loginUrl = basePath + '/login.html';
+            const loginUrl = basePath + '/public/login.html';
             
             // Evitar loops de redirección
             if (!currentPath.includes('login.html')) {
