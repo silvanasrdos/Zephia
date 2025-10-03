@@ -61,7 +61,7 @@
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fas fa-user"></i>
-                        <input type="text" id="username" placeholder="Usuario administrador" required>
+                        <input type="text" id="username" placeholder="Usuario" required>
                     </div>
                 </div>
                 
@@ -91,55 +91,8 @@
             </form>
             
             <div class="signup-link">
-                <p>¿Problemas de acceso? <a href="#">Contactar soporte técnico</a></p>
-                <p style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
-                    ¿Eres docente o escuela? <a href="#" onclick="showUserLogin()">Acceder como usuario</a>
-                </p>
+                <p>¿Problemas de acceso? <a href="contacto.html">Contactar soporte técnico</a></p>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal de login para usuarios -->
-    <div id="userLoginModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Acceso de Usuario</h3>
-                <button class="close-btn" onclick="closeUserLoginModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form id="userLoginForm">
-                <div class="form-group">
-                    <label>Tipo de usuario:</label>
-                    <select id="user-type" required>
-                        <option value="">Seleccionar tipo</option>
-                        <option value="teacher">Docente</option>
-                        <option value="school">Escuela</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="user-username" placeholder="Usuario asignado" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="user-password" placeholder="Contraseña asignada" required>
-                        <button type="button" class="toggle-password" onclick="toggleUserPassword()">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeUserLoginModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Acceder al Sistema</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -282,122 +235,6 @@
                 alert(errorMessage);
             }
         });
-
-        // Funciones para el modal de login de usuario
-        function showUserLogin() {
-            document.getElementById('userLoginModal').style.display = 'flex';
-        }
-
-        function closeUserLoginModal() {
-            document.getElementById('userLoginModal').style.display = 'none';
-            document.getElementById('userLoginForm').reset();
-        }
-
-        function toggleUserPassword() {
-            const passwordInput = document.getElementById('user-password');
-            const icon = event.currentTarget.querySelector('i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        // Login de usuario
-        document.getElementById('userLoginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const userType = document.getElementById('user-type').value;
-            const username = document.getElementById('user-username').value;
-            const password = document.getElementById('user-password').value;
-            
-            // Validación básica
-            if (!userType || !username || !password) {
-                alert('Por favor completa todos los campos');
-                return;
-            }
-            
-            const btn = this.querySelector('.btn-primary');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
-            btn.disabled = true;
-            
-            try {
-                // Intentar login con Firebase
-                const userCredential = await window.signInWithEmailAndPassword(window.auth, username, password);
-                const user = userCredential.user;
-                
-                btn.innerHTML = '<i class="fas fa-check"></i> ¡Acceso concedido!';
-                
-                // Actualizar último acceso en Firestore
-                try {
-                    const { getFirestore, collection, query, where, getDocs, doc, updateDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js');
-                    const db = getFirestore();
-                    const usersRef = collection(db, 'users');
-                    const q = query(usersRef, where('uid', '==', user.uid));
-                    const querySnapshot = await getDocs(q);
-                    
-                    if (!querySnapshot.empty) {
-                        const userDoc = querySnapshot.docs[0];
-                        const userDocRef = doc(db, 'users', userDoc.id);
-                        await updateDoc(userDocRef, {
-                            lastAccess: serverTimestamp()
-                        });
-                        console.log('Último acceso registrado correctamente');
-                    }
-                } catch (updateError) {
-                    console.error('Error al actualizar último acceso:', updateError);
-                }
-                
-                // Guardar datos del usuario en localStorage
-                localStorage.setItem('user', JSON.stringify({
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName,
-                    type: userType
-                }));
-                
-                setTimeout(() => {
-                    // Redirigir a la página de usuario
-                    window.location.href = 'usuario.html';
-                }, 1000);
-                
-            } catch (error) {
-                btn.innerHTML = '<span>Acceder al Sistema</span>';
-                btn.disabled = false;
-                
-                // Mostrar error específico
-                let errorMessage = 'Error al iniciar sesión';
-                switch (error.code) {
-                    case 'auth/user-not-found':
-                        errorMessage = 'Usuario no encontrado';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMessage = 'Contraseña incorrecta';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Email inválido';
-                        break;
-                    case 'auth/too-many-requests':
-                        errorMessage = 'Demasiados intentos fallidos. Intenta más tarde';
-                        break;
-                    default:
-                        errorMessage = error.message;
-                }
-                
-                alert(errorMessage);
-            }
-        });
-
-        // Cerrar modales al hacer clic fuera
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
     </script>
 </body>
 </html>

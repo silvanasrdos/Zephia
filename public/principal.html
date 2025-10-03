@@ -49,6 +49,10 @@
                     <i class="fas fa-chart-bar"></i>
                     <span>Reportes</span>
                 </li>
+                <li class="nav-item" onclick="showSection('support')">
+                    <i class="fas fa-life-ring"></i>
+                    <span>Soporte</span>
+                </li>
             </ul>
         </nav>
 
@@ -305,6 +309,66 @@
             <section id="reports-section" class="section" style="display: none;">
                 <div class="reports-container">
                     <p>Aquí se mostrarán los reportes del sistema.</p>
+                </div>
+            </section>
+
+            <!-- Support Section -->
+            <section id="support-section" class="section" style="display: none;">
+                <div class="support-container">
+                    <!-- Filtros y estadísticas -->
+                    <div class="support-header">
+                        <div class="support-stats">
+                            <div class="support-stat pending">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <strong id="pending-count">0</strong>
+                                    <span>Pendientes</span>
+                                </div>
+                            </div>
+                            <div class="support-stat in-progress">
+                                <i class="fas fa-spinner"></i>
+                                <div>
+                                    <strong id="in-progress-count">0</strong>
+                                    <span>En proceso</span>
+                                </div>
+                            </div>
+                            <div class="support-stat resolved">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong id="resolved-count">0</strong>
+                                    <span>Resueltas</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="support-filters">
+                            <select id="status-filter" onchange="filterSupportRequests()">
+                                <option value="all">Todos los estados</option>
+                                <option value="pending">Pendientes</option>
+                                <option value="in_progress">En proceso</option>
+                                <option value="resolved">Resueltas</option>
+                            </select>
+                            
+                            <select id="priority-filter" onchange="filterSupportRequests()">
+                                <option value="all">Todas las prioridades</option>
+                                <option value="alta">Alta</option>
+                                <option value="normal">Normal</option>
+                                <option value="baja">Baja</option>
+                            </select>
+                            
+                            <button class="action-btn" onclick="refreshSupportRequests()">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de solicitudes -->
+                    <div class="support-requests-list" id="support-requests-list">
+                        <div class="loading-state">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Cargando solicitudes...</p>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -880,6 +944,135 @@
         </div>
     </div>
 
+    <!-- Modal para Ver Detalles de Solicitud de Soporte -->
+    <div id="support-details-modal" class="modal">
+        <div class="modal-content support-details-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-life-ring"></i> Detalles de Solicitud de Soporte</h3>
+                <button class="modal-close" onclick="closeModal('support-details-modal')">&times;</button>
+            </div>
+            <div class="support-details-content">
+                <!-- Información de contacto -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <i class="fas fa-user"></i>
+                        <h4>Información del Solicitante</h4>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Nombre</span>
+                                <span class="detail-value" id="support-detail-name">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value" id="support-detail-email">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Teléfono</span>
+                                <span class="detail-value" id="support-detail-phone">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalles de la solicitud -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h4>Detalles de la Solicitud</h4>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-tag"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Tipo</span>
+                                <span class="detail-value" id="support-detail-type">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Prioridad</span>
+                                <span class="detail-value priority-badge" id="support-detail-priority">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-circle"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Estado</span>
+                                <span class="detail-value status-badge" id="support-detail-status">-</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="detail-content">
+                                <span class="detail-label">Fecha</span>
+                                <span class="detail-value" id="support-detail-date">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mensaje -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <i class="fas fa-comment-alt"></i>
+                        <h4>Mensaje</h4>
+                    </div>
+                    <div class="support-message-content">
+                        <p id="support-detail-message">-</p>
+                    </div>
+                </div>
+
+                <!-- Cambiar estado -->
+                <div class="detail-section">
+                    <div class="detail-section-header">
+                        <i class="fas fa-tasks"></i>
+                        <h4>Gestionar Solicitud</h4>
+                    </div>
+                    <div class="support-actions">
+                        <label for="support-status-select">Cambiar estado:</label>
+                        <select id="support-status-select">
+                            <option value="pending">Pendiente</option>
+                            <option value="in_progress">En proceso</option>
+                            <option value="resolved">Resuelta</option>
+                        </select>
+                        <button type="button" class="btn-primary" onclick="updateSupportStatus()">
+                            <i class="fas fa-save"></i> Actualizar Estado
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeModal('support-details-modal')">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script type="module">
         // Importar Firebase
@@ -1404,7 +1597,7 @@
             
             // Definir permisos por tipo de usuario
             const permissions = {
-                soporte: ['messaging', 'schools', 'teachers', 'users', 'dashboard', 'reports'],
+                soporte: ['messaging', 'schools', 'teachers', 'users', 'dashboard', 'reports', 'support'],
                 responsable: ['messaging', 'schools', 'teachers', 'dashboard'],
                 docente: ['messaging', 'dashboard'],
                 secretaria: ['messaging', 'dashboard']
@@ -1467,7 +1660,8 @@
                 teachers: { title: 'Gestión de Docentes', desc: 'Gestionar información de docentes' },
                 users: { title: 'Gestión de Usuarios', desc: 'Administrar usuarios del sistema' },
                 messaging: { title: 'Mensajería', desc: 'Comunicación con escuelas y docentes' },
-                reports: { title: 'Reportes', desc: 'Generar reportes del sistema' }
+                reports: { title: 'Reportes', desc: 'Generar reportes del sistema' },
+                support: { title: 'Soporte Técnico', desc: 'Gestionar solicitudes de soporte' }
             };
             
             document.getElementById('section-title').textContent = titles[sectionName].title;
@@ -2719,6 +2913,276 @@ Esta acción no se puede deshacer.`;
             // Cargar conversaciones al inicializar
             loadConversations();
         });
+
+        // ===== FUNCIONES DE GESTIÓN DE SOPORTE =====
+        
+        let supportRequests = [];
+        let currentSupportRequest = null;
+
+        // Cargar solicitudes de soporte desde Firebase
+        async function loadSupportRequests() {
+            try {
+                const supportRef = collection(window.db, 'support_requests');
+                const querySnapshot = await getDocs(supportRef);
+                
+                supportRequests = [];
+                querySnapshot.forEach((doc) => {
+                    supportRequests.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                // Ordenar por fecha (más recientes primero)
+                supportRequests.sort((a, b) => {
+                    const dateA = a.createdAt?.toDate() || new Date(a.timestamp);
+                    const dateB = b.createdAt?.toDate() || new Date(b.timestamp);
+                    return dateB - dateA;
+                });
+
+                renderSupportRequests();
+                updateSupportStats();
+            } catch (error) {
+                console.error('Error al cargar solicitudes de soporte:', error);
+                document.getElementById('support-requests-list').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error al cargar solicitudes</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Renderizar solicitudes
+        function renderSupportRequests() {
+            const container = document.getElementById('support-requests-list');
+            
+            if (supportRequests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay solicitudes de soporte</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const filteredRequests = getFilteredRequests();
+
+            if (filteredRequests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-filter"></i>
+                        <p>No hay solicitudes que coincidan con los filtros</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredRequests.map(request => {
+                const date = request.createdAt?.toDate() || new Date(request.timestamp);
+                const formattedDate = date.toLocaleString('es-ES', { 
+                    day: '2-digit', 
+                    month: 'short', 
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const statusText = {
+                    'pending': 'Pendiente',
+                    'in_progress': 'En proceso',
+                    'resolved': 'Resuelta'
+                }[request.status] || 'Pendiente';
+
+                const typeText = {
+                    'acceso': 'Problemas de acceso',
+                    'tecnico': 'Problema técnico',
+                    'cuenta': 'Solicitud de cuenta',
+                    'informacion': 'Solicitar información',
+                    'otro': 'Otro'
+                }[request.type] || request.type;
+
+                const priorityClass = {
+                    'alta': 'high',
+                    'normal': 'normal',
+                    'baja': 'low'
+                }[request.priority] || 'normal';
+
+                const statusClass = {
+                    'pending': 'pending',
+                    'in_progress': 'in-progress',
+                    'resolved': 'resolved'
+                }[request.status] || 'pending';
+
+                return `
+                    <div class="support-request-card ${statusClass}" onclick="viewSupportDetails('${request.id}')">
+                        <div class="support-request-header">
+                            <div class="support-request-info">
+                                <h4>${request.name}</h4>
+                                <p class="support-request-type"><i class="fas fa-tag"></i> ${typeText}</p>
+                            </div>
+                            <div class="support-request-badges">
+                                <span class="priority-badge priority-${priorityClass}">${request.priority}</span>
+                                <span class="status-badge status-${statusClass}">${statusText}</span>
+                            </div>
+                        </div>
+                        <div class="support-request-body">
+                            <p class="support-request-message">${request.message.substring(0, 150)}${request.message.length > 150 ? '...' : ''}</p>
+                        </div>
+                        <div class="support-request-footer">
+                            <span class="support-request-contact">
+                                <i class="fas fa-envelope"></i> ${request.email}
+                            </span>
+                            <span class="support-request-date">
+                                <i class="fas fa-calendar"></i> ${formattedDate}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Obtener solicitudes filtradas
+        function getFilteredRequests() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const priorityFilter = document.getElementById('priority-filter').value;
+
+            return supportRequests.filter(request => {
+                const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
+                const matchesPriority = priorityFilter === 'all' || request.priority === priorityFilter;
+                return matchesStatus && matchesPriority;
+            });
+        }
+
+        // Filtrar solicitudes
+        function filterSupportRequests() {
+            renderSupportRequests();
+            updateSupportStats();
+        }
+
+        // Actualizar estadísticas
+        function updateSupportStats() {
+            const pending = supportRequests.filter(r => r.status === 'pending').length;
+            const inProgress = supportRequests.filter(r => r.status === 'in_progress').length;
+            const resolved = supportRequests.filter(r => r.status === 'resolved').length;
+
+            document.getElementById('pending-count').textContent = pending;
+            document.getElementById('in-progress-count').textContent = inProgress;
+            document.getElementById('resolved-count').textContent = resolved;
+        }
+
+        // Ver detalles de solicitud
+        function viewSupportDetails(requestId) {
+            const request = supportRequests.find(r => r.id === requestId);
+            if (!request) return;
+
+            currentSupportRequest = request;
+
+            // Rellenar modal con información
+            document.getElementById('support-detail-name').textContent = request.name || '-';
+            document.getElementById('support-detail-email').textContent = request.email || '-';
+            document.getElementById('support-detail-phone').textContent = request.phone || 'No proporcionado';
+            
+            const typeText = {
+                'acceso': 'Problemas de acceso',
+                'tecnico': 'Problema técnico',
+                'cuenta': 'Solicitud de cuenta',
+                'informacion': 'Solicitar información',
+                'otro': 'Otro'
+            }[request.type] || request.type;
+            document.getElementById('support-detail-type').textContent = typeText;
+
+            const priorityElem = document.getElementById('support-detail-priority');
+            priorityElem.textContent = request.priority.toUpperCase();
+            priorityElem.className = 'detail-value priority-badge priority-' + {
+                'alta': 'high',
+                'normal': 'normal',
+                'baja': 'low'
+            }[request.priority];
+
+            const statusText = {
+                'pending': 'Pendiente',
+                'in_progress': 'En proceso',
+                'resolved': 'Resuelta'
+            }[request.status] || 'Pendiente';
+            
+            const statusElem = document.getElementById('support-detail-status');
+            statusElem.textContent = statusText;
+            statusElem.className = 'detail-value status-badge status-' + {
+                'pending': 'pending',
+                'in_progress': 'in-progress',
+                'resolved': 'resolved'
+            }[request.status];
+
+            const date = request.createdAt?.toDate() || new Date(request.timestamp);
+            const formattedDate = date.toLocaleString('es-ES', { 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('support-detail-date').textContent = formattedDate;
+            document.getElementById('support-detail-message').textContent = request.message;
+
+            // Establecer valor del select
+            document.getElementById('support-status-select').value = request.status;
+
+            // Abrir modal
+            openModal('support-details-modal');
+        }
+
+        // Actualizar estado de solicitud
+        async function updateSupportStatus() {
+            if (!currentSupportRequest) return;
+
+            const newStatus = document.getElementById('support-status-select').value;
+            const requestId = currentSupportRequest.id;
+
+            try {
+                const requestRef = doc(window.db, 'support_requests', requestId);
+                await updateDoc(requestRef, {
+                    status: newStatus,
+                    updatedAt: serverTimestamp()
+                });
+
+                // Actualizar en la lista local
+                const request = supportRequests.find(r => r.id === requestId);
+                if (request) {
+                    request.status = newStatus;
+                }
+
+                renderSupportRequests();
+                updateSupportStats();
+                closeModal('support-details-modal');
+
+                alert('Estado actualizado correctamente');
+            } catch (error) {
+                console.error('Error al actualizar estado:', error);
+                alert('Error al actualizar el estado');
+            }
+        }
+
+        // Refrescar solicitudes
+        async function refreshSupportRequests() {
+            document.getElementById('support-requests-list').innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Actualizando...</p>
+                </div>
+            `;
+            await loadSupportRequests();
+        }
+
+        // Cargar solicitudes cuando se muestre la sección
+        const originalShowSection = showSection;
+        showSection = function(sectionName) {
+            originalShowSection(sectionName);
+            if (sectionName === 'support') {
+                loadSupportRequests();
+            }
+        };
     </script>
 </body>
 </html>
