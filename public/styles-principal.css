@@ -18,6 +18,74 @@
     --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+/* Estilos de validación de formularios */
+.form-group {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    border-color: var(--danger-color);
+    background-color: #fff5f5;
+}
+
+.form-group.success input,
+.form-group.success select,
+.form-group.success textarea {
+    border-color: var(--success-color);
+}
+
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    animation: slideDown 0.3s ease;
+}
+
+.error-message i {
+    font-size: 0.8rem;
+}
+
+.success-message {
+    color: var(--success-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.input-icon {
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    color: var(--text-light);
+}
+
+.input-icon.valid {
+    color: var(--success-color);
+}
+
+.input-icon.invalid {
+    color: var(--danger-color);
+}
+
 /* Reset y base */
 * {
     margin: 0;
@@ -179,15 +247,53 @@ body {
 
 .section-header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+    gap: 15px;
 }
 
 .section-header h3 {
     font-size: 1.5rem;
     color: var(--primary-color);
     margin-right: auto;
+}
+
+/* Barra de búsqueda */
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-container i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 10px 15px 10px 45px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+.search-container input::placeholder {
+    color: var(--text-light);
 }
 
 /* Botones */
@@ -209,6 +315,26 @@ body {
     background: var(--secondary-color);
     transform: translateY(-1px);
     box-shadow: var(--shadow-hover);
+}
+
+.btn-warning {
+    background: var(--warning-color);
+    color: #333;
+}
+
+.btn-warning:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+    transform: translateY(-1px);
 }
 
 /* Tablas */
@@ -1383,6 +1509,17 @@ body {
     
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+    
+    /* Barra de búsqueda responsive */
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-container {
+        max-width: 100%;
+        margin-bottom: 10px;
     }
     
     .messaging-container {
@@ -2789,5 +2926,173 @@ body {
     
     .support-actions select {
         width: 100%;
+    }
+}
+
+/* ===== ESTILOS PARA SELECTOR MÚLTIPLE DE ESCUELAS ===== */
+
+.multi-select-container {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    overflow: hidden;
+}
+
+.multi-select-container .search-box {
+    position: relative;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    background: #f8f9fa;
+}
+
+.multi-select-container .search-box i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+}
+
+.multi-select-container .search-box input {
+    width: 100%;
+    padding: 8px 12px 8px 35px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+}
+
+.multi-select-container .search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.selected-items {
+    padding: 10px;
+    min-height: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: #f8f9fa;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.selected-items .no-selection {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.selected-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    animation: fadeIn 0.2s ease;
+}
+
+.selected-tag i {
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.selected-tag i:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.schools-list {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.school-item {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
+}
+
+.school-item:last-child {
+    border-bottom: none;
+}
+
+.school-item:hover {
+    background: #f8f9fa;
+}
+
+.school-item label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.school-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.school-item span {
+    flex: 1;
+}
+
+.no-schools {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Scrollbar para la lista de escuelas */
+.schools-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.schools-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.schools-list::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.schools-list::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* Responsive para selector múltiple */
+@media (max-width: 768px) {
+    .schools-list {
+        max-height: 200px;
+    }
+    
+    .selected-tag {
+        font-size: 0.8rem;
+        padding: 5px 10px;
     }
 }

@@ -119,6 +119,10 @@
             <!-- Schools Section -->
             <section id="schools-section" class="section" style="display: none;">
                 <div class="section-header">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="schools-search" placeholder="Buscar por institución, dirección, nivel..." onkeyup="filterSchools()">
+                    </div>
                     <button class="btn-primary" onclick="openModal('school-modal')">
                         <i class="fas fa-plus"></i> Agregar Escuela
                     </button>
@@ -148,6 +152,10 @@
             <!-- Teachers Section -->
             <section id="teachers-section" class="section" style="display: none;">
                 <div class="section-header">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="teachers-search" placeholder="Buscar por nombre, usuario, email, rol..." onkeyup="filterTeachers()">
+                    </div>
                     <button class="btn-primary" onclick="openModal('teacher-modal')">
                         <i class="fas fa-plus"></i> Agregar Docente
                     </button>
@@ -387,41 +395,45 @@
                     <div class="form-column">
                 <div class="form-group">
                             <label for="school-nombre">Nombre de la Institución *</label>
-                            <input type="text" id="school-nombre" name="nombreInstitucion" required placeholder="Ej: Escuela Primaria San Martín">
+                            <input type="text" id="school-nombre" name="nombreInstitucion" required placeholder="Ej: Escuela Primaria San Martín" maxlength="200">
+                            <small>Máximo 200 caracteres (sin caracteres especiales)</small>
                 </div>
                         
                         <fieldset class="form-fieldset">
                             <legend>Dirección *</legend>
                 <div class="form-group">
                                 <label for="school-calle">Calle y Número</label>
-                                <input type="text" id="school-calle" name="calle" required placeholder="Ej: Av. San Martín 1234">
+                                <input type="text" id="school-calle" name="calle" required placeholder="Ej: Av. San Martín 1234" maxlength="150">
+                                <small>Máximo 150 caracteres</small>
                 </div>
                             <div class="form-inline-grid">
                 <div class="form-group">
                                     <label for="school-ciudad">Ciudad</label>
-                                    <input type="text" id="school-ciudad" name="ciudad" required placeholder="Ej: Buenos Aires">
+                                    <input type="text" id="school-ciudad" name="ciudad" required placeholder="Ej: Buenos Aires" maxlength="150">
                 </div>
                 <div class="form-group">
                                     <label for="school-provincia">Provincia</label>
-                                    <input type="text" id="school-provincia" name="provincia" required placeholder="Ej: Buenos Aires">
+                                    <input type="text" id="school-provincia" name="provincia" required placeholder="Ej: Buenos Aires" maxlength="150">
                 </div>
                             </div>
                         </fieldset>
 
                         <div class="form-group">
                             <label for="school-telefono">Teléfono de Contacto *</label>
-                            <input type="tel" id="school-telefono" name="telefonoContacto" required placeholder="Ej: +54 11 1234-5678">
+                            <input type="tel" id="school-telefono" name="telefonoContacto" required placeholder="Ej: +54 11 1234-5678" maxlength="30">
+                            <small>Formato argentino (máx. 30 caracteres)</small>
                         </div>
 
                         <div class="form-group">
                             <label for="school-correo">Correo Institucional *</label>
-                            <input type="email" id="school-correo" name="correoInstitucional" required placeholder="contacto@escuela.edu.ar">
+                            <input type="email" id="school-correo" name="correoInstitucional" required placeholder="contacto@escuela.edu.ar" maxlength="100">
+                            <small>Máximo 100 caracteres</small>
                         </div>
 
                         <div class="form-group">
                             <label for="school-cue">CUE (Código Único de Establecimiento)</label>
-                            <input type="text" id="school-cue" name="cue" placeholder="Ej: 020001234">
-                            <small>Campo opcional</small>
+                            <input type="text" id="school-cue" name="cue" placeholder="Ej: 020001234" maxlength="9" pattern="[0-9]{9}">
+                            <small>9 dígitos numéricos (opcional)</small>
                         </div>
                     </div>
                     
@@ -492,28 +504,33 @@
                     <div class="form-column">
                 <div class="form-group">
                             <label for="teacher-usuario">Usuario/ID Docente</label>
-                            <input type="text" id="teacher-usuario" name="usuario" required placeholder="Ej: docente001">
+                            <input type="text" id="teacher-usuario" name="usuario" required placeholder="Ej: docente001" maxlength="50" pattern="[a-zA-Z0-9_]+">
+                            <small>Solo alfanumérico (máx. 50 caracteres)</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-nombre">Nombre</label>
-                            <input type="text" id="teacher-nombre" name="nombre" required placeholder="Nombre del docente">
+                            <input type="text" id="teacher-nombre" name="nombre" required placeholder="Nombre del docente" maxlength="50">
+                            <small>Solo letras (máx. 50 caracteres)</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-apellido">Apellido</label>
-                            <input type="text" id="teacher-apellido" name="apellido" required placeholder="Apellido del docente">
+                            <input type="text" id="teacher-apellido" name="apellido" required placeholder="Apellido del docente" maxlength="50">
+                            <small>Solo letras (máx. 50 caracteres)</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-correo">Correo Electrónico</label>
-                            <input type="email" id="teacher-correo" name="correo" required placeholder="correo@ejemplo.com">
+                            <input type="email" id="teacher-correo" name="correo" required placeholder="correo@ejemplo.com" maxlength="100">
+                            <small>Máximo 100 caracteres</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-contraseña">Contraseña</label>
-                            <input type="password" id="teacher-contraseña" name="contraseña" required placeholder="Contraseña del docente">
+                            <input type="password" id="teacher-contraseña" name="contraseña" required placeholder="Contraseña del docente" minlength="6" maxlength="50">
+                            <small>Entre 6 y 50 caracteres</small>
                 </div>
                         <div class="form-group">
                             <label for="teacher-dni">DNI</label>
-                            <input type="text" id="teacher-dni" name="dni" required placeholder="12345678" pattern="[0-9]{8,10}">
-                            <small>Ingresa 8 a 10 dígitos numéricos</small>
+                            <input type="text" id="teacher-dni" name="dni" required placeholder="12345678" pattern="[0-9]{7,10}" maxlength="10">
+                            <small>Entre 7 y 10 dígitos numéricos</small>
                         </div>
                     </div>
                     
@@ -533,7 +550,8 @@
                         </div>
                         <div class="form-group">
                             <label for="teacher-telefono">Teléfono de Contacto</label>
-                            <input type="tel" id="teacher-telefono" name="telefono" required placeholder="Ej: +54 11 1234-5678">
+                            <input type="tel" id="teacher-telefono" name="telefono" required placeholder="Ej: +54 11 1234-5678" maxlength="30">
+                            <small>Formato argentino (máx. 30 caracteres)</small>
                         </div>
                         <div class="form-group">
                             <label for="teacher-escuelas">Escuelas Asignadas</label>
@@ -576,17 +594,18 @@
                 <div class="user-form-container">
                     <div class="form-group">
                         <label for="username">Usuario</label>
-                        <input type="text" id="username" name="username" required placeholder="Ej: jperez">
-                        <small>Nombre de usuario único para acceder al sistema</small>
+                        <input type="text" id="username" name="username" required placeholder="Ej: jperez" maxlength="50" pattern="[a-zA-Z0-9_]+">
+                        <small>Nombre de usuario único (solo letras, números y guiones bajos, máx. 50 caracteres)</small>
                     </div>
                     <div class="form-group">
                         <label for="user-fullname">Nombre Completo</label>
-                        <input type="text" id="user-fullname" name="fullname" required placeholder="Ej: Juan Pérez">
+                        <input type="text" id="user-fullname" name="fullname" required placeholder="Ej: Juan Pérez" maxlength="100">
+                        <small>Máximo 100 caracteres</small>
                     </div>
                     <div class="form-group">
                         <label for="user-email">Email</label>
-                        <input type="email" id="user-email" name="email" required placeholder="correo@ejemplo.com">
-                        <small>Se usará para recuperación de contraseña</small>
+                        <input type="email" id="user-email" name="email" required placeholder="correo@ejemplo.com" maxlength="100">
+                        <small>Se usará para recuperación de contraseña (máx. 100 caracteres)</small>
                     </div>
                     <div class="form-group">
                         <label for="user-type">Tipo de Usuario</label>
@@ -600,12 +619,28 @@
                         <small>Define los permisos y accesos del usuario</small>
                     </div>
                     <div class="form-group">
+                        <label for="user-schools">Escuelas Asignadas</label>
+                        <div class="multi-select-container">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="schools-search-input" placeholder="Buscar escuela..." onkeyup="filterSchoolsList()">
+                            </div>
+                            <div class="selected-items" id="selected-schools">
+                                <span class="no-selection">Ninguna escuela seleccionada</span>
+                            </div>
+                            <div class="schools-list" id="schools-list">
+                                <!-- Las escuelas se cargarán aquí -->
+                            </div>
+                        </div>
+                        <small>Selecciona una o varias escuelas para este usuario</small>
+                    </div>
+                    <div class="form-group">
                         <label for="user-password">Contraseña</label>
-                        <input type="password" id="user-password" name="password" required placeholder="Mínimo 6 caracteres" minlength="6">
+                        <input type="password" id="user-password" name="password" required placeholder="Mínimo 6 caracteres" minlength="6" maxlength="50">
                         <div class="password-strength">
                             <div class="password-strength-bar"></div>
                         </div>
-                        <small>Debe tener al menos 6 caracteres</small>
+                        <small>Entre 6 y 50 caracteres</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1073,6 +1108,9 @@
         </div>
     </div>
 
+    <!-- Script de validaciones -->
+    <script src="validaciones.js"></script>
+
     <!-- Firebase SDK -->
     <script type="module">
         // Importar Firebase
@@ -1188,7 +1226,7 @@
         }
 
         // Cargar administradores en el select del formulario de escuelas
-        async function loadAdminsInSelect(isEditing = false) {
+        window.loadAdminsInSelect = async function(isEditing = false) {
             const select = document.getElementById('school-admin');
             const formGroup = select?.closest('.form-group');
             if (!select || !window.users) return;
@@ -1299,7 +1337,7 @@
                 
                 console.log('Usuarios cargados:', window.users.length);
                 loadUsersTable();
-                loadAdminsInSelect(); // Cargar administradores en el select de escuelas
+                window.loadAdminsInSelect(); // Cargar administradores en el select de escuelas
             } catch (error) {
                 console.error('Error al cargar usuarios:', error);
             }
@@ -1362,8 +1400,8 @@
                         <button class="btn-icon" onclick="editSchool('${school.id}')" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn-icon" onclick="deleteSchool('${school.id}')" title="Eliminar">
-                            <i class="fas fa-trash"></i>
+                        <button class="btn-icon ${(school.estado === 'activa' || school.status === 'Activa') ? 'btn-warning' : 'btn-success'}" onclick="toggleSchoolStatus('${school.id}')" title="${(school.estado === 'activa' || school.status === 'Activa') ? 'Deshabilitar' : 'Habilitar'}">
+                            <i class="fas ${(school.estado === 'activa' || school.status === 'Activa') ? 'fa-ban' : 'fa-check-circle'}"></i>
                         </button>
                     </td>
                 `;
@@ -1415,12 +1453,306 @@
                         <button class="btn-icon" onclick="editTeacher('${teacher.id}')" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn-icon" onclick="deleteTeacher('${teacher.id}')" title="Eliminar">
-                            <i class="fas fa-trash"></i>
+                        <button class="btn-icon ${teacher.estado === 'activo' ? 'btn-warning' : 'btn-success'}" onclick="toggleTeacherStatus('${teacher.id}')" title="${teacher.estado === 'activo' ? 'Deshabilitar' : 'Habilitar'}">
+                            <i class="fas ${teacher.estado === 'activo' ? 'fa-ban' : 'fa-check-circle'}"></i>
                         </button>
                     </td>
                 `;
                 tbody.appendChild(row);
+            });
+        }
+
+        // ===== FUNCIONES DE BÚSQUEDA Y FILTRADO =====
+
+        // Filtrar escuelas
+        window.filterSchools = function() {
+            const searchTerm = document.getElementById('schools-search').value.toLowerCase().trim();
+            const tbody = document.getElementById('schools-table-body');
+            
+            if (!tbody || !window.schools) return;
+            
+            // Si no hay término de búsqueda, mostrar todas
+            if (!searchTerm) {
+                loadSchoolsTable();
+                return;
+            }
+            
+            // Filtrar escuelas que coincidan con el término de búsqueda
+            const filteredSchools = window.schools.filter(school => {
+                const nombre = (school.nombreInstitucion || school.name || '').toLowerCase();
+                const direccion = school.direccion 
+                    ? `${school.direccion.calle || ''} ${school.direccion.ciudad || ''} ${school.direccion.provincia || ''}`.toLowerCase()
+                    : (school.address || '').toLowerCase();
+                const nivel = school.nivelEducativo ? school.nivelEducativo.join(' ').toLowerCase() : '';
+                const turnos = school.turnos ? school.turnos.join(' ').toLowerCase() : '';
+                const telefono = (school.telefonoContacto || school.phone || '').toLowerCase();
+                const email = (school.correoInstitucional || school.email || '').toLowerCase();
+                const estado = (school.estado || school.status || '').toLowerCase();
+                
+                return nombre.includes(searchTerm) ||
+                       direccion.includes(searchTerm) ||
+                       nivel.includes(searchTerm) ||
+                       turnos.includes(searchTerm) ||
+                       telefono.includes(searchTerm) ||
+                       email.includes(searchTerm) ||
+                       estado.includes(searchTerm);
+            });
+            
+            // Renderizar solo las escuelas filtradas
+            tbody.innerHTML = '';
+            
+            if (filteredSchools.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
+                            No se encontraron resultados para "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredSchools.forEach(school => {
+                const direccionCompleta = school.direccion 
+                    ? `${school.direccion.calle || ''}, ${school.direccion.ciudad || ''}, ${school.direccion.provincia || ''}`.replace(/^,\s*|,\s*$/g, '').replace(/,\s*,/g, ',')
+                    : school.address || 'N/A';
+                
+                const nivelesText = school.nivelEducativo && school.nivelEducativo.length > 0 
+                    ? school.nivelEducativo.join(', ') 
+                    : 'N/A';
+                
+                const turnosText = school.turnos && school.turnos.length > 0 
+                    ? school.turnos.join(', ') 
+                    : 'N/A';
+                
+                const direccionShort = direccionCompleta.length > 30 
+                    ? direccionCompleta.substring(0, 30) + '...' 
+                    : direccionCompleta;
+                
+                const nivelesShort = nivelesText.length > 20 
+                    ? nivelesText.substring(0, 20) + '...' 
+                    : nivelesText;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${school.nombreInstitucion || school.name || 'N/A'}</td>
+                    <td title="${direccionCompleta}">${direccionShort}</td>
+                    <td title="${nivelesText}">${nivelesShort}</td>
+                    <td>${turnosText}</td>
+                    <td>${school.telefonoContacto || school.phone || 'N/A'}</td>
+                    <td>${school.correoInstitucional || school.email || 'N/A'}</td>
+                    <td>${school.cantidadDocentes || school.teachers || 0}</td>
+                    <td><span class="status-badge ${(school.estado === 'activa' || school.status === 'Activa') ? 'active' : 'inactive'}">${school.estado || school.status || 'activa'}</span></td>
+                    <td class="actions">
+                        <button class="btn-icon" onclick="viewSchool('${school.id}')" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editSchool('${school.id}')" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon ${(school.estado === 'activa' || school.status === 'Activa') ? 'btn-warning' : 'btn-success'}" onclick="toggleSchoolStatus('${school.id}')" title="${(school.estado === 'activa' || school.status === 'Activa') ? 'Deshabilitar' : 'Habilitar'}">
+                            <i class="fas ${(school.estado === 'activa' || school.status === 'Activa') ? 'fa-ban' : 'fa-check-circle'}"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filtrar docentes
+        window.filterTeachers = function() {
+            const searchTerm = document.getElementById('teachers-search').value.toLowerCase().trim();
+            const tbody = document.getElementById('teachers-table-body');
+            
+            if (!tbody || !window.teachers) return;
+            
+            // Si no hay término de búsqueda, mostrar todos
+            if (!searchTerm) {
+                loadTeachersTable();
+                return;
+            }
+            
+            // Filtrar docentes que coincidan con el término de búsqueda
+            const filteredTeachers = window.teachers.filter(teacher => {
+                const usuario = (teacher.usuario || '').toLowerCase();
+                const nombre = `${teacher.nombre || ''} ${teacher.apellido || ''}`.toLowerCase();
+                const rol = (teacher.rol || '').toLowerCase();
+                const escuelas = teacher.escuelasAsignadas 
+                    ? getSchoolNames(teacher.escuelasAsignadas).join(' ').toLowerCase()
+                    : '';
+                const materias = teacher.materias ? teacher.materias.join(' ').toLowerCase() : '';
+                const email = (teacher.correo || teacher.email || '').toLowerCase();
+                const telefono = (teacher.telefono || '').toLowerCase();
+                const estado = (teacher.estado || '').toLowerCase();
+                
+                return usuario.includes(searchTerm) ||
+                       nombre.includes(searchTerm) ||
+                       rol.includes(searchTerm) ||
+                       escuelas.includes(searchTerm) ||
+                       materias.includes(searchTerm) ||
+                       email.includes(searchTerm) ||
+                       telefono.includes(searchTerm) ||
+                       estado.includes(searchTerm);
+            });
+            
+            // Renderizar solo los docentes filtrados
+            tbody.innerHTML = '';
+            
+            if (filteredTeachers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
+                            No se encontraron resultados para "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredTeachers.forEach(teacher => {
+                const escuelasText = teacher.escuelasAsignadas && teacher.escuelasAsignadas.length > 0 
+                    ? getSchoolNames(teacher.escuelasAsignadas).join(', ') 
+                    : 'Sin asignar';
+                
+                const materiasText = teacher.materias && teacher.materias.length > 0 
+                    ? teacher.materias.join(', ') 
+                    : 'Sin materias';
+                
+                const materiasShort = materiasText.length > 30 
+                    ? materiasText.substring(0, 30) + '...' 
+                    : materiasText;
+                
+                const escuelasShort = escuelasText.length > 25 
+                    ? escuelasText.substring(0, 25) + '...' 
+                    : escuelasText;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.usuario || 'N/A'}</td>
+                    <td>${teacher.nombre || ''} ${teacher.apellido || ''}</td>
+                    <td><span class="role-badge ${teacher.rol || ''}">${teacher.rol || 'Sin rol'}</span></td>
+                    <td title="${escuelasText}">${escuelasShort}</td>
+                    <td title="${materiasText}">${materiasShort}</td>
+                    <td>${teacher.correo || teacher.email || ''}</td>
+                    <td>${teacher.telefono || 'N/A'}</td>
+                    <td><span class="status-badge ${teacher.estado === 'activo' ? 'active' : 'inactive'}">${teacher.estado || 'activo'}</span></td>
+                    <td class="actions">
+                        <button class="btn-icon" onclick="viewTeacher('${teacher.id}')" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editTeacher('${teacher.id}')" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon ${teacher.estado === 'activo' ? 'btn-warning' : 'btn-success'}" onclick="toggleTeacherStatus('${teacher.id}')" title="${teacher.estado === 'activo' ? 'Deshabilitar' : 'Habilitar'}">
+                            <i class="fas ${teacher.estado === 'activo' ? 'fa-ban' : 'fa-check-circle'}"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ===== FUNCIONES PARA SELECCIÓN MÚLTIPLE DE ESCUELAS =====
+        
+        window.selectedSchoolIds = [];
+
+        // Cargar lista de escuelas para selección
+        window.loadSchoolsListForUser = function() {
+            const schoolsList = document.getElementById('schools-list');
+            if (!schoolsList) return;
+            
+            // Esperar a que las escuelas estén cargadas
+            if (!window.schools || window.schools.length === 0) {
+                schoolsList.innerHTML = '<div class="no-schools">Cargando escuelas...</div>';
+                // Reintentar después de un breve delay
+                setTimeout(() => {
+                    if (window.schools && window.schools.length > 0) {
+                        window.loadSchoolsListForUser();
+                    } else {
+                        schoolsList.innerHTML = '<div class="no-schools">No hay escuelas disponibles</div>';
+                    }
+                }, 500);
+                return;
+            }
+            
+            schoolsList.innerHTML = '';
+            
+            window.schools.forEach(school => {
+                const isChecked = window.selectedSchoolIds.includes(school.id);
+                const div = document.createElement('div');
+                div.className = 'school-item';
+                div.innerHTML = `
+                    <label>
+                        <input type="checkbox" 
+                               value="${school.id}" 
+                               ${isChecked ? 'checked' : ''}
+                               onchange="toggleSchoolSelection('${school.id}')">
+                        <span>${school.nombreInstitucion || school.name || 'Sin nombre'}</span>
+                    </label>
+                `;
+                schoolsList.appendChild(div);
+            });
+            
+            // Actualizar visualización de escuelas seleccionadas
+            updateSelectedSchoolsDisplay();
+        };
+
+        // Filtrar lista de escuelas
+        window.filterSchoolsList = function() {
+            const searchTerm = document.getElementById('schools-search-input').value.toLowerCase().trim();
+            const schoolItems = document.querySelectorAll('.school-item');
+            
+            schoolItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        };
+
+        // Toggle selección de escuela
+        window.toggleSchoolSelection = function(schoolId) {
+            const index = window.selectedSchoolIds.indexOf(schoolId);
+            
+            if (index > -1) {
+                // Deseleccionar
+                window.selectedSchoolIds.splice(index, 1);
+            } else {
+                // Seleccionar
+                window.selectedSchoolIds.push(schoolId);
+            }
+            
+            updateSelectedSchoolsDisplay();
+        };
+
+        // Actualizar visualización de escuelas seleccionadas
+        function updateSelectedSchoolsDisplay() {
+            const container = document.getElementById('selected-schools');
+            if (!container) return;
+            
+            if (window.selectedSchoolIds.length === 0) {
+                container.innerHTML = '<span class="no-selection">Ninguna escuela seleccionada</span>';
+                return;
+            }
+            
+            const selectedSchools = window.schools.filter(school => 
+                window.selectedSchoolIds.includes(school.id)
+            );
+            
+            container.innerHTML = selectedSchools.map(school => `
+                <span class="selected-tag">
+                    ${school.nombreInstitucion || school.name || 'Sin nombre'}
+                    <i class="fas fa-times" onclick="toggleSchoolSelection('${school.id}')"></i>
+                </span>
+            `).join('');
+            
+            // También actualizar los checkboxes
+            document.querySelectorAll('.school-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = window.selectedSchoolIds.includes(checkbox.value);
             });
         }
 
@@ -1490,8 +1822,8 @@
                                 <i class="fas fa-key"></i>
                             </button>` : ''
                         }
-                        <button class="btn-icon" onclick="deleteUser('${user.id}')" title="Eliminar">
-                            <i class="fas fa-trash"></i>
+                        <button class="btn-icon ${user.status === 'Activo' ? 'btn-warning' : 'btn-success'}" onclick="toggleUserStatus('${user.id}')" title="${user.status === 'Activo' ? 'Deshabilitar' : 'Habilitar'}">
+                            <i class="fas ${user.status === 'Activo' ? 'fa-ban' : 'fa-check-circle'}"></i>
                         </button>
                     </td>
                 `;
@@ -1570,7 +1902,7 @@
         window.users = [];
         
         // Función auxiliar para obtener nombres de escuelas por IDs
-        function getSchoolNames(schoolIds) {
+        window.getSchoolNames = function(schoolIds) {
             if (!window.schools || !schoolIds) return [];
             
             return schoolIds.map(id => {
@@ -1580,7 +1912,7 @@
         }
 
         // Función auxiliar para obtener nombre del administrador por ID
-        function getAdminName(adminId) {
+        window.getAdminName = function(adminId) {
             if (!adminId || !window.users) return 'No asignado';
             
             const admin = window.users.find(u => u.id === adminId);
@@ -1687,6 +2019,9 @@
                 // Si es el modal de usuarios y no estamos editando, resetear el formulario
                 if (modalId === 'user-modal' && !window.editingUserId) {
                     resetUserForm();
+                    window.loadSchoolsListForUser();
+                } else if (modalId === 'user-modal' && window.editingUserId) {
+                    window.loadSchoolsListForUser();
                 }
             }
         }
@@ -1726,9 +2061,20 @@
         
         // Event listeners cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar validaciones en tiempo real
+        inicializarValidacionEscuelas();
+        inicializarValidacionDocentes();
+        inicializarValidacionUsuarios();
+        
         // Event listener para el formulario de escuelas
         document.getElementById('school-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Validar formulario antes de enviar
+            if (!validarFormularioEscuela()) {
+                alert('Por favor, corrija los errores en el formulario antes de continuar');
+                return;
+            }
             
             // Verificar que Firebase esté inicializado
             try {
@@ -1746,17 +2092,6 @@
                 // Obtener turnos seleccionados
                 const turnosSelect = document.getElementById('school-turnos');
                 const turnos = Array.from(turnosSelect.selectedOptions).map(option => option.value);
-                
-                // Validar campos requeridos
-                if (nivelesEducativos.length === 0) {
-                    alert('Debe seleccionar al menos un nivel educativo');
-                    return;
-                }
-                
-                if (turnos.length === 0) {
-                    alert('Debe seleccionar al menos un turno');
-                    return;
-                }
 
                 const schoolData = {
                     nombreInstitucion: document.getElementById('school-nombre').value,
@@ -1816,6 +2151,12 @@
         document.getElementById('teacher-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Validar formulario antes de enviar
+            if (!validarFormularioDocente()) {
+                alert('Por favor, corrija los errores en el formulario antes de continuar');
+                return;
+            }
+            
             // Verificar que Firebase esté inicializado
             try {
                 window.ensureFirebaseInitialized();
@@ -1833,12 +2174,8 @@
                 const materiasText = document.getElementById('teacher-materias').value;
                 const materias = materiasText ? materiasText.split(',').map(m => m.trim()).filter(m => m) : [];
                 
-                // Validar campos requeridos
+                // Obtener datos del formulario
                 const usuario = document.getElementById('teacher-usuario').value;
-                if (!usuario) {
-                    alert('El campo Usuario/ID Docente es requerido');
-                    return;
-                }
                 
                 const teacherData = {
                     usuario: usuario,
@@ -1975,6 +2312,12 @@
             document.getElementById('user-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
+                // Validar formulario antes de enviar
+                if (!validarFormularioUsuario()) {
+                    alert('Por favor, corrija los errores en el formulario antes de continuar');
+                    return;
+                }
+                
                 // Verificar que Firebase esté inicializado
                 try {
                     window.ensureFirebaseInitialized();
@@ -1984,18 +2327,15 @@
                 }
                 
                 try {
-                    // Validar campos requeridos
+                    // Obtener datos del formulario
                     const username = document.getElementById('username').value;
-                    if (!username) {
-                        alert('El campo Usuario es requerido');
-                        return;
-                    }
 
                     const userData = {
                         username: username,
                         fullName: document.getElementById('user-fullname').value,
                         email: document.getElementById('user-email').value,
                         type: document.getElementById('user-type').value,
+                        schools: window.selectedSchoolIds || [],
                         status: 'Activo'
                     };
 
@@ -2009,6 +2349,7 @@
                             fullName: userData.fullName,
                             email: userData.email,
                             type: userData.type,
+                            schools: window.selectedSchoolIds || [],
                             status: userData.status,
                         updatedAt: window.serverTimestamp()
                     };
@@ -2130,7 +2471,7 @@
 
         // Funciones de edición y eliminación (placeholder)
         // Ver detalles de una escuela
-        function viewSchool(id) {
+        window.viewSchool = function(id) {
             const school = window.schools.find(s => s.id === id);
             if (!school) {
                 alert('Escuela no encontrada');
@@ -2189,54 +2530,85 @@
         }
         
         // Función para editar desde el modal de detalles de escuela
-        function editSchoolFromDetails() {
+        window.editSchoolFromDetails = function() {
             if (window.currentSchoolDetailsId) {
                 closeModal('school-details-modal');
                 editSchool(window.currentSchoolDetailsId);
             }
         }
 
-        async function editSchool(id) {
-            const school = window.schools.find(s => s.id === id);
-            if (!school) {
-                alert('Escuela no encontrada');
-                return;
-            }
-            
-            console.log('Editando escuela:', school);
-            
-            // Guardar el ID para la actualización ANTES de cualquier otra cosa
-            window.editingSchoolId = id;
-            console.log('ID de edición guardado:', window.editingSchoolId);
-            
-            // Cargar administradores ANTES de abrir el modal
-            await loadAdminsInSelect(true);
-            console.log('Administradores cargados');
-            
-            // Ahora abrir el modal (no se reseteará porque editingSchoolId ya está definido)
-            openModal('school-modal');
-            console.log('Modal abierto');
-            
-            // Cambiar el título del modal y el botón
-            document.querySelector('#school-modal .modal-header h3').textContent = 'Editar Escuela';
-            document.querySelector('#school-modal .btn-primary').textContent = 'Actualizar Escuela';
+        window.editSchool = async function(id) {
+            try {
+                const school = window.schools.find(s => s.id === id);
+                if (!school) {
+                    alert('Escuela no encontrada');
+                    return;
+                }
+                
+                console.log('🔧 Editando escuela:', school);
+                
+                // Guardar el ID para la actualización ANTES de cualquier otra cosa
+                window.editingSchoolId = id;
+                console.log('✅ ID de edición guardado:', window.editingSchoolId);
+                
+                // Cargar administradores ANTES de abrir el modal
+                await window.loadAdminsInSelect(true);
+                console.log('✅ Administradores cargados');
+                
+                // Ahora abrir el modal (no se reseteará porque editingSchoolId ya está definido)
+                openModal('school-modal');
+                console.log('✅ Modal abierto');
+                
+                // Cambiar el título del modal y el botón
+                document.querySelector('#school-modal .modal-header h3').textContent = 'Editar Escuela';
+                document.querySelector('#school-modal .btn-primary').textContent = 'Actualizar Escuela';
+                
+                // Asegurar que todos los campos están habilitados
+                const formInputs = document.querySelectorAll('#school-form input, #school-form select');
+                formInputs.forEach(input => {
+                    input.disabled = false;
+                    input.readOnly = false;
+                });
+                console.log('✅ Todos los campos habilitados');
             
             // Usar setTimeout para asegurar que el DOM está listo
             setTimeout(() => {
-                console.log('Llenando campos del formulario...');
+                console.log('📝 Llenando campos del formulario...');
+                
+                // Limpiar cualquier error previo del formulario
+                limpiarErroresFormulario('school-form');
                 
                 // Rellenar el formulario con los datos existentes
-                document.getElementById('school-nombre').value = school.nombreInstitucion || school.name || '';
-                document.getElementById('school-calle').value = school.direccion?.calle || '';
-                document.getElementById('school-ciudad').value = school.direccion?.ciudad || '';
-                document.getElementById('school-provincia').value = school.direccion?.provincia || '';
-                document.getElementById('school-telefono').value = school.telefonoContacto || school.phone || '';
-                document.getElementById('school-correo').value = school.correoInstitucional || school.email || '';
-                document.getElementById('school-cue').value = school.cue || '';
-                document.getElementById('school-docentes').value = school.cantidadDocentes || school.teachers || 0;
-                document.getElementById('school-estado').value = school.estado || school.status?.toLowerCase() || 'activa';
+                const nombreInput = document.getElementById('school-nombre');
+                const calleInput = document.getElementById('school-calle');
+                const ciudadInput = document.getElementById('school-ciudad');
+                const provinciaInput = document.getElementById('school-provincia');
+                const telefonoInput = document.getElementById('school-telefono');
+                const correoInput = document.getElementById('school-correo');
+                const cueInput = document.getElementById('school-cue');
+                const docentesInput = document.getElementById('school-docentes');
+                const estadoInput = document.getElementById('school-estado');
                 
-                console.log('Campos básicos llenados');
+                // Log para diagnóstico
+                console.log('🔍 Estado de campos antes de llenar:');
+                console.log('- nombreInput:', nombreInput ? 'Encontrado' : 'NO ENCONTRADO');
+                console.log('- nombreInput.disabled:', nombreInput?.disabled);
+                console.log('- nombreInput.readOnly:', nombreInput?.readOnly);
+                
+                if (nombreInput) {
+                    nombreInput.value = school.nombreInstitucion || school.name || '';
+                    console.log('✅ Nombre llenado:', nombreInput.value);
+                }
+                if (calleInput) calleInput.value = school.direccion?.calle || '';
+                if (ciudadInput) ciudadInput.value = school.direccion?.ciudad || '';
+                if (provinciaInput) provinciaInput.value = school.direccion?.provincia || '';
+                if (telefonoInput) telefonoInput.value = school.telefonoContacto || school.phone || '';
+                if (correoInput) correoInput.value = school.correoInstitucional || school.email || '';
+                if (cueInput) cueInput.value = school.cue || '';
+                if (docentesInput) docentesInput.value = school.cantidadDocentes || school.teachers || 0;
+                if (estadoInput) estadoInput.value = school.estado || school.status?.toLowerCase() || 'activa';
+                
+                console.log('✅ Campos básicos llenados');
                 
                 // Seleccionar el administrador responsable
                 const adminSelect = document.getElementById('school-admin');
@@ -2264,45 +2636,62 @@
                 }
                 
                 console.log('✅ Formulario completamente llenado');
-            }, 50);
+            }, 150);
+            } catch (error) {
+                console.error('❌ Error al editar escuela:', error);
+                alert('Error al cargar los datos de la escuela: ' + error.message);
+            }
         }
 
         // Función para resetear el formulario de escuelas
         function resetSchoolForm() {
             document.getElementById('school-form').reset();
+            limpiarErroresFormulario('school-form');
             document.querySelector('#school-modal .modal-header h3').textContent = 'Agregar Escuela';
             document.querySelector('#school-modal .btn-primary').textContent = 'Guardar Escuela';
             delete window.editingSchoolId;
             
+            // Asegurar que todos los campos están habilitados
+            const formInputs = document.querySelectorAll('#school-form input, #school-form select');
+            formInputs.forEach(input => {
+                input.disabled = false;
+                input.readOnly = false;
+            });
+            
             // Recargar el select de administradores para aplicar la lógica de auto-asignación
-            loadAdminsInSelect();
+            window.loadAdminsInSelect();
         }
         
-        async function deleteSchool(id) {
+        window.toggleSchoolStatus = async function(id) {
             const school = window.schools.find(s => s.id === id);
             if (!school) {
                 alert('Escuela no encontrada');
                 return;
             }
             
-            const confirmMessage = `¿Estás seguro de que quieres eliminar la escuela "${school.nombreInstitucion || school.name}"?
+            const currentStatus = school.estado || 'activa';
+            const newStatus = currentStatus === 'activa' ? 'inactiva' : 'activa';
+            const action = newStatus === 'inactiva' ? 'deshabilitar' : 'habilitar';
             
-Esta acción no se puede deshacer.`;
+            const confirmMessage = `¿Estás seguro de que quieres ${action} la escuela "${school.nombreInstitucion || school.name}"?`;
             
             if (confirm(confirmMessage)) {
                 try {
-                    // Eliminar de Firestore
+                    // Actualizar estado en Firestore
                     const schoolRef = window.doc(window.db, 'schools', id);
-                    await window.deleteDoc(schoolRef);
+                    await window.updateDoc(schoolRef, {
+                        estado: newStatus,
+                        updatedAt: window.serverTimestamp()
+                    });
                     
                     // Recargar datos
                     await window.loadSchools();
                     window.updateStats();
                     
-                    alert('Escuela eliminada correctamente');
+                    alert(`Escuela ${action === 'deshabilitar' ? 'deshabilitada' : 'habilitada'} correctamente`);
                 } catch (error) {
-                    console.error('Error al eliminar escuela:', error);
-                    alert('Error al eliminar escuela: ' + error.message);
+                    console.error(`Error al ${action} escuela:`, error);
+                    alert(`Error al ${action} la escuela: ` + error.message);
                 }
             }
         }
@@ -2426,6 +2815,7 @@ Esta acción no se puede deshacer.`;
         // Función para resetear el formulario de docentes
         function resetTeacherForm() {
             document.getElementById('teacher-form').reset();
+            limpiarErroresFormulario('teacher-form');
             document.getElementById('teacher-usuario').disabled = false;
             document.querySelector('#teacher-modal .modal-header h3').textContent = 'Agregar Docente';
             document.querySelector('#teacher-modal .btn-primary').textContent = 'Guardar Docente';
@@ -2433,31 +2823,36 @@ Esta acción no se puede deshacer.`;
         }
         
         
-        async function deleteTeacher(id) {
+        async function toggleTeacherStatus(id) {
             const teacher = window.teachers.find(t => t.id === id);
             if (!teacher) {
                 alert('Docente no encontrado');
                 return;
             }
             
-            const confirmMessage = `¿Estás seguro de que quieres eliminar al docente ${teacher.nombre} ${teacher.apellido} (${teacher.usuario})?
+            const currentStatus = teacher.estado || 'activo';
+            const newStatus = currentStatus === 'activo' ? 'inactivo' : 'activo';
+            const action = newStatus === 'inactivo' ? 'deshabilitar' : 'habilitar';
             
-Esta acción no se puede deshacer.`;
+            const confirmMessage = `¿Estás seguro de que quieres ${action} al docente ${teacher.nombre} ${teacher.apellido} (${teacher.usuario})?`;
             
             if (confirm(confirmMessage)) {
                 try {
-                    // Eliminar de Firestore
-                    const teacherRef = doc(window.db, 'teachers', id);
-                    await deleteDoc(teacherRef);
+                    // Actualizar estado en Firestore
+                    const teacherRef = window.doc(window.db, 'teachers', id);
+                    await window.updateDoc(teacherRef, {
+                        estado: newStatus,
+                        updatedAt: window.serverTimestamp()
+                    });
                     
                     // Recargar datos
                     await window.loadTeachers();
                     window.updateStats();
                     
-                    alert('Docente eliminado correctamente');
+                    alert(`Docente ${action === 'deshabilitar' ? 'deshabilitado' : 'habilitado'} correctamente`);
                 } catch (error) {
-                    console.error('Error al eliminar docente:', error);
-                    alert('Error al eliminar docente: ' + error.message);
+                    console.error(`Error al ${action} docente:`, error);
+                    alert(`Error al ${action} docente: ` + error.message);
                 }
             }
         }
@@ -2584,6 +2979,9 @@ Esta acción no se puede deshacer.`;
             // No mostrar la contraseña por seguridad
             document.getElementById('user-password').value = '';
             
+            // Cargar escuelas seleccionadas del usuario
+            window.selectedSchoolIds = user.schools || [];
+            
             // Cambiar el título del modal y el botón
             document.querySelector('#user-modal .modal-header h3').textContent = 'Editar Usuario';
             document.querySelector('#user-modal .btn-primary').textContent = 'Actualizar Usuario';
@@ -2608,6 +3006,7 @@ Esta acción no se puede deshacer.`;
         // Función para resetear el formulario de usuarios
         function resetUserForm() {
             document.getElementById('user-form').reset();
+            limpiarErroresFormulario('user-form');
             document.getElementById('username').disabled = false;
             document.getElementById('user-password').required = true;
             
@@ -2622,6 +3021,11 @@ Esta acción no se puede deshacer.`;
                 passwordStrength.classList.remove('weak', 'medium', 'strong');
             }
             
+            // Limpiar escuelas seleccionadas
+            window.selectedSchoolIds = [];
+            document.getElementById('schools-search-input').value = '';
+            updateSelectedSchoolsDisplay();
+            
             document.querySelector('#user-modal .modal-header h3').textContent = 'Agregar Usuario';
             document.querySelector('#user-modal .btn-primary').textContent = 'Guardar Usuario';
             delete window.editingUserId;
@@ -2635,31 +3039,36 @@ Esta acción no se puede deshacer.`;
             }
         }
         
-        async function deleteUser(id) {
+        async function toggleUserStatus(id) {
             const user = window.users.find(u => u.id === id);
             if (!user) {
                 alert('Usuario no encontrado');
                 return;
             }
             
-            const confirmMessage = `¿Estás seguro de que quieres eliminar al usuario "${user.fullName || user.name || user.username}"?
+            const currentStatus = user.status || 'Activo';
+            const newStatus = currentStatus === 'Activo' ? 'Inactivo' : 'Activo';
+            const action = newStatus === 'Inactivo' ? 'deshabilitar' : 'habilitar';
             
-Esta acción no se puede deshacer.`;
+            const confirmMessage = `¿Estás seguro de que quieres ${action} al usuario "${user.fullName || user.name || user.username}"?`;
             
             if (confirm(confirmMessage)) {
                 try {
-                    // Eliminar de Firestore
+                    // Actualizar estado en Firestore
                     const userRef = window.doc(window.db, 'users', id);
-                    await window.deleteDoc(userRef);
+                    await window.updateDoc(userRef, {
+                        status: newStatus,
+                        updatedAt: window.serverTimestamp()
+                    });
                     
                     // Recargar datos
                     await window.loadUsers();
                     window.updateStats();
                     
-                    alert('Usuario eliminado correctamente');
+                    alert(`Usuario ${action === 'deshabilitar' ? 'deshabilitado' : 'habilitado'} correctamente`);
                 } catch (error) {
-                    console.error('Error al eliminar usuario:', error);
-                    alert('Error al eliminar usuario: ' + error.message);
+                    console.error(`Error al ${action} usuario:`, error);
+                    alert(`Error al ${action} usuario: ` + error.message);
                 }
             }
         }

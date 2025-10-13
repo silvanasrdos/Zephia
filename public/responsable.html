@@ -103,6 +103,10 @@
             <!-- Schools Section -->
             <section id="schools-section" class="section" style="display: none;">
                 <div class="section-header">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="schools-search" placeholder="Buscar por nombre, dirección, nivel..." onkeyup="filterSchools()">
+                    </div>
                     <button class="btn-primary" onclick="openModal('school-modal')">
                         <i class="fas fa-plus"></i> Agregar Escuela
                     </button>
@@ -130,6 +134,10 @@
             <!-- Teachers Section -->
             <section id="teachers-section" class="section" style="display: none;">
                 <div class="section-header">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="teachers-search" placeholder="Buscar por nombre, usuario, correo, rol..." onkeyup="filterTeachers()">
+                    </div>
                     <button class="btn-primary" onclick="openModal('teacher-modal')">
                         <i class="fas fa-plus"></i> Agregar Docente
                     </button>
@@ -347,41 +355,45 @@
                     <div class="form-column">
                 <div class="form-group">
                             <label for="school-nombre">Nombre de la Institución</label>
-                            <input type="text" id="school-nombre" name="nombreInstitucion" required placeholder="Ej: Escuela Primaria San Martín">
+                            <input type="text" id="school-nombre" name="nombreInstitucion" required placeholder="Ej: Escuela Primaria San Martín" maxlength="200">
+                            <small>Máximo 200 caracteres (sin caracteres especiales)</small>
                 </div>
                         
                         <fieldset class="form-fieldset">
                             <legend>Dirección</legend>
                 <div class="form-group">
                                 <label for="school-calle">Calle y Número</label>
-                                <input type="text" id="school-calle" name="calle" required placeholder="Ej: Av. San Martín 1234">
+                                <input type="text" id="school-calle" name="calle" required placeholder="Ej: Av. San Martín 1234" maxlength="150">
+                                <small>Máximo 150 caracteres</small>
                 </div>
                             <div class="form-inline-grid">
                 <div class="form-group">
                                     <label for="school-ciudad">Ciudad</label>
-                                    <input type="text" id="school-ciudad" name="ciudad" required placeholder="Ej: Buenos Aires">
+                                    <input type="text" id="school-ciudad" name="ciudad" required placeholder="Ej: Buenos Aires" maxlength="150">
                 </div>
                 <div class="form-group">
                                     <label for="school-provincia">Provincia</label>
-                                    <input type="text" id="school-provincia" name="provincia" required placeholder="Ej: Buenos Aires">
+                                    <input type="text" id="school-provincia" name="provincia" required placeholder="Ej: Buenos Aires" maxlength="150">
                 </div>
                             </div>
                         </fieldset>
 
                         <div class="form-group">
                             <label for="school-telefono">Teléfono de Contacto</label>
-                            <input type="tel" id="school-telefono" name="telefonoContacto" required placeholder="Ej: +54 11 1234-5678">
+                            <input type="tel" id="school-telefono" name="telefonoContacto" required placeholder="Ej: +54 11 1234-5678" maxlength="30">
+                            <small>Formato argentino (máx. 30 caracteres)</small>
                         </div>
 
                         <div class="form-group">
                             <label for="school-correo">Correo Institucional</label>
-                            <input type="email" id="school-correo" name="correoInstitucional" required placeholder="contacto@escuela.edu.ar">
+                            <input type="email" id="school-correo" name="correoInstitucional" required placeholder="contacto@escuela.edu.ar" maxlength="100">
+                            <small>Máximo 100 caracteres</small>
                         </div>
 
                         <div class="form-group">
                             <label for="school-cue">CUE (Código Único de Establecimiento)</label>
-                            <input type="text" id="school-cue" name="cue" placeholder="Ej: 020001234">
-                            <small>Campo opcional</small>
+                            <input type="text" id="school-cue" name="cue" placeholder="Ej: 020001234" maxlength="9" pattern="[0-9]{9}">
+                            <small>9 dígitos numéricos (opcional)</small>
                         </div>
                     </div>
                     
@@ -444,28 +456,33 @@
                     <div class="form-column">
                 <div class="form-group">
                             <label for="teacher-usuario">Usuario/ID Docente</label>
-                            <input type="text" id="teacher-usuario" name="usuario" required placeholder="Ej: docente001">
+                            <input type="text" id="teacher-usuario" name="usuario" required placeholder="Ej: docente001" maxlength="50" pattern="[a-zA-Z0-9_]+">
+                            <small>Solo alfanumérico (máx. 50 caracteres)</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-nombre">Nombre</label>
-                            <input type="text" id="teacher-nombre" name="nombre" required placeholder="Nombre del docente">
+                            <input type="text" id="teacher-nombre" name="nombre" required placeholder="Nombre del docente" maxlength="50">
+                            <small>Solo letras (máx. 50 caracteres)</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-apellido">Apellido</label>
-                            <input type="text" id="teacher-apellido" name="apellido" required placeholder="Apellido del docente">
+                            <input type="text" id="teacher-apellido" name="apellido" required placeholder="Apellido del docente" maxlength="50">
+                            <small>Solo letras (máx. 50 caracteres)</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-correo">Correo Electrónico</label>
-                            <input type="email" id="teacher-correo" name="correo" required placeholder="correo@ejemplo.com">
+                            <input type="email" id="teacher-correo" name="correo" required placeholder="correo@ejemplo.com" maxlength="100">
+                            <small>Máximo 100 caracteres</small>
                 </div>
                 <div class="form-group">
                             <label for="teacher-contraseña">Contraseña</label>
-                            <input type="password" id="teacher-contraseña" name="contraseña" required placeholder="Contraseña del docente">
+                            <input type="password" id="teacher-contraseña" name="contraseña" required placeholder="Contraseña del docente" minlength="6" maxlength="50">
+                            <small>Entre 6 y 50 caracteres</small>
                 </div>
                         <div class="form-group">
                             <label for="teacher-dni">DNI</label>
-                            <input type="text" id="teacher-dni" name="dni" required placeholder="12345678" pattern="[0-9]{8,10}">
-                            <small>Ingresa 8 a 10 dígitos numéricos</small>
+                            <input type="text" id="teacher-dni" name="dni" required placeholder="12345678" pattern="[0-9]{7,10}" maxlength="10">
+                            <small>Entre 7 y 10 dígitos numéricos</small>
                         </div>
                     </div>
                     
@@ -485,7 +502,8 @@
                         </div>
                         <div class="form-group">
                             <label for="teacher-telefono">Teléfono de Contacto</label>
-                            <input type="tel" id="teacher-telefono" name="telefono" required placeholder="Ej: +54 11 1234-5678">
+                            <input type="tel" id="teacher-telefono" name="telefono" required placeholder="Ej: +54 11 1234-5678" maxlength="30">
+                            <small>Formato argentino (máx. 30 caracteres)</small>
                         </div>
                         <div class="form-group">
                             <label for="teacher-materias">Materias/Asignaturas</label>
@@ -510,6 +528,9 @@
         </div>
     </div>
 
+    <!-- Script de validaciones -->
+    <script src="validaciones.js"></script>
+    
     <!-- Scripts -->
     <script>
         // Variables globales
@@ -590,6 +611,7 @@
             const form = document.getElementById('school-form');
             if (form) {
                 form.reset();
+                limpiarErroresFormulario('school-form');
             }
         }
         
@@ -598,6 +620,7 @@
             const form = document.getElementById('teacher-form');
             if (form) {
                 form.reset();
+                limpiarErroresFormulario('teacher-form');
             }
         }
 
@@ -728,6 +751,145 @@
             });
         }
 
+        // ===== FUNCIONES DE BÚSQUEDA Y FILTRADO =====
+
+        // Filtrar escuelas
+        window.filterSchools = function() {
+            const searchTerm = document.getElementById('schools-search').value.toLowerCase().trim();
+            const tbody = document.getElementById('schools-table-body');
+            
+            if (!tbody || !window.schools) return;
+            
+            // Si no hay término de búsqueda, mostrar todas
+            if (!searchTerm) {
+                renderSchoolsTable();
+                return;
+            }
+            
+            // Filtrar escuelas que coincidan con el término de búsqueda
+            const filteredSchools = window.schools.filter(school => {
+                const nombre = (school.nombreInstitucion || school.name || '').toLowerCase();
+                const direccion = (school.direccion || '').toLowerCase();
+                const telefono = (school.telefonoContacto || school.phone || '').toLowerCase();
+                const nivel = Array.isArray(school.nivelEducativo) 
+                    ? school.nivelEducativo.join(' ').toLowerCase() 
+                    : (school.nivelEducativo || '').toLowerCase();
+                const estado = (school.estado || '').toLowerCase();
+                
+                return nombre.includes(searchTerm) ||
+                       direccion.includes(searchTerm) ||
+                       telefono.includes(searchTerm) ||
+                       nivel.includes(searchTerm) ||
+                       estado.includes(searchTerm);
+            });
+            
+            // Renderizar solo las escuelas filtradas
+            tbody.innerHTML = '';
+            
+            if (filteredSchools.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
+                            No se encontraron resultados para "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredSchools.forEach(school => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${school.nombreInstitucion}</td>
+                    <td>${school.direccion}</td>
+                    <td>${school.telefonoContacto}</td>
+                    <td>${Array.isArray(school.nivelEducativo) ? school.nivelEducativo.join(', ') : school.nivelEducativo}</td>
+                    <td>${school.cantidadDocentes || 0}</td>
+                    <td><span class="status-badge ${school.estado === 'activa' ? 'active' : 'inactive'}">${school.estado}</span></td>
+                    <td>
+                        <button class="btn-icon" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        };
+
+        // Filtrar docentes
+        window.filterTeachers = function() {
+            const searchTerm = document.getElementById('teachers-search').value.toLowerCase().trim();
+            const tbody = document.getElementById('teachers-table-body');
+            
+            if (!tbody || !window.teachers) return;
+            
+            // Si no hay término de búsqueda, mostrar todos
+            if (!searchTerm) {
+                renderTeachersTable();
+                return;
+            }
+            
+            // Filtrar docentes que coincidan con el término de búsqueda
+            const filteredTeachers = window.teachers.filter(teacher => {
+                const usuario = (teacher.usuario || '').toLowerCase();
+                const nombre = `${teacher.nombre || ''} ${teacher.apellido || ''}`.toLowerCase();
+                const rol = (teacher.rol || '').toLowerCase();
+                const correo = (teacher.correo || teacher.email || '').toLowerCase();
+                const telefono = (teacher.telefono || '').toLowerCase();
+                const estado = (teacher.estado || '').toLowerCase();
+                
+                return usuario.includes(searchTerm) ||
+                       nombre.includes(searchTerm) ||
+                       rol.includes(searchTerm) ||
+                       correo.includes(searchTerm) ||
+                       telefono.includes(searchTerm) ||
+                       estado.includes(searchTerm);
+            });
+            
+            // Renderizar solo los docentes filtrados
+            tbody.innerHTML = '';
+            
+            if (filteredTeachers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 10px; display: block;"></i>
+                            No se encontraron resultados para "${searchTerm}"
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredTeachers.forEach(teacher => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.usuario || 'N/A'}</td>
+                    <td>${teacher.nombre || ''} ${teacher.apellido || ''}</td>
+                    <td><span class="role-badge ${teacher.rol || ''}">${teacher.rol || 'Sin rol'}</span></td>
+                    <td>${teacher.correo || teacher.email || ''}</td>
+                    <td>${teacher.telefono || 'N/A'}</td>
+                    <td><span class="status-badge ${teacher.estado === 'activo' ? 'active' : 'inactive'}">${teacher.estado || 'activo'}</span></td>
+                    <td>
+                        <button class="btn-icon" title="Ver detalles">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        };
+
         // Función para generar reportes
         function generateReport() {
             console.log('Generando reporte...');
@@ -744,6 +906,46 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
             showSection('messaging');
+            
+            // Inicializar validaciones en tiempo real
+            inicializarValidacionEscuelas();
+            inicializarValidacionDocentes();
+            
+            // Event listener para el formulario de escuelas
+            const schoolForm = document.getElementById('school-form');
+            if (schoolForm) {
+                schoolForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Validar formulario antes de enviar
+                    if (!validarFormularioEscuela()) {
+                        alert('Por favor, corrija los errores en el formulario antes de continuar');
+                        return;
+                    }
+                    
+                    alert('Escuela guardada correctamente (integración con Firebase pendiente)');
+                    closeModal('school-modal');
+                    resetSchoolForm();
+                });
+            }
+            
+            // Event listener para el formulario de docentes
+            const teacherForm = document.getElementById('teacher-form');
+            if (teacherForm) {
+                teacherForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Validar formulario antes de enviar
+                    if (!validarFormularioDocente()) {
+                        alert('Por favor, corrija los errores en el formulario antes de continuar');
+                        return;
+                    }
+                    
+                    alert('Docente guardado correctamente (integración con Firebase pendiente)');
+                    closeModal('teacher-modal');
+                    resetTeacherForm();
+                });
+            }
         });
     </script>
 </body>
