@@ -213,6 +213,10 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        
+        // Hacer disponible globalmente
+        window.auth = auth;
+        window.db = db;
 
         // ===== FUNCIONES GLOBALES (Definir ANTES del auth listener) =====
         
@@ -220,14 +224,14 @@
         window.logout = async function() {
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
                 try {
-                    if (auth.currentUser) {
-                        await db.collection('users').doc(auth.currentUser.uid).update({
+                    if (window.auth.currentUser) {
+                        await window.db.collection('users').doc(window.auth.currentUser.uid).update({
                             online: false,
                             lastSeen: firebase.firestore.FieldValue.serverTimestamp()
                         });
                     }
                     
-                    await auth.signOut();
+                    await window.auth.signOut();
                     window.location.href = 'login.html';
                 } catch (error) {
                     console.error('Error al cerrar sesión:', error);

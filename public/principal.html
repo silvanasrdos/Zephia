@@ -2038,13 +2038,23 @@
         }
         
         // Función de logout
-        function logout() {
+        async function logout() {
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                auth.signOut().then(() => {
+                try {
+                    // Actualizar estado offline
+                    if (window.auth.currentUser) {
+                        await window.db.collection('users').doc(window.auth.currentUser.uid).update({
+                            online: false,
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                    
+                    await window.auth.signOut();
                     window.location.href = 'login.html';
-                }).catch((error) => {
+                } catch (error) {
                     console.error('Error al cerrar sesión:', error);
-                });
+                    window.location.href = 'login.html';
+                }
             }
         }
         
