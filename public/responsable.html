@@ -15,6 +15,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Sistema de Mensajería -->
+    <script src="messaging-service-compat.js"></script>
+    <script src="messaging-ui-compat.js"></script>
 </head>
 <body>
     <div class="admin-container">
@@ -599,6 +603,14 @@
                 
                 // Cargar datos
                 loadData();
+                
+                // Inicializar sistema de mensajería
+                try {
+                    await window.messagingUI.initialize(window.currentUser, db);
+                    console.log('💬 Sistema de mensajería listo');
+                } catch (error) {
+                    console.error('Error al inicializar mensajería:', error);
+                }
             } catch (error) {
                 console.error('Error al obtener perfil:', error);
                 window.location.href = 'login.html';
@@ -607,14 +619,27 @@
 
         // Funciones de mensajería
         window.openNewMessageModal = function() {
-            console.log('Abriendo modal de nuevo mensaje');
-            alert('Sistema de mensajería: Función en desarrollo');
+            if (window.messagingUI) {
+                window.messagingUI.openNewMessageModal();
+            } else {
+                console.warn('Sistema de mensajería no inicializado');
+            }
         };
         
         window.updatePriorityColor = function(selectElement) {
-            const value = selectElement.value;
-            selectElement.classList.remove('normal', 'baja', 'media', 'alta');
-            selectElement.classList.add(value);
+            if (window.messagingUI) {
+                window.messagingUI.updatePriorityColor(selectElement);
+            } else {
+                const value = selectElement.value;
+                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+                selectElement.classList.add(value);
+            }
+        };
+        
+        window.selectConversation = function(conversationId) {
+            if (window.messagingUI) {
+                window.messagingUI.selectConversation(conversationId);
+            }
         };
 
         // Función para mostrar secciones
