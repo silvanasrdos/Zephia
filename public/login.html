@@ -293,8 +293,16 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
             try {
+                // Configuración para evitar usar Firebase Dynamic Links (descontinuado)
+                const actionCodeSettings = {
+                    // URL de redirección después de restablecer la contraseña
+                    url: 'https://zephia-51ad4.firebaseapp.com/login.html',
+                    // Esto indica que el enlace se abrirá en la misma pestaña/dispositivo
+                    handleCodeInApp: false
+                };
+
                 // Enviar email de recuperación con Firebase
-                await auth.sendPasswordResetEmail(email);
+                await auth.sendPasswordResetEmail(email, actionCodeSettings);
                 
                 // Éxito
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> ¡Enviado!';
