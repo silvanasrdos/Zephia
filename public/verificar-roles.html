@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar y Actualizar Roles - Zephia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #8b4513;
+            text-align: center;
+        }
+        
+        .info {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: #6d3410;
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .user-table th,
+        .user-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .user-table th {
+            background-color: #8b4513;
+            color: white;
+        }
+        
+        .user-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .role-admin {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .role-responsable {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .role-secretaria {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .role-docente {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .role-none {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-fix {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .btn-fix:hover {
+            background-color: #2980b9;
+        }
+        
+        #log {
+            background-color: #2d2d2d;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        #log div {
+            margin: 5px 0;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificar Roles de Usuarios</h1>
+        
+        <div class="info">
+            <strong>ℹ️ Esta herramienta te ayuda a:</strong><br>
+            • Ver todos los usuarios en Firestore<br>
+            • Verificar qué roles tienen asignados<br>
+            • Corregir roles faltantes o incorrectos
+        </div>
+        
+        <div id="auth-section">
+            <h3>Autenticación Requerida</h3>
+            <p>Ingresa tus credenciales de admin o responsable para ver usuarios:</p>
+            <div style="margin: 15px 0;">
+                <input type="email" id="admin-email" placeholder="Email" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <input type="password" id="admin-password" placeholder="Contraseña" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <button id="login-btn" onclick="doLogin()">
+                🔐 Iniciar Sesión
+            </button>
+        </div>
+        
+        <button id="check-btn" onclick="checkUsers()" style="display: none;">
+            🔍 Ver Usuarios y Roles
+        </button>
+        
+        <div id="users-container" style="display: none;">
+            <h2>Usuarios en Firestore:</h2>
+            <table class="user-table" id="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol Actual</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                </tbody>
+            </table>
+        </div>
+        
+        <div id="success-message" class="success">
+            <strong>✅ Éxito:</strong><br>
+            <span id="success-text"></span>
+        </div>
+        
+        <div id="log"></div>
+    </div>
+
+    <script type="module">
+        import { db, auth } from './firebase-config.js';
+        import { 
+            collection, 
+            getDocs, 
+            doc, 
+            updateDoc 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { 
+            signInWithEmailAndPassword,
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        const logDiv = document.getElementById('log');
+        
+        function log(message, type = 'info') {
+            logDiv.style.display = 'block';
+            const div = document.createElement('div');
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '📝';
+            div.textContent = `${icon} ${message}`;
+            logDiv.appendChild(div);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        // Verificar si el usuario ya está autenticado
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                log('✅ Usuario autenticado: ' + user.email, 'success');
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('check-btn').style.display = 'block';
+            } else {
+                log('⚠️ No autenticado. Por favor inicia sesión.', 'warning');
+            }
+        });
+
+        // Función para hacer login
+        window.doLogin = async function() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const loginBtn = document.getElementById('login-btn');
+            
+            if (!email || !password) {
+                alert('Por favor ingresa email y contraseña');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = '⏳ Iniciando sesión...';
+            logDiv.innerHTML = '';
+            
+            try {
+                log('Autenticando...');
+                await signInWithEmailAndPassword(auth, email, password);
+                log('✅ Autenticación exitosa', 'success');
+                
+                document.getElementById('auth-section').style.display = 'none';
+                document.getElementById('check-btn').style.display = 'block';
+                
+                // Auto-cargar usuarios
+                setTimeout(() => checkUsers(), 500);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                log(`❌ Error al autenticar: ${error.message}`, 'error');
+                alert(`Error: ${error.message}\n\nPrueba con:\njuan.perez@escuela.com / 123456`);
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🔐 Iniciar Sesión';
+            }
+        };
+
+        window.checkUsers = async function() {
+            const btn = document.getElementById('check-btn');
+            const usersContainer = document.getElementById('users-container');
+            const tbody = document.getElementById('users-tbody');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Cargando usuarios...';
+            logDiv.innerHTML = '';
+            logDiv.style.display = 'block';
+            
+            try {
+                log('Consultando usuarios en Firestore...');
+                
+                const usersRef = collection(db, 'users');
+                const snapshot = await getDocs(usersRef);
+                
+                if (snapshot.empty) {
+                    log('⚠️ No se encontraron usuarios en Firestore', 'warning');
+                    alert('No hay usuarios en Firestore. Primero crea usuarios con crear-usuarios-auth.html');
+                    btn.disabled = false;
+                    btn.textContent = '🔍 Ver Usuarios y Roles';
+                    return;
+                }
+                
+                log(`Encontrados ${snapshot.size} usuario(s)`, 'success');
+                
+                tbody.innerHTML = '';
+                
+                snapshot.forEach(docSnap => {
+                    const user = docSnap.data();
+                    const userId = docSnap.id;
+                    
+                    const role = user.role || user.type || 'SIN ROL';
+                    const roleClass = getRoleClass(role);
+                    
+                    log(`Usuario: ${user.name || user.email} - Rol: ${role}`);
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="font-size: 0.85rem; font-family: monospace;">${userId.substring(0, 10)}...</td>
+                        <td>${user.name || 'Sin nombre'}</td>
+                        <td>${user.email || 'Sin email'}</td>
+                        <td>
+                            <span class="role-badge ${roleClass}">${role.toUpperCase()}</span>
+                        </td>
+                        <td>
+                            ${role === 'SIN ROL' || !role ? 
+                                `<button class="btn-fix" onclick="fixUserRole('${userId}', '${user.email}')">
+                                    Asignar Rol
+                                </button>` : 
+                                `<button class="btn-fix" onclick="changeUserRole('${userId}', '${role}')">
+                                    Cambiar
+                                </button>`
+                            }
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                usersContainer.style.display = 'block';
+                btn.textContent = '✅ Usuarios Cargados';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                log(`Error al cargar usuarios: ${error.message}`, 'error');
+                alert(`Error: ${error.message}`);
+                btn.disabled = false;
+                btn.textContent = '🔍 Ver Usuarios y Roles';
+            }
+        };
+
+        function getRoleClass(role) {
+            const roleMap = {
+                'admin': 'role-admin',
+                'responsable': 'role-responsable',
+                'secretaria': 'role-secretaria',
+                'docente': 'role-docente'
+            };
+            return roleMap[role?.toLowerCase()] || 'role-none';
+        }
+
+        window.fixUserRole = async function(userId, email) {
+            const role = prompt(
+                `Asignar rol al usuario: ${email}\n\n` +
+                `Opciones disponibles:\n` +
+                `- admin\n` +
+                `- responsable\n` +
+                `- secretaria\n` +
+                `- docente\n\n` +
+                `Ingresa el rol:`,
+                'docente'
+            );
+            
+            if (!role) return;
+            
+            const validRoles = ['admin', 'responsable', 'secretaria', 'docente'];
+            if (!validRoles.includes(role.toLowerCase())) {
+                alert('Rol inválido. Debe ser: admin, responsable, secretaria o docente');
+                return;
+            }
+            
+            await updateUserRole(userId, role.toLowerCase());
+        };
+
+        window.changeUserRole = async function(userId, currentRole) {
+            const role = prompt(
+                `Cambiar rol del usuario\n\n` +
+                `Rol actual: ${currentRole}\n\n` +
+                `Opciones disponibles:\n` +
+                `- admin\n` +
+                `- responsable\n` +
+                `- secretaria\n` +
+                `- docente\n\n` +
+                `Nuevo rol:`,
+                currentRole
+            );
+            
+            if (!role || role === currentRole) return;
+            
+            const validRoles = ['admin', 'responsable', 'secretaria', 'docente'];
+            if (!validRoles.includes(role.toLowerCase())) {
+                alert('Rol inválido. Debe ser: admin, responsable, secretaria o docente');
+                return;
+            }
+            
+            await updateUserRole(userId, role.toLowerCase());
+        };
+
+        async function updateUserRole(userId, role) {
+            try {
+                log(`Actualizando rol de usuario ${userId} a "${role}"...`);
+                
+                const userRef = doc(db, 'users', userId);
+                await updateDoc(userRef, {
+                    role: role,
+                    type: role
+                });
+                
+                log(`✅ Rol actualizado correctamente`, 'success');
+                
+                const successDiv = document.getElementById('success-message');
+                const successText = document.getElementById('success-text');
+                successText.textContent = `Rol actualizado a "${role}". Recarga la página para ver los cambios.`;
+                successDiv.style.display = 'block';
+                
+                // Recargar la tabla
+                setTimeout(() => {
+                    checkUsers();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                log(`❌ Error al actualizar: ${error.message}`, 'error');
+                alert(`Error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
+
