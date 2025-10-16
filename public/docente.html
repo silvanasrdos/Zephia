@@ -8,6 +8,7 @@
     <title>Zephia - Panel de Docente</title>
     <link rel="icon" type="image/png" href="img/logo.png">
     <link rel="stylesheet" href="styles-docente.css?v=2">
+    <link rel="stylesheet" href="styles-messaging.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -185,22 +186,19 @@
         </main>
     </div>
 
-    <!-- Scripts -->
-    <script>
-        // Variables globales
-        window.conversations = [];
-        window.messages = [];
-        window.currentUser = {
-            id: 'current_docente',
-            name: 'Docente Juan Pérez',
-            type: 'docente',
-            role: 'docente',
-            schoolId: 'school1',
-            schoolName: 'Escuela San Martín'
-        };
-
+    <!-- Scripts de Integración con Mensajería -->
+    <script type="module">
+        // Importar integración de autenticación y mensajería
+        import { setupAuthListener, logoutWithMessaging } from './auth-messaging-integration.js';
+        
+        // Configurar listener de autenticación
+        // Esto detecta automáticamente el usuario logueado e inicializa la mensajería
+        setupAuthListener();
+        
+        // ===== FUNCIONES GLOBALES =====
+        
         // Función para mostrar secciones
-        function showSection(sectionName) {
+        window.showSection = function(sectionName) {
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => section.style.display = 'none');
             
@@ -226,138 +224,50 @@
                 document.getElementById('section-title').textContent = titleInfo.title;
                 document.getElementById('section-description').textContent = titleInfo.desc;
             }
-        }
-
-        // Función para abrir modales
-        function openModal(modalId) {
-            console.log('Abriendo modal:', modalId);
-            // Aquí se implementaría la lógica para abrir modales
-        }
-
-        // Función para abrir modal de nuevo mensaje
-        function openNewMessageModal() {
-            console.log('Abriendo modal de nuevo mensaje');
-        }
-
-        // Función para actualizar el color del selector de prioridad
-        function updatePriorityColor(selectElement) {
-            const value = selectElement.value;
-            // Remover todas las clases de prioridad
-            selectElement.classList.remove('normal', 'baja', 'media', 'alta');
-            // Agregar la clase correspondiente al valor seleccionado
-            selectElement.classList.add(value);
-        }
-
-        // Función para cargar datos
-        async function loadData() {
-            console.log('Cargando datos del docente...');
-            
-            // Datos de ejemplo para conversaciones del docente
-            window.conversations = [
-                {
-                    id: 'conv1',
-                    name: 'Responsable María García',
-                    lastMessage: 'Hola Juan, ¿cómo va el proyecto?',
-                    timestamp: '11:30 AM',
-                    unread: 1,
-                    avatar: 'https://via.placeholder.com/40',
-                    role: 'responsable'
-                },
-                {
-                    id: 'conv2',
-                    name: 'Secretaria Ana López',
-                    lastMessage: 'Recordatorio: Reunión de coordinación mañana',
-                    timestamp: '10:15 AM',
-                    unread: 0,
-                    avatar: 'https://via.placeholder.com/40',
-                    role: 'secretaria'
-                },
-                {
-                    id: 'conv3',
-                    name: 'Docente María Rodríguez',
-                    lastMessage: '¿Podrías revisar el material que te envié?',
-                    timestamp: '09:45 AM',
-                    unread: 2,
-                    avatar: 'https://via.placeholder.com/40',
-                    role: 'docente'
-                },
-                {
-                    id: 'conv4',
-                    name: 'Administración',
-                    lastMessage: 'Nuevas políticas de evaluación implementadas',
-                    timestamp: 'Ayer',
-                    unread: 0,
-                    avatar: 'https://via.placeholder.com/40',
-                    role: 'admin'
-                },
-                {
-                    id: 'conv5',
-                    name: 'Docente Carlos Silva',
-                    lastMessage: 'Gracias por la colaboración en el proyecto',
-                    timestamp: 'Ayer',
-                    unread: 1,
-                    avatar: 'https://via.placeholder.com/40',
-                    role: 'docente'
-                }
-            ];
-            
-            renderConversations();
-        }
-
-        // Función para renderizar conversaciones (actualmente no se usa porque están hardcodeadas en HTML)
-        function renderConversations() {
-            // Las conversaciones están hardcodeadas en el HTML
-            // Esta función se puede usar para cargar conversaciones dinámicamente desde Firebase
-            console.log('Conversaciones cargadas desde HTML');
-        }
-
-        // Función para obtener el icono según el rol
-        function getRoleIcon(role) {
-            const icons = {
-                'responsable': 'fa-user-tie',
-                'secretaria': 'fa-user-secret',
-                'docente': 'fa-chalkboard-teacher',
-                'admin': 'fa-cog'
-            };
-            return icons[role] || 'fa-user';
-        }
-
-        // Función para obtener la etiqueta del rol
-        function getRoleLabel(role) {
-            const labels = {
-                'responsable': 'Responsable',
-                'secretaria': 'Secretaría',
-                'docente': 'Docente',
-                'admin': 'Administración'
-            };
-            return labels[role] || 'Usuario';
-        }
-
-        // Función para seleccionar conversación
-        function selectConversation(conversationId) {
-            // Remover clase active de todas las conversaciones
-            const conversations = document.querySelectorAll('.conversation-item');
-            conversations.forEach(conv => conv.classList.remove('active'));
-            
-            // Agregar clase active a la conversación seleccionada
-            event.currentTarget.classList.add('active');
-            
-            // Aquí puedes cargar los mensajes de la conversación seleccionada
-            console.log('Conversación seleccionada:', conversationId);
-        }
-
+        };
+        
         // Función para cerrar sesión
-        function logout() {
+        window.logout = async function() {
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                window.location.href = 'login.html';
+                try {
+                    await logoutWithMessaging();
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    // Fallback: redirigir al login
+                    window.location.href = 'login.html';
+                }
             }
-        }
-
-        // Inicializar aplicación
+        };
+        
+        // Funciones de mensajería (estas se conectan con messagingUI)
+        window.openNewMessageModal = function() {
+            if (window.messagingUI) {
+                window.messagingUI.openNewMessageModal();
+            } else {
+                console.warn('Sistema de mensajería no inicializado aún');
+            }
+        };
+        
+        window.updatePriorityColor = function(selectElement) {
+            if (window.messagingUI) {
+                window.messagingUI.updatePriorityColor(selectElement);
+            } else {
+                // Fallback manual
+                const value = selectElement.value;
+                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+                selectElement.classList.add(value);
+            }
+        };
+        
+        // Inicializar la vista por defecto
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
+            console.log('🎓 Panel de Docente cargado');
             showSection('messaging');
         });
+        
+        // Log de información
+        console.log('📝 Sistema de mensajería con autenticación integrado');
+        console.log('🔐 El usuario será detectado automáticamente al cargar la página');
     </script>
 </body>
 </html>

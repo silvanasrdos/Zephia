@@ -8,6 +8,7 @@
     <title>Zephia - Panel Responsable a Cargo</title>
     <link rel="icon" type="image/png" href="img/logo.png">
     <link rel="stylesheet" href="styles-r.css?v=2">
+    <link rel="stylesheet" href="styles-messaging.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -531,7 +532,41 @@
     <!-- Script de validaciones -->
     <script src="validaciones.js"></script>
     
-    <!-- Scripts -->
+    <!-- Scripts de Integración con Mensajería -->
+    <script type="module">
+        // Importar integración de autenticación y mensajería
+        import { setupAuthListener, logoutWithMessaging } from './auth-messaging-integration.js';
+        
+        // Configurar listener de autenticación
+        // Esto detecta automáticamente el usuario logueado e inicializa la mensajería
+        setupAuthListener();
+        
+        // Funciones de mensajería globales
+        window.openNewMessageModal = function() {
+            if (window.messagingUI) {
+                window.messagingUI.openNewMessageModal();
+            } else {
+                console.warn('Sistema de mensajería no inicializado aún');
+            }
+        };
+        
+        window.updatePriorityColor = function(selectElement) {
+            if (window.messagingUI) {
+                window.messagingUI.updatePriorityColor(selectElement);
+            } else {
+                // Fallback manual
+                const value = selectElement.value;
+                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+                selectElement.classList.add(value);
+            }
+        };
+        
+        // Log de información
+        console.log('📝 Sistema de mensajería con autenticación integrado');
+        console.log('🔐 El usuario será detectado automáticamente al cargar la página');
+    </script>
+    
+    <!-- Scripts originales del panel -->
     <script>
         // Variables globales
         window.schools = [];
@@ -539,7 +574,7 @@
         window.currentUser = {
             id: 'current_responsable',
             name: 'Responsable María García',
-            type: 'responsable',
+            role: 'responsable',
             schoolId: 'school1',
             schoolName: 'Escuela San Martín'
         };
@@ -732,7 +767,7 @@
                     <td>${teacher.usuario || 'N/A'}</td>
                     <td>${teacher.nombre || ''} ${teacher.apellido || ''}</td>
                     <td><span class="role-badge ${teacher.rol || ''}">${teacher.rol || 'Sin rol'}</span></td>
-                    <td>${teacher.correo || teacher.email || ''}</td>
+                    <td>${teacher.correo || ''}</td>
                     <td>${teacher.telefono || 'N/A'}</td>
                     <td><span class="status-badge ${teacher.estado === 'activo' ? 'active' : 'inactive'}">${teacher.estado || 'activo'}</span></td>
                     <td>
@@ -871,7 +906,7 @@
                     <td>${teacher.usuario || 'N/A'}</td>
                     <td>${teacher.nombre || ''} ${teacher.apellido || ''}</td>
                     <td><span class="role-badge ${teacher.rol || ''}">${teacher.rol || 'Sin rol'}</span></td>
-                    <td>${teacher.correo || teacher.email || ''}</td>
+                    <td>${teacher.correo || ''}</td>
                     <td>${teacher.telefono || 'N/A'}</td>
                     <td><span class="status-badge ${teacher.estado === 'activo' ? 'active' : 'inactive'}">${teacher.estado || 'activo'}</span></td>
                     <td>
@@ -896,9 +931,17 @@
         }
 
         // Función para cerrar sesión
-        function logout() {
+        async function logout() {
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                window.location.href = 'login.html';
+                try {
+                    // Importar función de logout con mensajería
+                    const { logoutWithMessaging } = await import('./auth-messaging-integration.js');
+                    await logoutWithMessaging();
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    // Fallback: redirigir al login
+                    window.location.href = 'login.html';
+                }
             }
         }
 

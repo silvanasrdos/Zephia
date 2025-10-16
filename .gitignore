@@ -1,202 +1,152 @@
-# ===== INFORMACIÓN SENSIBLE - NO SUBIR A GIT =====
+# ========================================
+# CONFIGURACIÓN SENSIBLE - NO COMMITEAR
+# ========================================
 
-# Configuración de Firebase (CONTENIDO SENSIBLE)
+# Firebase config con API keys
+public/firebase-config.js
 firebase-config.js
-firebase-services.js
-*.firebase.json
-firebase-debug.log
-firebase-debug.*.log
 
-# Variables de entorno y configuración
+# Variables de entorno
 .env
 .env.local
-.env.development
 .env.production
-.env.staging
-config.json
-secrets.json
 
-# Claves API y credenciales
-api-keys.json
-credentials.json
-service-account.json
-google-services.json
-GoogleService-Info.plist
+# ========================================
+# DEPENDENCIAS
+# ========================================
 
-# ===== ARCHIVOS DEL SISTEMA =====
-
-# Dependencias de Node.js
+# Node modules
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
-yarn.lock
 
-# Archivos de cache
-.cache/
-.parcel-cache/
-.next/
-.nuxt/
-.vuepress/dist
+# ========================================
+# ARCHIVOS DE FIREBASE
+# ========================================
 
-# ===== ARCHIVOS DE DESARROLLO =====
+# Firebase cache y debug
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
 
-# Logs del sistema
-*.log
-logs/
-*.log.*
+# Emulators
+*-debug.log
+ui-debug.log
 
-# Archivos temporales
-*.tmp
-*.temp
-.tmp/
-.temp/
+# Firebase hosting cache
+.firebase/
 
-# Cache del navegador
-.cache/
-.browser-cache/
+# ========================================
+# ARCHIVOS TEMPORALES Y DE SISTEMA
+# ========================================
 
-# Archivos de IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# ===== ARCHIVOS DE PRODUCCIÓN =====
-
-# Builds compilados
-dist/
-build/
-out/
-.next/
-.nuxt/
-
-# Archivos de deployment
-deploy/
-deployment/
-docker-compose.override.yml
-
-# ===== DATOS DE USUARIOS Y BASE DE DATOS =====
-
-# Backups de base de datos
-*.sql
-*.db
-*.sqlite
-*.sqlite3
-backups/
-database-backups/
-
-# Dumps de datos
-dumps/
-data-exports/
-user-data/
-
-# Logs de autenticación
-auth-logs/
-security-logs/
-
-# ===== ARCHIVOS ESPECÍFICOS DEL PROYECTO =====
-
-# Imágenes y documentos de usuarios
-uploads/
-user-uploads/
-documents/
-images/
-photos/
-
-# Archivos de configuración del servidor
-server-config/
-nginx.conf
-apache.conf
-
-# Certificados SSL
-*.pem
-*.key
-*.crt
-*.p12
-*.pfx
-ssl/
-certificates/
-
-# ===== ARCHIVOS DE SEGURIDAD =====
-
-# Tokens y claves
-*.token
-*.key
-*.secret
-secrets/
-keys/
-
-# Archivos de configuración con credenciales
-database-config.json
-email-config.json
-sms-config.json
-
-# ===== ARCHIVOS DE SISTEMA OPERATIVO =====
-
-# Windows
+# Archivos de Windows
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
 
-# macOS
+# Archivos de Word temporales
+~$*.doc*
+~$*.xls*
+~$*.ppt*
+*.tmp
+
+# MacOS
 .DS_Store
 .AppleDouble
 .LSOverride
-Icon?
-._*
-.Spotlight-V100
-.Trashes
 
 # Linux
 *~
-.fuse_hidden*
-.directory
-.Trash-*
 .nfs*
 
-# ===== ARCHIVOS DE TESTING =====
+# ========================================
+# IDE Y EDITORES
+# ========================================
 
-# Coverage reports
-coverage/
-.nyc_output/
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
-# Test results
-test-results/
-junit.xml
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
 
-# ===== ARCHIVOS DE DOCUMENTACIÓN SENSIBLE =====
+# ========================================
+# ARCHIVOS DE DESARROLLO Y PRUEBA
+# ========================================
 
-# Documentación con información sensible
-docs/secrets/
-docs/credentials/
-admin-docs/
-internal-docs/
+# Scripts de limpieza y testing
+limpiar-archivos.*
+test-*.html
+demo-*.html
 
-# ===== ARCHIVOS DE MONITOREO =====
+# Archivos de migración temporal
+*-BACKUP
+*-MIGRATION
+*-TEMP
 
-# Logs de aplicación
-app-logs/
-error-logs/
-access-logs/
+# Datos de prueba
+test-data/
+mock-data/
 
-# Métricas y analytics
-analytics/
-metrics/
-monitoring/
+# ========================================
+# DOCUMENTACIÓN TEMPORAL
+# ========================================
 
-# ===== ARCHIVOS DE BACKUP =====
+# Guías de solución de problemas específicos
+SOLUCION-*.md
+INSTRUCCIONES-*.md
+COMO-*.md
+PROBLEMAS-*.md
 
-# Backups generales
-*.backup
+# Notas personales
+NOTAS.md
+TODO-personal.md
+CAMBIOS*.docx
+
+# ========================================
+# BUILD Y DISTRIBUCIÓN
+# ========================================
+
+# Build outputs
+dist/
+build/
+out/
+
+# Logs
+logs/
+*.log
+
+# ========================================
+# OTROS
+# ========================================
+
+# Archivos de backup del editor
 *.bak
-backup/
-backups/
+*.swp
+*.swo
+*~
 
-# Archivos de respaldo
-*.old
-*.orig
-*.save
+# Cache
+.cache/
+*.cache
+
+# Archivos comprimidos
+*.zip
+*.tar.gz
+*.rar
