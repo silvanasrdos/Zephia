@@ -565,6 +565,28 @@
         window.teachers = [];
         window.currentUser = null;
 
+        // ===== FUNCIONES GLOBALES (Definir ANTES del auth listener) =====
+        
+        // Función para cerrar sesión
+        window.logout = async function() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                try {
+                    if (auth.currentUser) {
+                        await db.collection('users').doc(auth.currentUser.uid).update({
+                            online: false,
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                    
+                    await auth.signOut();
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    window.location.href = 'login.html';
+                }
+            }
+        };
+
         // Verificar autenticación
         auth.onAuthStateChanged(async (firebaseUser) => {
             if (!firebaseUser) {
@@ -991,27 +1013,6 @@
         // Función para generar reportes
         function generateReport() {
             console.log('Generando reporte...');
-        }
-
-        // Función para cerrar sesión
-        async function logout() {
-            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                try {
-                    // Actualizar estado offline
-                    if (auth.currentUser) {
-                        await db.collection('users').doc(auth.currentUser.uid).update({
-                            online: false,
-                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    }
-                    
-                    await auth.signOut();
-                    window.location.href = 'login.html';
-                } catch (error) {
-                    console.error('Error al cerrar sesión:', error);
-                    window.location.href = 'login.html';
-                }
-            }
         }
 
         // Inicializar aplicación

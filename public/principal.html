@@ -2040,7 +2040,7 @@
         // Función de logout
         function logout() {
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                window.signOut(window.auth).then(() => {
+                auth.signOut().then(() => {
                     window.location.href = 'login.html';
                 }).catch((error) => {
                     console.error('Error al cerrar sesión:', error);
