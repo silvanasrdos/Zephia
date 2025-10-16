@@ -97,14 +97,49 @@
     <div class="container">
         <h1><i class="fas fa-search"></i> Verificar Usuario</h1>
         
-        <div class="search-box">
-            <input type="text" id="email-search" placeholder="Ingresa el email del usuario (ej: danilok@gmail.com)">
-            <button class="btn" onclick="searchUser()">
-                <i class="fas fa-search"></i> Buscar Usuario
-            </button>
+        <!-- Login Section -->
+        <div id="login-section" style="display: block;">
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fas fa-info-circle"></i>
+                <strong>Autenticación requerida:</strong> Inicia sesión para verificar usuarios.
+            </div>
+            <div style="max-width: 400px; margin: 0 auto;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Email:</label>
+                    <input type="email" id="login-email" placeholder="tu-email@escuela.com" 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Contraseña:</label>
+                    <input type="password" id="login-password" placeholder="••••••••"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <button class="btn" onclick="login()" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                <div id="login-error" style="display: none; margin-top: 15px; padding: 10px; background: #fee2e2; border-radius: 8px; color: #dc2626;"></div>
+            </div>
         </div>
-        
-        <div class="results" id="results" style="display: none;"></div>
+
+        <!-- Main Section (hidden until login) -->
+        <div id="main-section" style="display: none;">
+            <div style="background: #d1fae5; border-left: 4px solid #10b981; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fas fa-check-circle"></i>
+                Sesión iniciada como: <strong id="current-user-email"></strong>
+                <button class="btn" onclick="logout()" style="float: right; padding: 6px 12px;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="email-search" placeholder="Ingresa el email del usuario (ej: danilok@gmail.com)">
+                <button class="btn" onclick="searchUser()">
+                    <i class="fas fa-search"></i> Buscar Usuario
+                </button>
+            </div>
+            
+            <div class="results" id="results" style="display: none;"></div>
+        </div>
     </div>
 
     <script>
@@ -123,6 +158,60 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // Listener de autenticación
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('main-section').style.display = 'block';
+                document.getElementById('current-user-email').textContent = user.email;
+            } else {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('main-section').style.display = 'none';
+            }
+        });
+
+        // Login
+        window.login = async function() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+
+            if (!email || !password) {
+                errorDiv.textContent = 'Por favor completa todos los campos';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                errorDiv.style.display = 'none';
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                console.error('Error al iniciar sesión:', error);
+                let errorMessage = 'Error al iniciar sesión';
+                
+                switch (error.code) {
+                    case 'auth/invalid-credential':
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                        errorMessage = 'Email o contraseña incorrectos';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Email inválido';
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.display = 'block';
+            }
+        };
+
+        // Logout
+        window.logout = async function() {
+            await auth.signOut();
+        };
 
         window.searchUser = async function() {
             const email = document.getElementById('email-search').value.trim();
