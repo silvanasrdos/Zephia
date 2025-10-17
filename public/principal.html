@@ -20,6 +20,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Sistema de Mensajería -->
+    <script src="messaging-service-compat.js"></script>
+    <script src="messaging-ui-compat.js"></script>
 </head>
 <body>
     <div class="admin-container">
@@ -1191,10 +1195,47 @@
             }
         });
         
-        function initializeAppData() {
+        async function initializeAppData() {
             loadData();
             updateStats();
             initializeUserPermissions();
+            await initializeMessagingSystem();
+        }
+        
+        // Inicializar sistema de mensajería
+        async function initializeMessagingSystem() {
+            try {
+                console.log('🔄 Inicializando sistema de mensajería...');
+                
+                // Obtener usuario actual
+                const currentUser = window.currentUser || {
+                    id: 'admin_user',
+                    name: 'Administrador',
+                    email: 'admin@zephia.com',
+                    role: 'admin'
+                };
+                
+                console.log('👤 Usuario actual:', currentUser);
+                
+                // Verificar que messagingUI esté disponible
+                if (typeof window.messagingUI === 'undefined') {
+                    console.error('❌ messagingUI no está disponible');
+                    return;
+                }
+                
+                // Verificar que db esté disponible
+                if (!window.db) {
+                    console.error('❌ Firestore (db) no está disponible');
+                    return;
+                }
+                
+                // Inicializar el sistema de mensajería (pasar currentUser y db)
+                await window.messagingUI.initialize(currentUser, window.db);
+                
+                console.log('✅ Sistema de mensajería inicializado correctamente');
+            } catch (error) {
+                console.error('❌ Error al inicializar mensajería:', error);
+            }
         }
         
         // Función helper para verificar Firebase
@@ -3582,6 +3623,38 @@
             originalShowSection(sectionName);
             if (sectionName === 'support') {
                 loadSupportRequests();
+            }
+        };
+        
+        // ===== FUNCIONES DE MENSAJERÍA =====
+        
+        // Abrir modal de nuevo mensaje
+        window.openNewMessageModal = function() {
+            if (window.messagingUI) {
+                window.messagingUI.openNewMessageModal();
+            } else {
+                console.warn('Sistema de mensajería no inicializado');
+                alert('El sistema de mensajería aún se está cargando. Por favor, intenta de nuevo en un momento.');
+            }
+        };
+        
+        // Actualizar color del selector de prioridad
+        window.updatePriorityColor = function(selectElement) {
+            if (window.messagingUI && window.messagingUI.updatePriorityColor) {
+                window.messagingUI.updatePriorityColor(selectElement);
+            } else {
+                const value = selectElement.value;
+                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+                selectElement.classList.add(value);
+            }
+        };
+        
+        // Seleccionar conversación
+        window.selectConversation = function(conversationId) {
+            if (window.messagingUI && window.messagingUI.selectConversation) {
+                window.messagingUI.selectConversation(conversationId);
+            } else {
+                console.warn('Sistema de mensajería no inicializado');
             }
         };
         
