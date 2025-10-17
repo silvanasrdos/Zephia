@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de Docente - Mensajería">
+    <meta name="theme-color" content="#8b4513">
+    <title>Zephia - Panel de Docente</title>
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <link rel="stylesheet" href="styles-docente.css?v=2">
+    <link rel="stylesheet" href="styles-messaging.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Sistema de Mensajería -->
+    <script src="messaging-service-compat.js"></script>
+    <script src="messaging-ui-compat.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="img/logo.png" alt="Zephia Logo" class="logo">
+                <h2>Zephia</h2>
+                <p class="user-role">Docente</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showSection('messaging')">
+                    <i class="fas fa-envelope"></i>
+                    <span>Mensajería</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="breadcrumb">
+                    <h2 id="section-title">Mensajería</h2>
+                    <p id="section-description">Panel de Docente - Comunicación</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </header>
+
+            <!-- Messaging Section -->
+            <section id="messaging-section" class="section">
+                <div class="messaging-wrapper">
+                    <!-- Panel Izquierdo: Lista de Conversaciones -->
+                    <div class="conversations-panel">
+                        <div class="conversations-header">
+                            <button class="header-icon-btn" title="Menu">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                            <h3>Mensajes</h3>
+                            <div class="header-actions">
+                                <button class="header-icon-btn" title="Nuevo mensaje" onclick="openNewMessageModal()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Actualizar">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="conversations-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="conversation-search" placeholder="Buscar conversaciones">
+                        </div>
+                        
+                        <div class="conversations-list" id="conversations-list">
+                            <!-- Conversaciones de ejemplo -->
+                            <div class="conversation-item priority-alta active" onclick="selectConversation(1)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Responsable García</h4>
+                                        <span class="priority-badge alta">ALTA</span>
+                                    </div>
+                                    <p class="conversation-preview">¿Cómo va el proyecto?</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">11:30</span>
+                                </div>
+                            </div>
+                            
+                            <div class="conversation-item priority-media" onclick="selectConversation(2)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Secretaría Ana López</h4>
+                                        <span class="priority-badge media">MEDIA</span>
+                                    </div>
+                                    <p class="conversation-preview">Recordatorio: Reunión de coordinación</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">10:15</span>
+                                </div>
+                            </div>
+                            
+                            <div class="conversation-item priority-baja" onclick="selectConversation(3)">
+                                <div class="conversation-avatar">
+                                    <i class="fas fa-user"></i>
+                                    <span class="online-indicator"></span>
+                                </div>
+                                <div class="conversation-info">
+                                    <div class="conversation-header">
+                                        <h4>Docente María Rodríguez</h4>
+                                        <span class="priority-badge baja">BAJA</span>
+                                    </div>
+                                    <p class="conversation-preview">¿Podrías revisar el material?</p>
+                                </div>
+                                <div class="conversation-meta">
+                                    <span class="conversation-time">09:45</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel Derecho: Chat -->
+                    <div class="chat-panel">
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <div class="chat-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="chat-user-details">
+                                    <h3>Responsable García</h3>
+                                    <span class="user-status">En línea</span>
+                                </div>
+                            </div>
+                            <div class="chat-header-actions">
+                                <button class="header-icon-btn" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Mensajes -->
+                            <div class="message received">
+                                <div class="message-bubble">
+                                    <p>Hola Juan, ¿cómo va el proyecto?</p>
+                                    <span class="message-time">11:20</span>
+                                </div>
+                            </div>
+                            
+                            <div class="message sent">
+                                <div class="message-bubble">
+                                    <p>Todo va muy bien, gracias por preguntar</p>
+                                    <span class="message-time">11:25</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <button class="emoji-btn" title="Emojis">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+                            <select class="priority-selector-input normal" id="priority-selector" title="Prioridad" onchange="updatePriorityColor(this)">
+                                <option value="normal">Normal</option>
+                                <option value="baja">Baja</option>
+                                <option value="media">Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                            <button class="send-btn" title="Enviar">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts de Configuración -->
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAebJgE_34xBGfVeiLXUs9gnisoFbIPOn4",
+            authDomain: "zephia-51ad4.firebaseapp.com",
+            databaseURL: "https://zephia-51ad4-default-rtdb.firebaseio.com",
+            projectId: "zephia-51ad4",
+            storageBucket: "zephia-51ad4.firebasestorage.app",
+            messagingSenderId: "829322879330",
+            appId: "1:829322879330:web:f59f5389c7ead8a6440c3b",
+            measurementId: "G-75CDPLDSFX"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // Hacer disponible globalmente
+        window.auth = auth;
+        window.db = db;
+
+        // ===== FUNCIONES GLOBALES (Definir ANTES del auth listener) =====
+        
+        // Función para cerrar sesión
+        window.logout = async function() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                try {
+                    if (window.auth.currentUser) {
+                        await window.db.collection('users').doc(window.auth.currentUser.uid).update({
+                            online: false,
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                    
+                    await window.auth.signOut();
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    window.location.href = 'login.html';
+                }
+            }
+        };
+
+        // Verificar autenticación
+        auth.onAuthStateChanged(async (firebaseUser) => {
+            if (!firebaseUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // Obtener perfil del usuario
+                const userDoc = await db.collection('users').doc(firebaseUser.uid).get();
+                if (!userDoc.exists) {
+                    console.error('Perfil de usuario no encontrado');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const userData = userDoc.data();
+                window.currentUser = {
+                    id: firebaseUser.uid,
+                    email: firebaseUser.email,
+                    name: userData.name,
+                    role: userData.role
+                };
+
+                // Verificar que sea docente
+                if (userData.role !== 'docente' && userData.role !== 'admin') {
+                    console.warn('Usuario no autorizado para esta página');
+                    // Redirigir según su rol
+                    if (userData.role === 'responsable') window.location.href = 'responsable.html';
+                    else if (userData.role === 'secretaria') window.location.href = 'secretaria.html';
+                }
+
+                console.log('✅ Usuario autenticado:', window.currentUser);
+                
+                // Inicializar sistema de mensajería
+                try {
+                    await window.messagingUI.initialize(window.currentUser, db);
+                    console.log('💬 Sistema de mensajería listo');
+                } catch (error) {
+                    console.error('Error al inicializar mensajería:', error);
+                }
+            } catch (error) {
+                console.error('Error al obtener perfil:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Función para mostrar secciones
+        window.showSection = function(sectionName) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+            
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('onclick') === `showSection('${sectionName}')`) {
+                    item.classList.add('active');
+                }
+            });
+            
+            const titles = {
+                messaging: { title: 'Mensajería', desc: 'Comunicarte con el equipo' }
+            };
+            
+            const titleInfo = titles[sectionName];
+            if (titleInfo) {
+                document.getElementById('section-title').textContent = titleInfo.title;
+                document.getElementById('section-description').textContent = titleInfo.desc;
+            }
+        };
+        
+        // Funciones de mensajería
+        window.openNewMessageModal = function() {
+            if (window.messagingUI) {
+                window.messagingUI.openNewMessageModal();
+            } else {
+                console.warn('Sistema de mensajería no inicializado');
+            }
+        };
+        
+        window.updatePriorityColor = function(selectElement) {
+            if (window.messagingUI) {
+                window.messagingUI.updatePriorityColor(selectElement);
+            } else {
+                const value = selectElement.value;
+                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+                selectElement.classList.add(value);
+            }
+        };
+        
+        window.selectConversation = function(conversationId) {
+            if (window.messagingUI) {
+                window.messagingUI.selectConversation(conversationId);
+            }
+        };
+        
+        // Inicializar la vista por defecto
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎓 Panel de Docente cargado');
+            showSection('messaging');
+        });
+    </script>
+</body>
+</html>

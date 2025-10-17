@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Usuario - Zephia</title>
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .search-box {
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .results {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .user-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .user-card.error {
+            border-left-color: #ef4444;
+        }
+        .user-card.warning {
+            border-left-color: #f59e0b;
+        }
+        .user-card.success {
+            border-left-color: #10b981;
+        }
+        pre {
+            background: #1e293b;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+    </style>
+    
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-search"></i> Verificar Usuario</h1>
+        
+        <!-- Login Section -->
+        <div id="login-section" style="display: block;">
+            <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fas fa-info-circle"></i>
+                <strong>Autenticación requerida:</strong> Inicia sesión para verificar usuarios.
+            </div>
+            <div style="max-width: 400px; margin: 0 auto;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Email:</label>
+                    <input type="email" id="login-email" placeholder="tu-email@escuela.com" 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Contraseña:</label>
+                    <input type="password" id="login-password" placeholder="••••••••"
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+                <button class="btn" onclick="login()" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+                <div id="login-error" style="display: none; margin-top: 15px; padding: 10px; background: #fee2e2; border-radius: 8px; color: #dc2626;"></div>
+            </div>
+        </div>
+
+        <!-- Main Section (hidden until login) -->
+        <div id="main-section" style="display: none;">
+            <div style="background: #d1fae5; border-left: 4px solid #10b981; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <i class="fas fa-check-circle"></i>
+                Sesión iniciada como: <strong id="current-user-email"></strong>
+                <button class="btn" onclick="logout()" style="float: right; padding: 6px 12px;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="email-search" placeholder="Ingresa el email del usuario (ej: danilok@gmail.com)">
+                <button class="btn" onclick="searchUser()">
+                    <i class="fas fa-search"></i> Buscar Usuario
+                </button>
+            </div>
+            
+            <div class="results" id="results" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAebJgE_34xBGfVeiLXUs9gnisoFbIPOn4",
+            authDomain: "zephia-51ad4.firebaseapp.com",
+            databaseURL: "https://zephia-51ad4-default-rtdb.firebaseio.com",
+            projectId: "zephia-51ad4",
+            storageBucket: "zephia-51ad4.firebasestorage.app",
+            messagingSenderId: "829322879330",
+            appId: "1:829322879330:web:f59f5389c7ead8a6440c3b",
+            measurementId: "G-75CDPLDSFX"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Listener de autenticación
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('main-section').style.display = 'block';
+                document.getElementById('current-user-email').textContent = user.email;
+            } else {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('main-section').style.display = 'none';
+            }
+        });
+
+        // Login
+        window.login = async function() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+
+            if (!email || !password) {
+                errorDiv.textContent = 'Por favor completa todos los campos';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                errorDiv.style.display = 'none';
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                console.error('Error al iniciar sesión:', error);
+                let errorMessage = 'Error al iniciar sesión';
+                
+                switch (error.code) {
+                    case 'auth/invalid-credential':
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                        errorMessage = 'Email o contraseña incorrectos';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Email inválido';
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.display = 'block';
+            }
+        };
+
+        // Logout
+        window.logout = async function() {
+            await auth.signOut();
+        };
+
+        window.searchUser = async function() {
+            const email = document.getElementById('email-search').value.trim();
+            const resultsDiv = document.getElementById('results');
+            
+            if (!email) {
+                alert('Por favor ingresa un email');
+                return;
+            }
+
+            resultsDiv.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Buscando...</p>';
+            resultsDiv.style.display = 'block';
+
+            try {
+                // Buscar en Firestore
+                const usersSnapshot = await db.collection('users').get();
+                let userInFirestore = null;
+                let userId = null;
+
+                usersSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.email === email) {
+                        userInFirestore = data;
+                        userId = doc.id;
+                    }
+                });
+
+                // Resultados
+                let html = '';
+
+                if (userInFirestore) {
+                    const hasRole = userInFirestore.role !== undefined && userInFirestore.role !== null;
+                    const isValidRole = ['admin', 'responsable', 'secretaria', 'docente'].includes(userInFirestore.role);
+                    
+                    let cardClass = 'success';
+                    if (!hasRole) cardClass = 'error';
+                    else if (!isValidRole) cardClass = 'warning';
+
+                    html += `
+                        <div class="user-card ${cardClass}">
+                            <h3>✅ Usuario encontrado en Firestore</h3>
+                            <p><strong>ID:</strong> ${userId}</p>
+                            <p><strong>Email:</strong> ${userInFirestore.email}</p>
+                            <p><strong>Nombre:</strong> ${userInFirestore.name || userInFirestore.fullName || 'Sin nombre'}</p>
+                            <p><strong>Rol:</strong> ${userInFirestore.role || '❌ SIN ROL'}</p>
+                            ${userInFirestore.type ? `<p><strong>Type (obsoleto):</strong> ${userInFirestore.type}</p>` : ''}
+                            
+                            ${!hasRole ? `
+                                <div style="background: #fee2e2; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                                    <strong>❌ PROBLEMA:</strong> El usuario NO tiene campo 'role'<br>
+                                    <strong>Solución:</strong> 
+                                    <button class="btn" onclick="fixUserRole('${userId}', '${userInFirestore.type || 'docente'}')">
+                                        Asignar rol: ${userInFirestore.type || 'docente'}
+                                    </button>
+                                </div>
+                            ` : ''}
+                            
+                            ${!isValidRole && hasRole ? `
+                                <div style="background: #fef3c7; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                                    <strong>⚠️ ADVERTENCIA:</strong> El rol "${userInFirestore.role}" no es válido<br>
+                                    <strong>Solución:</strong>
+                                    <button class="btn" onclick="fixUserRole('${userId}', 'docente')">
+                                        Cambiar a rol: docente
+                                    </button>
+                                </div>
+                            ` : ''}
+                            
+                            <pre>${JSON.stringify(userInFirestore, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="user-card error">
+                            <h3>❌ Usuario NO encontrado en Firestore</h3>
+                            <p>El email <strong>${email}</strong> no existe en la colección 'users'</p>
+                            <p><strong>Posible causa:</strong> El usuario se creó en Authentication pero falló al crear el perfil en Firestore</p>
+                        </div>
+                    `;
+                }
+
+                // Intentar verificar en Authentication
+                html += `
+                    <div class="user-card">
+                        <h3>ℹ️ Verificación en Firebase Authentication</h3>
+                        <p>Para verificar si el usuario existe en Authentication, intenta hacer login con ese email y contraseña.</p>
+                        <p>Si el login falla con "Email o contraseña incorrectos", el usuario NO está en Authentication.</p>
+                    </div>
+                `;
+
+                resultsDiv.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error al buscar usuario:', error);
+                resultsDiv.innerHTML = `
+                    <div class="user-card error">
+                        <h3>❌ Error al buscar</h3>
+                        <p>${error.message}</p>
+                        <p>Por favor, inicia sesión primero o verifica tu conexión.</p>
+                    </div>
+                `;
+            }
+        };
+
+        window.fixUserRole = async function(userId, suggestedRole) {
+            if (!confirm(`¿Asignar rol "${suggestedRole}" al usuario?`)) {
+                return;
+            }
+
+            try {
+                await db.collection('users').doc(userId).update({
+                    role: suggestedRole
+                });
+
+                alert(`✅ Rol actualizado a "${suggestedRole}". El usuario ahora puede iniciar sesión correctamente.`);
+                
+                // Recargar búsqueda
+                searchUser();
+            } catch (error) {
+                console.error('Error al actualizar rol:', error);
+                alert('❌ Error al actualizar rol: ' + error.message);
+            }
+        };
+
+        // Permitir buscar con Enter
+        document.getElementById('email-search').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchUser();
+            }
+        });
+    </script>
+</body>
+</html>
+

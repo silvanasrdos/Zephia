@@ -10,6 +10,15 @@
     <link rel="stylesheet" href="styles-r.css?v=2">
     <link rel="stylesheet" href="styles-messaging.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Sistema de Mensajería -->
+    <script src="messaging-service-compat.js"></script>
+    <script src="messaging-ui-compat.js"></script>
 </head>
 <body>
     <div class="admin-container">
@@ -551,21 +560,114 @@
     <!-- Script de validaciones -->
     <script src="validaciones.js"></script>
     
-    <!-- Scripts de Integración con Mensajería -->
-    <script type="module">
-        // Importar integración de autenticación y mensajería
-        import { setupAuthListener, logoutWithMessaging } from './auth-messaging-integration.js';
+    <!-- Scripts de Firebase y Autenticación -->
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAebJgE_34xBGfVeiLXUs9gnisoFbIPOn4",
+            authDomain: "zephia-51ad4.firebaseapp.com",
+            databaseURL: "https://zephia-51ad4-default-rtdb.firebaseio.com",
+            projectId: "zephia-51ad4",
+            storageBucket: "zephia-51ad4.firebasestorage.app",
+            messagingSenderId: "829322879330",
+            appId: "1:829322879330:web:f59f5389c7ead8a6440c3b",
+            measurementId: "G-75CDPLDSFX"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
         
-        // Configurar listener de autenticación
-        // Esto detecta automáticamente el usuario logueado e inicializa la mensajería
-        setupAuthListener();
+        // Hacer disponible globalmente
+        window.auth = auth;
+        window.db = db;
+
+        // Variables globales
+        window.schools = [];
+        window.teachers = [];
+        window.currentUser = null;
+
+        // ===== FUNCIONES GLOBALES (Definir ANTES del auth listener) =====
         
-        // Funciones de mensajería globales
+        // Función para cerrar sesión
+        window.logout = async function() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                try {
+                    if (window.auth.currentUser) {
+                        await window.db.collection('users').doc(window.auth.currentUser.uid).update({
+                            online: false,
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                    
+                    await window.auth.signOut();
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    window.location.href = 'login.html';
+                }
+            }
+        };
+
+        // Verificar autenticación
+        auth.onAuthStateChanged(async (firebaseUser) => {
+            if (!firebaseUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                // Obtener perfil del usuario
+                const userDoc = await db.collection('users').doc(firebaseUser.uid).get();
+                if (!userDoc.exists) {
+                    console.error('Perfil de usuario no encontrado');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const userData = userDoc.data();
+                window.currentUser = {
+                    id: firebaseUser.uid,
+                    email: firebaseUser.email,
+                    name: userData.name,
+                    role: userData.role,
+                    schoolId: userData.schoolId,
+                    schoolName: userData.schoolName
+                };
+
+                // Verificar que sea responsable
+                if (userData.role !== 'responsable' && userData.role !== 'admin') {
+                    console.warn('Usuario no autorizado para esta página');
+                    if (userData.role === 'docente') window.location.href = 'docente.html';
+                    else if (userData.role === 'secretaria') window.location.href = 'secretaria.html';
+                    return;
+                }
+
+                console.log('✅ Usuario autenticado:', window.currentUser);
+                
+                // Cargar datos
+                loadData();
+                
+                // Inicializar sistema de mensajería
+                try {
+                    await window.messagingUI.initialize(window.currentUser, db);
+                    console.log('💬 Sistema de mensajería listo');
+                } catch (error) {
+                    console.error('Error al inicializar mensajería:', error);
+                }
+            } catch (error) {
+                console.error('Error al obtener perfil:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Funciones de mensajería
         window.openNewMessageModal = function() {
             if (window.messagingUI) {
                 window.messagingUI.openNewMessageModal();
             } else {
-                console.warn('Sistema de mensajería no inicializado aún');
+                console.warn('Sistema de mensajería no inicializado');
             }
         };
         
@@ -573,29 +675,16 @@
             if (window.messagingUI) {
                 window.messagingUI.updatePriorityColor(selectElement);
             } else {
-                // Fallback manual
                 const value = selectElement.value;
                 selectElement.classList.remove('normal', 'baja', 'media', 'alta');
                 selectElement.classList.add(value);
             }
         };
         
-        // Log de información
-        console.log('📝 Sistema de mensajería con autenticación integrado');
-        console.log('🔐 El usuario será detectado automáticamente al cargar la página');
-    </script>
-    
-    <!-- Scripts originales del panel -->
-    <script>
-        // Variables globales
-        window.schools = [];
-        window.teachers = [];
-        window.currentUser = {
-            id: 'current_responsable',
-            name: 'Responsable María García',
-            role: 'responsable',
-            schoolId: 'school1',
-            schoolName: 'Escuela San Martín'
+        window.selectConversation = function(conversationId) {
+            if (window.messagingUI) {
+                window.messagingUI.selectConversation(conversationId);
+            }
         };
 
         // Función para mostrar secciones
@@ -948,38 +1037,6 @@
         function generateReport() {
             console.log('Generando reporte...');
         }
-
-        // Función de logout - Abrir modal
-        function logout() {
-            document.getElementById('logout-modal').style.display = 'flex';
-        }
-
-        // Cerrar modal de logout
-        function closeLogoutModal() {
-            document.getElementById('logout-modal').style.display = 'none';
-        }
-
-        // Confirmar y ejecutar logout
-        async function confirmLogout() {
-            try {
-                // Importar función de logout con mensajería
-                const { logoutWithMessaging } = await import('./auth-messaging-integration.js');
-                await logoutWithMessaging();
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-                alert('Error al cerrar sesión. Intenta nuevamente.');
-                // Fallback: redirigir al login
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Cerrar modal al hacer clic fuera
-        window.addEventListener('click', function(event) {
-            const modal = document.getElementById('logout-modal');
-            if (event.target === modal) {
-                closeLogoutModal();
-            }
-        });
 
         // Inicializar aplicación
         document.addEventListener('DOMContentLoaded', function() {
