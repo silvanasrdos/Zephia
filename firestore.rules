@@ -16,12 +16,6 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Verificar si el usuario es administrador
-    function isAdmin() {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-    
     // ========================================
     // COLECCIÓN: users - PERMISOS AMPLIADOS TEMPORALMENTE
     // ========================================
@@ -118,24 +112,6 @@ service cloud.firestore {
       // Los usuarios pueden eliminar sus propias notificaciones
       allow delete: if isAuthenticated() && 
                        (isAdmin() || resource.data.userId == request.auth.uid);
-    }
-    
-    // ========================================
-    // COLECCIÓN: support_requests (Solicitudes de Soporte)
-    // ========================================
-    match /support_requests/{requestId} {
-      // Permitir a CUALQUIER PERSONA crear solicitudes (incluso sin autenticar)
-      // Esto es necesario para el formulario de contacto en la página de login
-      allow create: if true;
-      
-      // Solo usuarios autenticados pueden leer solicitudes de soporte
-      allow read: if isAuthenticated();
-      
-      // Solo usuarios autenticados pueden actualizar (por ejemplo, cambiar estado)
-      allow update: if isAuthenticated();
-      
-      // Solo Admin puede eliminar solicitudes
-      allow delete: if isAdmin();
     }
     
     // ========================================
