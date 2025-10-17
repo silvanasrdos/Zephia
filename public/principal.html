@@ -2450,7 +2450,7 @@
                         message: 'Los datos de la escuela se han actualizado correctamente.',
                         details: [
                             { icon: 'fas fa-school', text: `<strong>Escuela:</strong> ${schoolData.nombreInstitucion}` },
-                            { icon: 'fas fa-map-marker-alt', text: `<strong>Ubicación:</strong> ${schoolData.direccion.localidad}, ${schoolData.direccion.provincia}` }
+                            { icon: 'fas fa-map-marker-alt', text: `<strong>Ubicación:</strong> ${schoolData.direccion.ciudad}, ${schoolData.direccion.provincia}` }
                         ]
                     });
                     delete window.editingSchoolId;
@@ -2468,8 +2468,8 @@
                         message: 'La nueva escuela se ha registrado exitosamente en el sistema.',
                         details: [
                             { icon: 'fas fa-school', text: `<strong>Escuela:</strong> ${schoolData.nombreInstitucion}` },
-                            { icon: 'fas fa-graduation-cap', text: `<strong>Niveles:</strong> ${schoolData.nivelesEducativos.join(', ')}` },
-                            { icon: 'fas fa-map-marker-alt', text: `<strong>Ubicación:</strong> ${schoolData.direccion.localidad}, ${schoolData.direccion.provincia}` }
+                            { icon: 'fas fa-graduation-cap', text: `<strong>Niveles:</strong> ${schoolData.nivelEducativo.join(', ')}` },
+                            { icon: 'fas fa-map-marker-alt', text: `<strong>Ubicación:</strong> ${schoolData.direccion.ciudad}, ${schoolData.direccion.provincia}` }
                         ]
                     });
                 }
