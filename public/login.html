@@ -65,7 +65,7 @@
             </form>
             
             <div class="signup-link">
-                <p>¿Problemas de acceso? <a href="contacto.html">Contactar soporte técnico</a></p>
+                <p>¿Problemas de acceso? <a href="#" onclick="openContactModal(); return false;">Contactar soporte técnico</a></p>
             </div>
         </div>
     </div>
@@ -101,8 +101,94 @@
                     </div>
                 </form>
                 <div class="alternative-option">
-                    <p>¿No tienes acceso a tu correo? <a href="contacto.html">Contacta al soporte técnico</a></p>
+                    <p>¿No tienes acceso a tu correo? <a href="#" onclick="closeResetPasswordModal(); openContactModal(); return false;">Contacta al soporte técnico</a></p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Contacto a Soporte -->
+    <div id="contact-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-headset"></i> Contactar Soporte Técnico</h3>
+                <button class="close-btn" onclick="closeContactModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">
+                    Completa el formulario y nos pondremos en contacto contigo a la brevedad.
+                </p>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label>Nombre completo <span style="color: #e74c3c;">*</span></label>
+                        <input type="text" id="contact-name" placeholder="Tu nombre completo" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Correo electrónico <span style="color: #e74c3c;">*</span></label>
+                        <input type="email" id="contact-email" placeholder="tu@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" id="contact-phone" placeholder="(Opcional)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tipo de consulta <span style="color: #e74c3c;">*</span></label>
+                        <select id="contact-type" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="acceso">Problemas de acceso</option>
+                            <option value="tecnico">Problema técnico</option>
+                            <option value="cuenta">Solicitud de cuenta</option>
+                            <option value="informacion">Solicitar información</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Prioridad <span style="color: #e74c3c;">*</span></label>
+                        <div class="priority-selector">
+                            <div class="priority-option baja">
+                                <input type="radio" id="contact-priority-baja" name="contact-priority" value="baja" required>
+                                <label for="contact-priority-baja">
+                                    <i class="fas fa-circle"></i> Baja
+                                </label>
+                            </div>
+                            <div class="priority-option normal">
+                                <input type="radio" id="contact-priority-normal" name="contact-priority" value="normal" checked>
+                                <label for="contact-priority-normal">
+                                    <i class="fas fa-circle"></i> Normal
+                                </label>
+                            </div>
+                            <div class="priority-option alta">
+                                <input type="radio" id="contact-priority-alta" name="contact-priority" value="alta">
+                                <label for="contact-priority-alta">
+                                    <i class="fas fa-circle"></i> Alta
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mensaje (solo letras) <span style="color: #e74c3c;">*</span></label>
+                        <textarea id="contact-message" placeholder="Describe tu consulta o problema..." required></textarea>
+                        <small>Solo se permiten letras mayúsculas y minúsculas, espacios y saltos de línea.</small>
+                    </div>
+                    
+                    <div id="contact-alert" class="message" style="display: none;"></div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeContactModal()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary" id="contact-submit-btn">
+                            <i class="fas fa-paper-plane"></i> Enviar mensaje
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -347,9 +433,179 @@
 
         // Cerrar modal al hacer clic fuera
         window.addEventListener('click', function(event) {
-            const modal = document.getElementById('reset-password-modal');
-            if (event.target === modal) {
+            const resetModal = document.getElementById('reset-password-modal');
+            const contactModal = document.getElementById('contact-modal');
+            
+            if (event.target === resetModal) {
                 closeResetPasswordModal();
+            }
+            if (event.target === contactModal) {
+                closeContactModal();
+            }
+        });
+
+        // ===== FUNCIONES DE CONTACTO A SOPORTE =====
+        
+        // Abrir modal de contacto
+        function openContactModal() {
+            document.getElementById('contact-modal').style.display = 'flex';
+            document.getElementById('contact-form').reset();
+            document.getElementById('contact-alert').style.display = 'none';
+        }
+
+        // Cerrar modal de contacto
+        function closeContactModal() {
+            document.getElementById('contact-modal').style.display = 'none';
+            document.getElementById('contact-form').reset();
+            document.getElementById('contact-alert').style.display = 'none';
+        }
+
+        // Mostrar mensaje en el modal de contacto
+        function showContactMessage(message, type) {
+            const messageDiv = document.getElementById('contact-alert');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        // Validar que el texto solo contenga letras (mayúsculas, minúsculas, espacios y saltos de línea)
+        function validateOnlyLetters(text) {
+            // Permitir solo letras (a-z, A-Z), espacios, saltos de línea y tildes/acentos
+            const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\n\r]+$/;
+            return regex.test(text);
+        }
+
+        // Validación en tiempo real del campo de mensaje
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageField = document.getElementById('contact-message');
+            
+            if (messageField) {
+                messageField.addEventListener('input', function(e) {
+                    const value = e.target.value;
+                    
+                    // Filtrar solo caracteres permitidos (letras, espacios, saltos de línea)
+                    const filtered = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\n\r]/g, '');
+                    
+                    if (value !== filtered) {
+                        e.target.value = filtered;
+                        showContactMessage('Solo se permiten letras. Se han eliminado caracteres no permitidos.', 'error');
+                        
+                        setTimeout(() => {
+                            document.getElementById('contact-alert').style.display = 'none';
+                        }, 3000);
+                    }
+                });
+            }
+        });
+
+        // Manejar formulario de contacto
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contact-form');
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    console.log('📝 Enviando formulario de contacto...');
+                    
+                    const name = document.getElementById('contact-name').value.trim();
+                    const email = document.getElementById('contact-email').value.trim();
+                    const phone = document.getElementById('contact-phone').value.trim();
+                    const type = document.getElementById('contact-type').value;
+                    const priority = document.querySelector('input[name="contact-priority"]:checked')?.value || 'normal';
+                    const message = document.getElementById('contact-message').value.trim();
+                    const submitBtn = document.getElementById('contact-submit-btn');
+                    
+                    // Validación de campos vacíos
+                    if (!name || !email || !type || !message) {
+                        showContactMessage('Por favor completa todos los campos obligatorios', 'error');
+                        console.log('❌ Campos vacíos');
+                        return;
+                    }
+
+                    // Validar formato de email
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        showContactMessage('Por favor ingresa un correo electrónico válido', 'error');
+                        console.log('❌ Email inválido');
+                        return;
+                    }
+
+                    // Validar que el mensaje solo contenga letras
+                    if (!validateOnlyLetters(message)) {
+                        showContactMessage('El mensaje solo puede contener letras, espacios y saltos de línea', 'error');
+                        console.log('❌ Mensaje con caracteres no permitidos');
+                        return;
+                    }
+
+                    console.log('✅ Validaciones pasadas');
+                    console.log('🔧 Verificando dependencias de Firestore...');
+                    console.log('window.db:', window.db);
+                    console.log('window.firestoreCollection:', window.firestoreCollection);
+                    console.log('window.firestoreAddDoc:', window.firestoreAddDoc);
+                    console.log('window.firestoreServerTimestamp:', window.firestoreServerTimestamp);
+
+                    // Verificar que las funciones de Firestore estén disponibles
+                    if (!window.db || !window.firestoreCollection || !window.firestoreAddDoc || !window.firestoreServerTimestamp) {
+                        console.error('❌ Funciones de Firestore no disponibles');
+                        showContactMessage('Error: Sistema de base de datos no inicializado. Recarga la página.', 'error');
+                        return;
+                    }
+
+                    // Deshabilitar botón y mostrar loading
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+                    try {
+                        console.log('💾 Guardando en Firestore...');
+                        
+                        // Guardar en Firestore usando sintaxis modular v9+
+                        const docRef = await window.firestoreAddDoc(
+                            window.firestoreCollection(window.db, 'support_requests'), 
+                            {
+                                name: name,
+                                email: email,
+                                phone: phone || '',
+                                type: type,
+                                priority: priority,
+                                message: message,
+                                status: 'pending',
+                                createdAt: window.firestoreServerTimestamp(),
+                                timestamp: new Date().toISOString()
+                            }
+                        );
+
+                        console.log('✅ Documento guardado con ID:', docRef.id);
+
+                        // Éxito
+                        submitBtn.innerHTML = '<i class="fas fa-check"></i> ¡Enviado!';
+                        showContactMessage(
+                            '¡Mensaje enviado correctamente! Nos pondremos en contacto contigo pronto.',
+                            'success'
+                        );
+                        
+                        // Cerrar modal después de 2 segundos
+                        setTimeout(() => {
+                            closeContactModal();
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar mensaje';
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error('❌ Error al enviar mensaje de contacto:', error);
+                        console.error('Error completo:', error.message);
+                        console.error('Stack:', error.stack);
+                        
+                        // Resetear botón
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar mensaje';
+                        
+                        // Mostrar error
+                        showContactMessage('Error al enviar el mensaje: ' + error.message, 'error');
+                    }
+                });
+            } else {
+                console.log('⚠️ Formulario de contacto no encontrado');
             }
         });
     </script>

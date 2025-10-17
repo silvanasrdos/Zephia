@@ -631,6 +631,113 @@ body.login-page {
     text-decoration: underline;
 }
 
+/* ===== ESTILOS PARA MODAL DE CONTACTO ===== */
+
+#contact-form input,
+#contact-form select,
+#contact-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+#contact-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+#contact-form input:focus,
+#contact-form select:focus,
+#contact-form textarea:focus {
+    outline: none;
+    border-color: #8b4513;
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+.modal small {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Selector de prioridad */
+.priority-selector {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.priority-option {
+    flex: 1;
+    padding: 12px 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.priority-option input[type="radio"] {
+    display: none;
+}
+
+.priority-option:hover {
+    border-color: #8b4513;
+    transform: translateY(-2px);
+}
+
+.priority-option label {
+    cursor: pointer;
+    display: block;
+    font-weight: 500;
+    margin: 0;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.priority-option input[type="radio"]:checked + label {
+    color: white;
+}
+
+.priority-option.baja:has(input:checked) {
+    background: #3498db;
+    border-color: #3498db;
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.priority-option.normal:has(input:checked) {
+    background: #2ecc71;
+    border-color: #2ecc71;
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+}
+
+.priority-option.alta:has(input:checked) {
+    background: #e74c3c;
+    border-color: #e74c3c;
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+}
+
+.priority-option i {
+    margin-right: 5px;
+}
+
+/* Animación para el mensaje de validación */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.message.error {
+    animation: shake 0.3s ease;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .modal-content {
@@ -656,6 +763,14 @@ body.login-page {
 
     .btn-primary,
     .btn-secondary {
+        width: 100%;
+    }
+
+    .priority-selector {
+        flex-direction: column;
+    }
+
+    .priority-option {
         width: 100%;
     }
 }
