@@ -529,6 +529,25 @@
         </div>
     </div>
 
+    <!-- Modal de Confirmación de Cierre de Sesión -->
+    <div id="logout-modal" class="logout-modal" style="display: none;">
+        <div class="logout-modal-content">
+            <div class="logout-modal-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3>¿Cerrar sesión?</h3>
+            <p>¿Estás seguro de que deseas salir del sistema?</p>
+            <div class="logout-modal-actions">
+                <button class="btn-cancel" onclick="closeLogoutModal()">
+                    Cancelar
+                </button>
+                <button class="btn-logout" onclick="confirmLogout()">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Script de validaciones -->
     <script src="validaciones.js"></script>
     
@@ -930,20 +949,37 @@
             console.log('Generando reporte...');
         }
 
-        // Función para cerrar sesión
-        async function logout() {
-            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                try {
-                    // Importar función de logout con mensajería
-                    const { logoutWithMessaging } = await import('./auth-messaging-integration.js');
-                    await logoutWithMessaging();
-                } catch (error) {
-                    console.error('Error al cerrar sesión:', error);
-                    // Fallback: redirigir al login
-                    window.location.href = 'login.html';
-                }
+        // Función de logout - Abrir modal
+        function logout() {
+            document.getElementById('logout-modal').style.display = 'flex';
+        }
+
+        // Cerrar modal de logout
+        function closeLogoutModal() {
+            document.getElementById('logout-modal').style.display = 'none';
+        }
+
+        // Confirmar y ejecutar logout
+        async function confirmLogout() {
+            try {
+                // Importar función de logout con mensajería
+                const { logoutWithMessaging } = await import('./auth-messaging-integration.js');
+                await logoutWithMessaging();
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                alert('Error al cerrar sesión. Intenta nuevamente.');
+                // Fallback: redirigir al login
+                window.location.href = 'login.html';
             }
         }
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('logout-modal');
+            if (event.target === modal) {
+                closeLogoutModal();
+            }
+        });
 
         // Inicializar aplicación
         document.addEventListener('DOMContentLoaded', function() {

@@ -168,7 +168,7 @@ export function setupAuthListener() {
             
             // Redirigir al login si no está en la página de login
             const currentPage = window.location.pathname;
-            if (!currentPage.includes('login.html') && !currentPage.includes('contacto.html')) {
+            if (!currentPage.includes('login.html')) {
                 console.log('Redirigiendo al login...');
                 window.location.href = 'login.html';
             }

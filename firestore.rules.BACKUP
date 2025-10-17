@@ -2,13 +2,8 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // ========================================
-    // REGLAS TEMPORALES PARA MIGRACIÓN DE ROLES
-    // ========================================
-    // ⚠️ IMPORTANTE: Estas reglas son TEMPORALES
-    // Después de completar la migración de roles, ejecuta:
-    // firebase deploy --only firestore:rules
-    // usando el archivo firestore.rules.BACKUP
+      // ========================================
+    // FUNCIONES AUXILIARES
     // ========================================
     
     // Verificar si el usuario está autenticado
@@ -16,39 +11,88 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Verificar si el usuario es administrador
+    // Obtener el rol del usuario desde su documento
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Verificar si el usuario es admin
     function isAdmin() {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    // Verificar si el usuario es responsable
+    function isResponsable() {
+      return isAuthenticated() && getUserRole() == 'responsable';
+    }
+    
+    // Verificar si el usuario es secretaria
+    function isSecretaria() {
+      return isAuthenticated() && getUserRole() == 'secretaria';
+    }
+    
+    // Verificar si el usuario es docente
+    function isDocente() {
+      return isAuthenticated() && getUserRole() == 'docente';
+    }
+    
+    // Verificar si el usuario es admin o responsable
+    function isAdminOrResponsable() {
+      return isAdmin() || isResponsable();
     }
     
     // ========================================
-    // COLECCIÓN: users - PERMISOS AMPLIADOS TEMPORALMENTE
+    // COLECCIÓN: users
     // ========================================
     match /users/{userId} {
       // Todos pueden leer usuarios (necesario para mensajería)
       allow read: if isAuthenticated();
       
-      // ⚠️ TEMPORAL: Permitir a cualquier usuario autenticado actualizar
-      // Esto permite la migración de roles sin problemas
-      allow create, update: if isAuthenticated();
+      // Solo el propio usuario puede actualizar su perfil
+      // Admin puede crear y editar todos los usuarios
+      allow create: if isAdmin();
+      allow update: if isAuthenticated() && 
+                       (request.auth.uid == userId || isAdmin());
       
-      // Solo el propio usuario puede eliminar (por seguridad)
-      allow delete: if isAuthenticated() && request.auth.uid == userId;
+      // Solo admin puede eliminar usuarios
+      allow delete: if isAdmin();
     }
     
     // ========================================
-    // COLECCIÓN: schools (Escuelas) - TEMPORAL
+    // COLECCIÓN: schools (Escuelas)
     // ========================================
     match /schools/{schoolId} {
-      allow read, write: if isAuthenticated();
+      // Admin y Responsable pueden leer escuelas
+      // Responsable solo ve las escuelas asignadas (filtrado en cliente)
+      allow read: if isAdminOrResponsable();
+      
+      // Admin y Responsable pueden crear escuelas
+      allow create: if isAdminOrResponsable();
+      
+      // Admin y Responsable pueden editar escuelas
+      // Responsable solo edita sus escuelas (validado en cliente)
+      allow update: if isAdminOrResponsable();
+      
+      // Solo Admin puede eliminar escuelas
+      allow delete: if isAdmin();
     }
     
     // ========================================
-    // COLECCIÓN: teachers (Docentes) - TEMPORAL
+    // COLECCIÓN: teachers (Docentes)
     // ========================================
     match /teachers/{teacherId} {
-      allow read, write: if isAuthenticated();
+      // Admin y Responsable pueden leer docentes
+      // Responsable solo ve docentes de sus escuelas (filtrado en cliente)
+      allow read: if isAdminOrResponsable();
+      
+      // Admin y Responsable pueden crear docentes
+      allow create: if isAdminOrResponsable();
+      
+      // Admin y Responsable pueden editar docentes
+      allow update: if isAdminOrResponsable();
+      
+      // Solo Admin puede eliminar docentes
+      allow delete: if isAdmin();
     }
     
     // ========================================
@@ -92,10 +136,20 @@ service cloud.firestore {
     }
     
     // ========================================
-    // COLECCIÓN: reports (Reportes) - TEMPORAL
+    // COLECCIÓN: reports (Reportes)
     // ========================================
     match /reports/{reportId} {
-      allow read, write: if isAuthenticated();
+      // Admin, Responsable y Secretaria pueden leer reportes
+      allow read: if isAdmin() || isResponsable() || isSecretaria();
+      
+      // Admin y Responsable pueden crear reportes
+      allow create: if isAdminOrResponsable();
+      
+      // Admin y Responsable pueden editar reportes
+      allow update: if isAdminOrResponsable();
+      
+      // Solo Admin puede eliminar reportes
+      allow delete: if isAdmin();
     }
     
     // ========================================
@@ -121,24 +175,6 @@ service cloud.firestore {
     }
     
     // ========================================
-    // COLECCIÓN: support_requests (Solicitudes de Soporte)
-    // ========================================
-    match /support_requests/{requestId} {
-      // Permitir a CUALQUIER PERSONA crear solicitudes (incluso sin autenticar)
-      // Esto es necesario para el formulario de contacto en la página de login
-      allow create: if true;
-      
-      // Solo usuarios autenticados pueden leer solicitudes de soporte
-      allow read: if isAuthenticated();
-      
-      // Solo usuarios autenticados pueden actualizar (por ejemplo, cambiar estado)
-      allow update: if isAuthenticated();
-      
-      // Solo Admin puede eliminar solicitudes
-      allow delete: if isAdmin();
-    }
-    
-    // ========================================
     // REGLA POR DEFECTO: DENEGAR TODO LO DEMÁS
     // ========================================
     // Cualquier colección no especificada arriba será denegada
@@ -147,3 +183,4 @@ service cloud.firestore {
     }
   }
 }
+

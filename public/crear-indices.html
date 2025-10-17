@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Índices de Firestore - Zephia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #8b4513;
+            text-align: center;
+        }
+        
+        .info {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .index-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #8b4513;
+        }
+        
+        .index-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .index-card p {
+            color: #666;
+            margin: 10px 0;
+        }
+        
+        button {
+            background-color: #8b4513;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #6d3410;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: #8b4513;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Crear Índices de Firestore</h1>
+        
+        <div class="info">
+            <strong>📋 Instrucciones:</strong><br>
+            Haz clic en cada botón para abrir Firebase Console y crear el índice correspondiente.
+            En cada página que se abra, solo haz clic en <strong>"Crear índice"</strong> o <strong>"Create Index"</strong>.
+        </div>
+
+        <!-- Índice 1 -->
+        <div class="index-card">
+            <h3><span class="step-number">1</span>Índice para Conversaciones</h3>
+            <p>Este índice permite ordenar las conversaciones por fecha de última actualización.</p>
+            <p><strong>Colección:</strong> conversations</p>
+            <p><strong>Campos:</strong> participants + updatedAt</p>
+            <button onclick="abrirIndice1()">
+                🔗 Crear Índice 1
+            </button>
+        </div>
+
+        <!-- Índice 2 -->
+        <div class="index-card">
+            <h3><span class="step-number">2</span>Índice para Mensajes</h3>
+            <p>Este índice permite cargar los mensajes de una conversación ordenados por fecha.</p>
+            <p><strong>Colección:</strong> messages</p>
+            <p><strong>Campos:</strong> conversationId + timestamp</p>
+            <button onclick="abrirIndice2()">
+                🔗 Crear Índice 2
+            </button>
+        </div>
+
+        <!-- Índice 3 -->
+        <div class="index-card">
+            <h3><span class="step-number">3</span>Índice para Mensajes Leídos</h3>
+            <p>Este índice permite marcar mensajes como leídos y filtrarlos.</p>
+            <p><strong>Colección:</strong> messages</p>
+            <p><strong>Campos:</strong> conversationId + read + senderId</p>
+            <button onclick="abrirIndice3()">
+                🔗 Crear Índice 3
+            </button>
+        </div>
+
+        <div class="success">
+            <strong>✅ Después de crear los 3 índices:</strong><br>
+            1. Espera 3-5 minutos hasta que todos digan "Habilitado" en Firebase<br>
+            2. Recarga la página de tu aplicación<br>
+            3. ¡El sistema de mensajería funcionará perfectamente!
+        </div>
+    </div>
+
+    <script>
+        function abrirIndice1() {
+            window.open('https://console.firebase.google.com/v1/r/project/zephia-51ad4/firestore/indexes?create_composite=ClJwcm9qZWN0cy96ZXBoaWEtNTFhZDQvZGF0YWJhc2VzLyhkZWZhdWx0KS9jb2xsZWN0aW9uR3JvdXBzL2NvbnZlcnNhdGlvbnMvaW5kZXhlcy9fEAEaEAoMcGFydGljaXBhbnRzGAEaDQoJdXBkYXRlZEF0EAIaDAoIX19uYW1lX18QAg', '_blank');
+        }
+
+        function abrirIndice2() {
+            window.open('https://console.firebase.google.com/v1/r/project/zephia-51ad4/firestore/indexes?create_composite=Ck1wcm9qZWN0cy96ZXBoaWEtNTFhZDQvZGF0YWJhc2VzLyhkZWZhdWx0KS9jb2xsZWN0aW9uR3JvdXBzL21lc3NhZ2VzL2luZGV4ZXMvXxABGhIKDmNvbnZlcnNhdGlvbklkEAEaDQoJdGltZXN0YW1wEAEaDAoIX19uYW1lX18QAQ', '_blank');
+        }
+
+        function abrirIndice3() {
+            window.open('https://console.firebase.google.com/v1/r/project/zephia-51ad4/firestore/indexes?create_composite=Ck1wcm9qZWN0cy96ZXBoaWEtNTFhZDQvZGF0YWJhc2VzLyhkZWZhdWx0KS9jb2xsZWN0aW9uR3JvdXBzL21lc3NhZ2VzL2luZGV4ZXMvXxABGhIKDmNvbnZlcnNhdGlvbklkEAEaCAoEcmVhZBABGgwKCHNlbmRlcklkEAEaDAoIX19uYW1lX18QAQ', '_blank');
+        }
+    </script>
+</body>
+</html>
+

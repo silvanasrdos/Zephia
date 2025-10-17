@@ -13,6 +13,7 @@
     <link rel="apple-touch-icon" href="img/logo.png">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles-principal.css?v=2">
+    <link rel="stylesheet" href="styles-messaging.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
 </head>
@@ -25,9 +26,13 @@
                 <h2>Zephia</h2>
                     </div>
             <ul class="nav-menu">
-                <li class="nav-item active" onclick="showSection('messaging')">
+                <li class="nav-item" onclick="showSection('messaging')">
                     <i class="fas fa-envelope"></i>
                     <span>Mensajería</span>
+                </li>
+                <li class="nav-item" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
                 </li>
                 <li class="nav-item" onclick="showSection('schools')">
                     <i class="fas fa-school"></i>
@@ -40,10 +45,6 @@
                 <li class="nav-item" onclick="showSection('users')">
                     <i class="fas fa-users"></i>
                     <span>Usuarios</span>
-                </li>
-                <li class="nav-item" onclick="showSection('dashboard')">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
                 </li>
                 <li class="nav-item" onclick="showSection('reports')">
                     <i class="fas fa-chart-bar"></i>
@@ -185,6 +186,16 @@
             <!-- Users Section -->
             <section id="users-section" class="section" style="display: none;">
                 <div class="section-header">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="users-search" placeholder="Buscar por usuario, nombre, email, tipo..." onkeyup="filterUsers()">
+                    </div>
+                    <div class="filter-checkbox">
+                        <label>
+                            <input type="checkbox" id="show-inactive-users" onchange="filterUsers()">
+                            <span>Mostrar inactivos</span>
+                        </label>
+                    </div>
                     <button class="btn-primary" onclick="openModal('user-modal')">
                         <i class="fas fa-plus"></i> Agregar Usuario
                     </button>
@@ -209,105 +220,88 @@
             </section>
 
             <!-- Messaging Section -->
-            <section id="messaging-section" class="section">
-                <div class="messaging-container">
-                    <!-- Sidebar de conversaciones -->
-                    <div class="conversations-sidebar">
-                        <!-- Header del sidebar -->
-                        <div class="sidebar-header">
-                            <div class="header-left">
-                                <button class="menu-btn">
-                                    <i class="fas fa-bars"></i>
-                                </button>
-                                <h2>Mensajes</h2>
-                            </div>
+            <section id="messaging-section" class="section" style="display: none;">
+                <div class="messaging-wrapper">
+                    <!-- Panel Izquierdo: Lista de Conversaciones -->
+                    <div class="conversations-panel">
+                        <div class="conversations-header">
+                            <button class="header-icon-btn" title="Menu">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                            <h3>Mensajes</h3>
                             <div class="header-actions">
-                                <button class="action-btn" onclick="openModal('new-message-modal')" title="Nuevo chat">
+                                <button class="header-icon-btn" title="Nuevo mensaje" onclick="openNewMessageModal()">
                                     <i class="fas fa-plus"></i>
                                 </button>
-                                <button class="action-btn" onclick="refreshConversations()" title="Actualizar">
+                                <button class="header-icon-btn" title="Actualizar">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
-                                <button class="action-btn" title="Más opciones">
+                                <button class="header-icon-btn" title="Más opciones">
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                             </div>
                         </div>
                         
-                        <!-- Barra de búsqueda -->
-                        <div class="search-bar">
+                        <div class="conversations-search">
                             <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Buscar conversaciones" id="conversation-search">
+                            <input type="text" id="conversation-search" placeholder="Buscar conversaciones">
                         </div>
                         
-                        <!-- Lista de conversaciones -->
                         <div class="conversations-list" id="conversations-list">
-                            <!-- Las conversaciones se cargarán aquí -->
+                            <!-- Las conversaciones se cargarán dinámicamente aquí -->
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>No hay conversaciones aún</p>
+                                <small>Inicia una nueva conversación usando el botón +</small>
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- Área de chat principal -->
-                    <div class="chat-area">
-                        <!-- Estado vacío -->
-                        <div class="empty-chat" id="empty-chat">
-                            <div class="empty-icon">
-                                <i class="fas fa-comments"></i>
+
+                    <!-- Panel Derecho: Chat -->
+                    <div class="chat-panel">
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <div class="chat-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="chat-user-details">
+                                    <h3>Selecciona una conversación</h3>
+                                    <span class="user-status">-</span>
+                                </div>
                             </div>
-                            <h3>Mensajería Zephia</h3>
-                            <p>Selecciona una conversación para comenzar a chatear</p>
-                            <button class="btn-primary" onclick="openModal('new-message-modal')">
-                                <i class="fas fa-plus"></i> Nuevo Mensaje
-                            </button>
+                            <div class="chat-header-actions">
+                                <button class="header-icon-btn" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button class="header-icon-btn" title="Más opciones">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
                         </div>
-                        
-                        <!-- Chat activo -->
-                        <div class="active-chat" id="active-chat" style="display: none;">
-                            <!-- Header del chat -->
-                            <div class="chat-header">
-                                <div class="chat-user-info">
-                                    <div class="user-avatar">
-                                        <i class="fas fa-user-circle"></i>
-                                    </div>
-                                    <div class="user-details">
-                                        <h4 id="chat-user-name">Nombre del Usuario</h4>
-                                        <span id="chat-user-status">En línea</span>
-                                    </div>
-                                </div>
-                                <div class="chat-actions">
-                                    <button class="chat-action-btn" title="Buscar">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    <button class="chat-action-btn" title="Más opciones">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Los mensajes se cargarán dinámicamente aquí -->
+                            <div class="empty-state">
+                                <i class="fas fa-comments"></i>
+                                <p>Selecciona una conversación</p>
+                                <small>Elige una conversación de la lista para comenzar</small>
                             </div>
-                            
-                            <!-- Área de mensajes -->
-                            <div class="messages-area" id="messages-container">
-                                <!-- Los mensajes se cargarán aquí -->
-                            </div>
-                            
-                            <!-- Input de mensaje -->
-                            <div class="message-input-area">
-                                <button class="input-action-btn" title="Emoji">
-                                    <i class="fas fa-smile"></i>
-                                </button>
-                                <div class="message-input">
-                                    <input type="text" placeholder="Escribe un mensaje..." id="message-input">
-                                </div>
-                                <div class="priority-selector">
-                                    <select id="message-priority" title="Prioridad del mensaje">
-                                        <option value="normal">📋 Normal</option>
-                                        <option value="baja">🟢 Baja</option>
-                                        <option value="media">🟡 Media</option>
-                                        <option value="alta">🔴 Alta</option>
-                                    </select>
-                                </div>
-                                <button class="input-action-btn send-btn" title="Enviar mensaje" onclick="sendMessage()">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <button class="emoji-btn" title="Emojis">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+                            <select class="priority-selector-input normal" id="priority-selector" title="Prioridad" onchange="updatePriorityColor(this)">
+                                <option value="normal">Normal</option>
+                                <option value="baja">Baja</option>
+                                <option value="media">Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                            <button class="send-btn" title="Enviar">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -555,10 +549,19 @@
                         </div>
                         <div class="form-group">
                             <label for="teacher-escuelas">Escuelas Asignadas</label>
-                            <select id="teacher-escuelas" name="escuelasAsignadas" multiple size="4">
-                                <!-- Se cargarán dinámicamente las escuelas disponibles -->
-                            </select>
-                            <small>Mantén Ctrl presionado para seleccionar múltiples escuelas</small>
+                            <div class="multi-select-container">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="teacher-schools-search-input" placeholder="Buscar escuela..." onkeyup="filterTeacherSchoolsList()">
+                                </div>
+                                <div class="selected-items" id="teacher-selected-schools">
+                                    <span class="no-selection">Ninguna escuela seleccionada</span>
+                                </div>
+                                <div class="schools-list" id="teacher-schools-list">
+                                    <!-- Las escuelas se cargarán aquí -->
+                                </div>
+                            </div>
+                            <small>Selecciona una o varias escuelas para este docente</small>
                         </div>
                         <div class="form-group">
                             <label for="teacher-materias">Materias/Asignaturas</label>
@@ -1108,34 +1111,70 @@
         </div>
     </div>
 
+    <!-- Modal de Confirmación de Cierre de Sesión -->
+    <div id="logout-modal" class="logout-modal" style="display: none;">
+        <div class="logout-modal-content">
+            <div class="logout-modal-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3>¿Cerrar sesión?</h3>
+            <p>¿Estás seguro de que deseas salir del sistema?</p>
+            <div class="logout-modal-actions">
+                <button class="btn-cancel" onclick="closeLogoutModal()">
+                    Cancelar
+                </button>
+                <button class="btn-logout" onclick="confirmLogout()">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación Exitosa -->
+    <div id="success-modal" class="success-modal" style="display: none;">
+        <div class="success-modal-content">
+            <div class="success-modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 id="success-modal-title">¡Operación exitosa!</h3>
+            <p id="success-modal-message">Los datos se han guardado correctamente.</p>
+            <div class="success-modal-details" id="success-modal-details" style="display: none;"></div>
+            <div class="success-modal-actions">
+                <button class="btn-success-ok" onclick="closeSuccessModal()">
+                    <i class="fas fa-check"></i> Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Script de validaciones -->
     <script src="validaciones.js"></script>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK y Sistema de Mensajería -->
     <script type="module">
-        // Importar Firebase
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, updateProfile } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js';
-        import { getFirestore, collection, getDocs, addDoc, serverTimestamp, doc, deleteDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js';
+        // Importar Firebase desde configuración centralizada
+        import { auth, db } from './firebase-config.js';
+        import { logoutWithMessaging } from './auth-messaging-integration.js';
         
-        // Configuración de Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAebJgE_34xBGfVeiLXUs9gnisoFbIPOn4",
-            authDomain: "zephia-51ad4.firebaseapp.com",
-            databaseURL: "https://zephia-51ad4-default-rtdb.firebaseio.com",
-            projectId: "zephia-51ad4",
-            storageBucket: "zephia-51ad4.firebasestorage.app",
-            messagingSenderId: "829322879330",
-            appId: "1:829322879330:web:f59f5389c7ead8a6440c3b",
-            measurementId: "G-75CDPLDSFX"
-        };
+        // Importar funciones necesarias de Firebase
+        import { 
+            onAuthStateChanged,
+            signOut,
+            createUserWithEmailAndPassword,
+            updateProfile
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        // Hacer disponible globalmente
+        import { 
+            collection,
+            getDocs,
+            addDoc,
+            serverTimestamp,
+            doc,
+            deleteDoc,
+            updateDoc
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Hacer disponible globalmente para compatibilidad con código existente
         window.auth = auth;
         window.db = db;
         window.collection = collection;
@@ -1148,17 +1187,61 @@
         window.updateDoc = updateDoc;
         window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
         window.updateProfile = updateProfile;
+        window.onAuthStateChanged = onAuthStateChanged;
+        
+        // Hacer disponible el sistema de mensajería
+        window.logoutWithMessaging = logoutWithMessaging;
         
         // Marcar Firebase como inicializado
         window.firebaseInitialized = true;
         
-        // Verificar autenticación
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log('Usuario autenticado:', user.email);
-                initializeAppData();
+        // Variables para control de inicialización
+        let appDataInitialized = false;
+        let messagingInitialized = false;
+        
+        // Importar sistema de mensajería
+        import { setupAuthListener } from './auth-messaging-integration.js';
+        
+        // Configurar listener de autenticación que también inicializa mensajería
+        console.log('🔥 Configurando autenticación y mensajería para Admin...');
+        
+        // Inicializar el sistema de mensajería (esto configura su propio listener)
+        setupAuthListener();
+        
+        // ===== FUNCIONES GLOBALES PARA MENSAJERÍA =====
+        
+        // Funciones de mensajería (estas se conectan con messagingUI)
+        window.openNewMessageModal = function() {
+            if (window.messagingUI) {
+                window.messagingUI.openNewMessageModal();
             } else {
-                console.log('Usuario no autenticado');
+                console.warn('Sistema de mensajería no inicializado aún');
+            }
+        };
+        
+        window.updatePriorityColor = function(selectElement) {
+            if (window.messagingUI) {
+                window.messagingUI.updatePriorityColor(selectElement);
+            } else {
+                // Fallback manual
+                const value = selectElement.value;
+                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+                selectElement.classList.add(value);
+            }
+        };
+        
+        // Listener personalizado que combina autenticación y carga de datos
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('✅ Usuario autenticado:', user.email);
+                
+                // Cargar datos de la aplicación (una sola vez)
+                if (!appDataInitialized) {
+                    initializeAppData();
+                    appDataInitialized = true;
+                }
+            } else {
+                console.log('❌ Usuario no autenticado');
                 window.location.href = 'login.html';
             }
         });
@@ -1210,18 +1293,91 @@
             }
         }
 
-        // Cargar escuelas en el select del formulario de docentes
+        // Cargar escuelas en el componente de búsqueda del formulario de docentes
         function loadSchoolsInSelect() {
-            const select = document.getElementById('teacher-escuelas');
-            if (!select || !window.schools) return;
+            const schoolsList = document.getElementById('teacher-schools-list');
+            if (!schoolsList || !window.schools) return;
             
-            select.innerHTML = ''; // Limpiar opciones existentes
+            // Inicializar array de escuelas seleccionadas para docentes si no existe
+            if (!window.selectedTeacherSchoolIds) {
+                window.selectedTeacherSchoolIds = [];
+            }
+            
+            schoolsList.innerHTML = '';
             
             window.schools.forEach(school => {
-                const option = document.createElement('option');
-                option.value = school.id;
-                option.textContent = school.nombreInstitucion || school.name;
-                select.appendChild(option);
+                const isChecked = window.selectedTeacherSchoolIds.includes(school.id);
+                const div = document.createElement('div');
+                div.className = 'school-item';
+                div.innerHTML = `
+                    <label>
+                        <input type="checkbox" 
+                               value="${school.id}" 
+                               ${isChecked ? 'checked' : ''}
+                               onchange="toggleTeacherSchoolSelection('${school.id}')">
+                        <span>${school.nombreInstitucion || school.name || 'Sin nombre'}</span>
+                    </label>
+                `;
+                schoolsList.appendChild(div);
+            });
+            
+            // Actualizar visualización de escuelas seleccionadas
+            updateTeacherSelectedSchoolsDisplay();
+        }
+
+        // Filtrar lista de escuelas para docentes
+        window.filterTeacherSchoolsList = function() {
+            const searchTerm = document.getElementById('teacher-schools-search-input').value.toLowerCase().trim();
+            const schoolItems = document.querySelectorAll('#teacher-schools-list .school-item');
+            
+            schoolItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        };
+
+        // Toggle selección de escuela para docente
+        window.toggleTeacherSchoolSelection = function(schoolId) {
+            const index = window.selectedTeacherSchoolIds.indexOf(schoolId);
+            
+            if (index > -1) {
+                // Deseleccionar
+                window.selectedTeacherSchoolIds.splice(index, 1);
+            } else {
+                // Seleccionar
+                window.selectedTeacherSchoolIds.push(schoolId);
+            }
+            
+            updateTeacherSelectedSchoolsDisplay();
+        };
+
+        // Actualizar visualización de escuelas seleccionadas para docente
+        function updateTeacherSelectedSchoolsDisplay() {
+            const container = document.getElementById('teacher-selected-schools');
+            if (!container) return;
+            
+            if (window.selectedTeacherSchoolIds.length === 0) {
+                container.innerHTML = '<span class="no-selection">Ninguna escuela seleccionada</span>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            window.selectedTeacherSchoolIds.forEach(schoolId => {
+                const school = window.schools.find(s => s.id === schoolId);
+                if (school) {
+                    const tag = document.createElement('span');
+                    tag.className = 'selected-tag';
+                    tag.innerHTML = `
+                        ${school.nombreInstitucion || school.name}
+                        <i class="fas fa-times" onclick="toggleTeacherSchoolSelection('${schoolId}')"></i>
+                    `;
+                    container.appendChild(tag);
+                }
             });
         }
 
@@ -1231,42 +1387,7 @@
             const formGroup = select?.closest('.form-group');
             if (!select || !window.users) return;
             
-            // Obtener el usuario actual autenticado
-            const currentUser = auth.currentUser;
-            let currentUserData = null;
-            
-            // Buscar datos del usuario actual en la colección users
-            if (currentUser) {
-                currentUserData = window.users.find(user => 
-                    user.uid === currentUser.uid || user.email === currentUser.email
-                );
-            }
-            
-            // Si el usuario actual es un responsable a cargo y NO está editando, auto-asignar
-            if (!isEditing && currentUserData && (currentUserData.type === 'responsable' || 
-                currentUserData.type === 'Responsable a cargo' || 
-                currentUserData.type === 'responsable a cargo')) {
-                
-                // Auto-seleccionar al responsable actual
-                select.innerHTML = `<option value="${currentUserData.id}" selected>${currentUserData.fullName || currentUserData.name || currentUserData.username}</option>`;
-                
-                // Ocultar el select y mostrar info
-                select.style.display = 'none';
-                
-                // Crear mensaje informativo si no existe
-                let infoMsg = formGroup?.querySelector('.admin-auto-assigned');
-                if (!infoMsg) {
-                    infoMsg = document.createElement('div');
-                    infoMsg.className = 'admin-auto-assigned';
-                    infoMsg.innerHTML = `<i class="fas fa-info-circle"></i><span>Serás asignado automáticamente como administrador de esta escuela</span>`;
-                    formGroup?.appendChild(infoMsg);
-                }
-                
-                console.log('Responsable auto-asignado:', currentUserData.fullName);
-                return;
-            }
-            
-            // Si es soporte u otro tipo de usuario, o está editando, mostrar todos los responsables
+            // Siempre mostrar el select
             select.style.display = 'block';
             
             // Eliminar mensaje informativo si existe
@@ -1275,13 +1396,20 @@
                 infoMsg.remove();
             }
             
-            // Limpiar opciones existentes (excepto la primera)
+            // Limpiar opciones existentes
             select.innerHTML = '<option value="">Seleccionar administrador</option>';
             
             // Filtrar solo usuarios con rol de responsable a cargo
             const administrators = window.users.filter(user => 
                 user.type === 'responsable' || user.type === 'Responsable a cargo' || user.type === 'responsable a cargo'
             );
+            
+            // Ordenar alfabéticamente por nombre
+            administrators.sort((a, b) => {
+                const nameA = (a.fullName || a.name || a.username).toLowerCase();
+                const nameB = (b.fullName || b.name || b.username).toLowerCase();
+                return nameA.localeCompare(nameB);
+            });
             
             administrators.forEach(admin => {
                 const option = document.createElement('option');
@@ -1294,10 +1422,12 @@
             if (administrators.length === 0) {
                 const option = document.createElement('option');
                 option.value = '';
-                option.textContent = 'No hay administradores disponibles';
+                option.textContent = 'No hay responsables disponibles';
                 option.disabled = true;
                 select.appendChild(option);
             }
+            
+            console.log(`✅ ${administrators.length} responsables cargados en el selector`);
         }
         
         // Cargar docentes
@@ -1832,6 +1962,9 @@
             
             // Mostrar notificación si hay usuarios con problemas
             showUsersWithAuthIssues();
+            
+            // Aplicar filtro automáticamente (ocultar inactivos por defecto)
+            filterUsers();
         }
 
         // Función para resolver problemas de autenticación de usuarios
@@ -1884,6 +2017,63 @@
             }
         }
 
+        // Función para filtrar escuelas
+        function filterSchools() {
+            const searchInput = document.getElementById('schools-search');
+            const filter = searchInput.value.toLowerCase();
+            const tbody = document.getElementById('schools-table-body');
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Función para filtrar docentes
+        function filterTeachers() {
+            const searchInput = document.getElementById('teachers-search');
+            const filter = searchInput.value.toLowerCase();
+            const tbody = document.getElementById('teachers-table-body');
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Función para filtrar usuarios
+        function filterUsers() {
+            const searchInput = document.getElementById('users-search');
+            const showInactive = document.getElementById('show-inactive-users').checked;
+            const filter = searchInput.value.toLowerCase();
+            const tbody = document.getElementById('users-table-body');
+            const rows = tbody.getElementsByTagName('tr');
+
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                const statusBadge = row.querySelector('.status-badge');
+                const isInactive = statusBadge && statusBadge.classList.contains('inactive');
+                
+                // Aplicar filtro de búsqueda
+                const matchesSearch = text.includes(filter);
+                
+                // Aplicar filtro de estado
+                const shouldShow = matchesSearch && (showInactive || !isInactive);
+                
+                row.style.display = shouldShow ? '' : 'none';
+            }
+        }
+
         // Hacer funciones globales
         window.loadSchools = loadSchools;
         window.loadTeachers = loadTeachers;
@@ -1892,6 +2082,9 @@
         window.loadTeachersTable = loadTeachersTable;
         window.loadUsersTable = loadUsersTable;
         window.updateStats = updateStats;
+        window.filterSchools = filterSchools;
+        window.filterTeachers = filterTeachers;
+        window.filterUsers = filterUsers;
     </script>
 
     <!-- Script principal -->
@@ -1925,17 +2118,27 @@
         // Función para controlar permisos de navegación
         function initializeUserPermissions() {
             const currentUser = window.currentUser;
+            console.log('Current user:', currentUser);
+            
+            if (!currentUser) {
+                console.log('No current user found, using default permissions');
+                // Si no hay usuario, mostrar mensajería por defecto
+                showSection('messaging');
+                return;
+            }
+            
             const navItems = document.querySelectorAll('.nav-item');
             
             // Definir permisos por tipo de usuario
             const permissions = {
-                soporte: ['messaging', 'schools', 'teachers', 'users', 'dashboard', 'reports', 'support'],
-                responsable: ['messaging', 'schools', 'teachers', 'dashboard'],
+                soporte: ['messaging', 'dashboard', 'schools', 'teachers', 'users', 'reports', 'support'],
+                responsable: ['messaging', 'dashboard', 'schools', 'teachers'],
                 docente: ['messaging', 'dashboard'],
                 secretaria: ['messaging', 'dashboard']
             };
             
             const userPermissions = permissions[currentUser.type] || [];
+            console.log('User permissions:', userPermissions);
             
             // Mostrar/ocultar elementos de navegación según permisos
             navItems.forEach(item => {
@@ -1955,7 +2158,11 @@
             
             // Mostrar la primera sección permitida por defecto
             if (userPermissions.length > 0) {
+                console.log('Showing section:', userPermissions[0]);
                 showSection(userPermissions[0]);
+            } else {
+                // Fallback: mostrar mensajería
+                showSection('messaging');
             }
         }
         
@@ -2048,35 +2255,109 @@
             }
         }
         
-        // Función de logout
+        // Función de logout - Abrir modal
         function logout() {
-            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                window.signOut(window.auth).then(() => {
+            document.getElementById('logout-modal').style.display = 'flex';
+        }
+
+        // Cerrar modal de logout
+        function closeLogoutModal() {
+            document.getElementById('logout-modal').style.display = 'none';
+        }
+
+        // Confirmar y ejecutar logout
+        async function confirmLogout() {
+            try {
+                // Usar logoutWithMessaging si está disponible (con mensajería integrada)
+                if (window.logoutWithMessaging) {
+                    await window.logoutWithMessaging();
+                } else {
+                    // Fallback a logout tradicional
+                    await window.signOut(window.auth);
                     window.location.href = 'login.html';
-                }).catch((error) => {
-                    console.error('Error al cerrar sesión:', error);
-                });
+                }
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                alert('Error al cerrar sesión. Intenta nuevamente.');
+                // Fallback: redirigir al login de todas formas
+                window.location.href = 'login.html';
             }
         }
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('logout-modal');
+            if (event.target === modal) {
+                closeLogoutModal();
+            }
+            
+            const successModal = document.getElementById('success-modal');
+            if (event.target === successModal) {
+                closeSuccessModal();
+            }
+        });
+
+        // Función para mostrar el modal de confirmación exitosa
+        function showSuccessModal(options) {
+            const modal = document.getElementById('success-modal');
+            const title = document.getElementById('success-modal-title');
+            const message = document.getElementById('success-modal-message');
+            const details = document.getElementById('success-modal-details');
+            
+            // Configurar contenido
+            title.textContent = options.title || '¡Operación exitosa!';
+            message.textContent = options.message || 'Los datos se han guardado correctamente.';
+            
+            // Limpiar clases anteriores
+            modal.className = 'success-modal';
+            
+            // Agregar clase específica según el tipo
+            if (options.type) {
+                modal.classList.add(options.type);
+            }
+            
+            // Mostrar detalles si existen
+            if (options.details && options.details.length > 0) {
+                details.innerHTML = options.details.map(detail => 
+                    `<p><i class="${detail.icon}"></i><span>${detail.text}</span></p>`
+                ).join('');
+                details.style.display = 'block';
+            } else {
+                details.style.display = 'none';
+            }
+            
+            // Mostrar modal
+            modal.style.display = 'flex';
+            
+            // Auto-cerrar después de cierto tiempo si se especifica
+            if (options.autoClose !== false) {
+                setTimeout(() => {
+                    closeSuccessModal();
+                }, options.autoCloseDelay || 3000);
+            }
+        }
+
+        // Función para cerrar el modal de confirmación exitosa
+        function closeSuccessModal() {
+            const modal = document.getElementById('success-modal');
+            modal.style.display = 'none';
+        }
         
-        // Event listeners cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar validaciones en tiempo real
         inicializarValidacionEscuelas();
         inicializarValidacionDocentes();
         inicializarValidacionUsuarios();
         
-        // Event listener para el formulario de escuelas
+        // Inicializar la aplicación con permisos y datos
+        initializeAppData();
+        
         document.getElementById('school-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // Validar formulario antes de enviar
             if (!validarFormularioEscuela()) {
                 alert('Por favor, corrija los errores en el formulario antes de continuar');
                 return;
             }
             
-            // Verificar que Firebase esté inicializado
             try {
                 window.ensureFirebaseInitialized();
                 } catch (error) {
@@ -2085,11 +2366,9 @@
             }
             
             try {
-                // Obtener niveles educativos seleccionados
                 const nivelesSelect = document.getElementById('school-nivel');
                 const nivelesEducativos = Array.from(nivelesSelect.selectedOptions).map(option => option.value);
                 
-                // Obtener turnos seleccionados
                 const turnosSelect = document.getElementById('school-turnos');
                 const turnos = Array.from(turnosSelect.selectedOptions).map(option => option.value);
 
@@ -2110,19 +2389,24 @@
                     cantidadDocentes: parseInt(document.getElementById('school-docentes').value) || 0
                 };
 
-                // Verificar si estamos editando o creando
                 if (window.editingSchoolId) {
-                    // EDITAR escuela existente
                     const schoolRef = window.doc(window.db, 'schools', window.editingSchoolId);
                     await window.updateDoc(schoolRef, {
                         ...schoolData,
                         updatedAt: window.serverTimestamp()
                     });
                     
-                    alert('Escuela actualizada correctamente');
+                    showSuccessModal({
+                        type: 'school-added',
+                        title: '¡Escuela actualizada!',
+                        message: 'Los datos de la escuela se han actualizado correctamente.',
+                        details: [
+                            { icon: 'fas fa-school', text: `<strong>Escuela:</strong> ${schoolData.nombreInstitucion}` },
+                            { icon: 'fas fa-map-marker-alt', text: `<strong>Ubicación:</strong> ${schoolData.direccion.localidad}, ${schoolData.direccion.provincia}` }
+                        ]
+                    });
                     delete window.editingSchoolId;
                 } else {
-                    // CREAR nueva escuela
                     const schoolsRef = window.collection(window.db, 'schools');
                     await window.addDoc(schoolsRef, {
                         ...schoolData,
@@ -2130,15 +2414,21 @@
                         updatedAt: window.serverTimestamp()
                     });
                     
-                    alert('Escuela agregada correctamente');
+                    showSuccessModal({
+                        type: 'school-added',
+                        title: '¡Escuela agregada!',
+                        message: 'La nueva escuela se ha registrado exitosamente en el sistema.',
+                        details: [
+                            { icon: 'fas fa-school', text: `<strong>Escuela:</strong> ${schoolData.nombreInstitucion}` },
+                            { icon: 'fas fa-graduation-cap', text: `<strong>Niveles:</strong> ${schoolData.nivelesEducativos.join(', ')}` },
+                            { icon: 'fas fa-map-marker-alt', text: `<strong>Ubicación:</strong> ${schoolData.direccion.localidad}, ${schoolData.direccion.provincia}` }
+                        ]
+                    });
                 }
                 
-                // Recargar datos
                     await window.loadSchools();
                     window.updateStats();
                 closeModal('school-modal');
-                
-                // Resetear formulario
                 resetSchoolForm();
                 
             } catch (error) {
@@ -2147,17 +2437,14 @@
             }
         });
         
-        // Event listener para el formulario de docentes
         document.getElementById('teacher-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Validar formulario antes de enviar
             if (!validarFormularioDocente()) {
                 alert('Por favor, corrija los errores en el formulario antes de continuar');
                 return;
             }
             
-            // Verificar que Firebase esté inicializado
             try {
                 window.ensureFirebaseInitialized();
             } catch (error) {
@@ -2166,15 +2453,9 @@
             }
             
             try {
-                // Obtener escuelas seleccionadas
-                const escuelasSelect = document.getElementById('teacher-escuelas');
-                const escuelasAsignadas = Array.from(escuelasSelect.selectedOptions).map(option => option.value);
-                
-                // Procesar materias (separadas por comas)
+                const escuelasAsignadas = window.selectedTeacherSchoolIds || [];
                 const materiasText = document.getElementById('teacher-materias').value;
                 const materias = materiasText ? materiasText.split(',').map(m => m.trim()).filter(m => m) : [];
-                
-                // Obtener datos del formulario
                 const usuario = document.getElementById('teacher-usuario').value;
                 
                 const teacherData = {
@@ -2191,12 +2472,8 @@
                     estado: document.getElementById('teacher-estado').value || 'activo'
                 };
 
-                // Verificar si estamos editando o creando
                 if (window.editingTeacherId) {
-                    // EDITAR docente existente
                     const teacherRef = window.doc(window.db, 'teachers', window.editingTeacherId);
-                    
-                    // Preparar datos para actualización (sin contraseña si está vacía)
                     const updateData = {
                         escuelasAsignadas: teacherData.escuelasAsignadas,
                         nombre: teacherData.nombre,
@@ -2210,19 +2487,24 @@
                     updatedAt: window.serverTimestamp()
                 };
 
-                    // Solo actualizar contraseña si se proporciona una nueva
                     if (teacherData.contraseña && teacherData.contraseña.trim()) {
                         updateData.contraseña = teacherData.contraseña;
                     }
                     
                     await window.updateDoc(teacherRef, updateData);
-                    alert('Docente actualizado correctamente');
                     
-                    // Limpiar variable de edición
+                    showSuccessModal({
+                        type: 'teacher-added',
+                        title: '¡Docente actualizado!',
+                        message: 'Los datos del docente se han actualizado correctamente.',
+                        details: [
+                            { icon: 'fas fa-chalkboard-teacher', text: `<strong>Docente:</strong> ${teacherData.nombre} ${teacherData.apellido}` },
+                            { icon: 'fas fa-id-card', text: `<strong>DNI:</strong> ${teacherData.dni}` },
+                            { icon: 'fas fa-envelope', text: `<strong>Email:</strong> ${teacherData.correo}` }
+                        ]
+                    });
                     delete window.editingTeacherId;
                 } else {
-                    // CREAR nuevo docente
-                    // Verificar si el usuario ya existe
                     const existingTeacher = window.teachers.find(t => t.usuario === usuario);
                     if (existingTeacher) {
                         alert('Ya existe un docente con este usuario. Por favor, elija otro.');
@@ -2247,15 +2529,21 @@
                         updatedAt: window.serverTimestamp()
                     });
                     
-                    alert('Docente agregado correctamente');
+                    showSuccessModal({
+                        type: 'teacher-added',
+                        title: '¡Docente agregado!',
+                        message: 'El nuevo docente se ha registrado exitosamente en el sistema.',
+                        details: [
+                            { icon: 'fas fa-chalkboard-teacher', text: `<strong>Docente:</strong> ${teacherData.nombre} ${teacherData.apellido}` },
+                            { icon: 'fas fa-user', text: `<strong>Usuario:</strong> ${teacherData.usuario}` },
+                            { icon: 'fas fa-school', text: `<strong>Escuelas:</strong> ${escuelasAsignadas.length} asignada(s)` }
+                        ]
+                    });
                 }
                 
-                // Recargar datos
                     await window.loadTeachers();
                     window.updateStats();
                 closeModal('teacher-modal');
-                
-                // Resetear formulario
                 resetTeacherForm();
                 
             } catch (error) {
@@ -2308,17 +2596,14 @@
                 return 'strong';
             }
 
-            // Event listener para el formulario de usuarios
             document.getElementById('user-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // Validar formulario antes de enviar
                 if (!validarFormularioUsuario()) {
                     alert('Por favor, corrija los errores en el formulario antes de continuar');
                     return;
                 }
                 
-                // Verificar que Firebase esté inicializado
                 try {
                     window.ensureFirebaseInitialized();
                 } catch (error) {
@@ -2327,7 +2612,6 @@
                 }
                 
                 try {
-                    // Obtener datos del formulario
                     const username = document.getElementById('username').value;
 
                     const userData = {
@@ -2339,12 +2623,8 @@
                         status: 'Activo'
                     };
 
-                    // Verificar si estamos editando o creando
                     if (window.editingUserId) {
-                        // EDITAR usuario existente
                         const userRef = window.doc(window.db, 'users', window.editingUserId);
-                        
-                        // Preparar datos para actualización
                         const updateData = {
                             fullName: userData.fullName,
                             email: userData.email,
@@ -2354,37 +2634,38 @@
                         updatedAt: window.serverTimestamp()
                     };
 
-                        // Solo actualizar contraseña si se proporciona una nueva
                         const newPassword = document.getElementById('user-password').value;
                         if (newPassword && newPassword.trim()) {
-                            updateData.password = newPassword; // En producción debería estar hasheada
+                            updateData.password = newPassword;
                         }
                         
                         await window.updateDoc(userRef, updateData);
-                        alert('Usuario actualizado correctamente');
                         
-                        // Limpiar variable de edición
+                        showSuccessModal({
+                            type: 'user-added',
+                            title: '¡Usuario actualizado!',
+                            message: 'Los datos del usuario se han actualizado correctamente.',
+                            details: [
+                                { icon: 'fas fa-user', text: `<strong>Usuario:</strong> ${userData.username}` },
+                                { icon: 'fas fa-id-badge', text: `<strong>Nombre:</strong> ${userData.fullName}` },
+                                { icon: 'fas fa-user-tag', text: `<strong>Tipo:</strong> ${userData.type}` }
+                            ]
+                        });
                         delete window.editingUserId;
                     } else {
-                        // CREAR nuevo usuario
-                        // Verificar si el usuario ya existe
                         const existingUser = window.users.find(u => u.username === username);
                         if (existingUser) {
                             alert('Ya existe un usuario con este nombre de usuario. Por favor, elija otro.');
                             return;
                         }
 
-                        // Validar contraseña para nuevo usuario
                         const password = document.getElementById('user-password').value;
                         if (!password) {
                             alert('La contraseña es requerida para nuevos usuarios');
                             return;
                         }
 
-                        // Verificar si el email ya existe en Firebase Auth
                         const email = userData.email;
-                        
-                        // Verificar si el email ya existe en la base de datos local
                         const existingEmail = window.users.find(u => u.email === email);
                         if (existingEmail) {
                             alert('Ya existe un usuario con este email. Por favor, use un email diferente.');
@@ -2392,32 +2673,38 @@
                         }
                         
                         try {
-                            // Crear usuario en Firebase Auth primero
                             const userCredential = await window.createUserWithEmailAndPassword(window.auth, email, password);
                             const firebaseUser = userCredential.user;
 
-                            // Actualizar el perfil del usuario en Firebase Auth
                             await window.updateProfile(firebaseUser, {
                                 displayName: userData.fullName
                             });
 
-                            // Guardar datos adicionales en Firestore
                             const usersRef = window.collection(window.db, 'users');
                             await window.addDoc(usersRef, {
                                 ...userData,
-                                uid: firebaseUser.uid, // ID de Firebase Auth
-                                password: password, // En producción debería estar hasheada
+                                uid: firebaseUser.uid,
+                                password: password,
                                 createdAt: window.serverTimestamp(),
                                 updatedAt: window.serverTimestamp()
                             });
                             
-                            alert('Usuario agregado correctamente y credenciales de autenticación creadas');
+                            showSuccessModal({
+                                type: 'user-added',
+                                title: '¡Usuario creado exitosamente!',
+                                message: 'El usuario se ha registrado correctamente con credenciales de autenticación.',
+                                details: [
+                                    { icon: 'fas fa-user', text: `<strong>Usuario:</strong> ${userData.username}` },
+                                    { icon: 'fas fa-id-badge', text: `<strong>Nombre:</strong> ${userData.fullName}` },
+                                    { icon: 'fas fa-envelope', text: `<strong>Email:</strong> ${userData.email}` },
+                                    { icon: 'fas fa-check-circle', text: '<strong>Autenticación:</strong> Credenciales creadas' }
+                                ]
+                            });
                             
                         } catch (authError) {
                             console.error('Error de autenticación:', authError);
                             
                             if (authError.code === 'auth/email-already-in-use') {
-                                // El email ya existe en Firebase Auth
                                 const userChoice = confirm(
                                     'El email ya está registrado en el sistema de autenticación.\n\n' +
                                     '¿Desea continuar y crear el usuario solo en la base de datos local?\n\n' +
@@ -2426,18 +2713,27 @@
                                 );
                                 
                                 if (userChoice) {
-                                    // Crear usuario solo en Firestore sin credenciales de Auth
                                     const usersRef = window.collection(window.db, 'users');
                                     await window.addDoc(usersRef, {
                                         ...userData,
-                                        password: password, // En producción debería estar hasheada
+                                        password: password,
                                         createdAt: window.serverTimestamp(),
                                         updatedAt: window.serverTimestamp(),
-                                        authStatus: 'pending', // Marcar que necesita credenciales
+                                        authStatus: 'pending',
                                         note: 'Usuario creado sin credenciales de autenticación - email ya existe'
                                     });
                                     
-                                    alert('Usuario agregado a la base de datos.\n\nNota: Este usuario no podrá iniciar sesión hasta que se resuelva el conflicto de email.');
+                                    showSuccessModal({
+                                        type: 'user-added',
+                                        title: '⚠️ Usuario agregado con limitaciones',
+                                        message: 'El usuario se ha guardado en la base de datos, pero no podrá iniciar sesión hasta resolver el conflicto de email.',
+                                        details: [
+                                            { icon: 'fas fa-user', text: `<strong>Usuario:</strong> ${userData.username}` },
+                                            { icon: 'fas fa-id-badge', text: `<strong>Nombre:</strong> ${userData.fullName}` },
+                                            { icon: 'fas fa-exclamation-triangle', text: '<strong>Estado:</strong> Sin credenciales de autenticación' }
+                                        ],
+                                        autoCloseDelay: 5000
+                                    });
                                 } else {
                                     alert('Creación de usuario cancelada. Por favor, use un email diferente.');
                                     return;
@@ -2454,12 +2750,9 @@
                         }
                     }
                     
-                    // Recargar datos
                     await window.loadUsers();
                     window.updateStats();
                     closeModal('user-modal');
-
-                    // Resetear formulario
                     resetUserForm();
                     
                 } catch (error) {
@@ -2786,12 +3079,14 @@
             document.getElementById('teacher-estado').value = teacher.estado || 'activo';
             
             // Seleccionar escuelas asignadas
-            const escuelasSelect = document.getElementById('teacher-escuelas');
-            if (teacher.escuelasAsignadas && escuelasSelect) {
-                Array.from(escuelasSelect.options).forEach(option => {
-                    option.selected = teacher.escuelasAsignadas.includes(option.value);
-                });
+            if (teacher.escuelasAsignadas) {
+                window.selectedTeacherSchoolIds = [...teacher.escuelasAsignadas];
+            } else {
+                window.selectedTeacherSchoolIds = [];
             }
+            
+            // Recargar la lista de escuelas con las selecciones
+            loadSchoolsInSelect();
             
             // Rellenar materias
             if (teacher.materias && teacher.materias.length > 0) {
@@ -2820,6 +3115,10 @@
             document.querySelector('#teacher-modal .modal-header h3').textContent = 'Agregar Docente';
             document.querySelector('#teacher-modal .btn-primary').textContent = 'Guardar Docente';
             delete window.editingTeacherId;
+            
+            // Limpiar escuelas seleccionadas
+            window.selectedTeacherSchoolIds = [];
+            loadSchoolsInSelect();
         }
         
         
@@ -3073,255 +3372,7 @@
             }
         }
 
-        // ===== NUEVA MENSAJERÍA =====
-        
-        // Variables globales para mensajería
-        window.conversations = [];
-        window.currentConversation = null;
-        window.messages = [];
-        
-        // Usuario actual
-        window.currentUser = {
-            id: 'current_user',
-            name: 'Usuario Actual',
-            type: 'soporte',
-            schoolId: 'all',
-            schoolName: 'Sistema'
-        };
-
-        // Función para refrescar conversaciones
-        function refreshConversations() {
-            loadConversations();
-        }
-
-        // Función para cargar conversaciones
-        async function loadConversations() {
-            try {
-                // Datos de ejemplo
-                window.conversations = [
-                    {
-                        id: 'conv1',
-                        name: 'Lucas Ramirez (R.C)',
-                        lastMessage: 'Calificaciones 5TO C',
-                        time: '19:48',
-                        unread: 1,
-                        avatar: 'brown',
-                        userType: 'responsable',
-                        schoolId: 'school1',
-                        schoolName: 'Escuela San Martín',
-                        priority: 'alta'
-                    },
-                    {
-                        id: 'conv2',
-                        name: 'Secretaría',
-                        lastMessage: 'Enseguida te envio los papeles.',
-                        time: '18:30',
-                        unread: 2,
-                        avatar: 'green',
-                        userType: 'secretaria',
-                        schoolId: 'school1',
-                        schoolName: 'Escuela San Martín',
-                        priority: 'media'
-                    },
-                    {
-                        id: 'conv3',
-                        name: 'Maria Gonzalez (Docente)',
-                        lastMessage: 'Necesito reportes.',
-                        time: '18:16',
-                        unread: 0,
-                        avatar: 'purple',
-                        userType: 'teacher',
-                        schoolId: 'school1',
-                        schoolName: 'Escuela San Martín',
-                        priority: 'baja'
-                    }
-                ];
-
-                renderConversations();
-            } catch (error) {
-                console.error('Error al cargar conversaciones:', error);
-            }
-        }
-
-        // Función para renderizar conversaciones
-        function renderConversations() {
-            const conversationsList = document.getElementById('conversations-list');
-            
-            if (window.conversations.length === 0) {
-                conversationsList.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-comments"></i>
-                        <p>No hay conversaciones</p>
-                        <button class="btn-primary" onclick="openModal('new-message-modal')">
-                            <i class="fas fa-plus"></i> Nuevo Chat
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            conversationsList.innerHTML = window.conversations.map(conv => `
-                <div class="conversation-item ${conv.priority ? 'priority-' + conv.priority : ''}" onclick="openConversation('${conv.id}')">
-                    <div class="conversation-avatar ${conv.avatar}">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="conversation-info">
-                        <div style="display: flex; align-items: center;">
-                            <h4 class="conversation-name">${conv.name}</h4>
-                            ${conv.priority && conv.priority !== 'normal' ? `<span class="priority-badge ${conv.priority}">${conv.priority.toUpperCase()}</span>` : ''}
-                        </div>
-                        <p class="conversation-preview">${conv.lastMessage}</p>
-                    </div>
-                    <div class="conversation-meta">
-                        <span class="conversation-time">${conv.time}</span>
-                        ${conv.unread > 0 ? `<span class="unread-badge">${conv.unread}</span>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Función para abrir una conversación
-        function openConversation(conversationId) {
-            // Actualizar estado activo
-            document.querySelectorAll('.conversation-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-
-            // Encontrar la conversación
-            const conversation = window.conversations.find(conv => conv.id === conversationId);
-            if (!conversation) return;
-
-            window.currentConversation = conversation;
-
-            // Mostrar el chat activo
-            document.getElementById('empty-chat').style.display = 'none';
-            document.getElementById('active-chat').style.display = 'flex';
-
-            // Actualizar header del chat
-            document.getElementById('chat-user-name').textContent = conversation.name;
-            document.getElementById('chat-user-status').textContent = 'En línea';
-
-            // Cargar mensajes
-            loadMessages(conversationId);
-
-            // Marcar como leída
-            conversation.unread = 0;
-            renderConversations();
-        }
-
-        // Función para cargar mensajes
-        function loadMessages(conversationId) {
-            const sampleMessages = {
-                'conv1': [
-                    { id: 1, text: 'Hoy', sender: 'system', time: '', priority: 'normal' },
-                    { id: 2, text: 'Enseguida te envío las calificaciones de 5TO', sender: 'sent', time: '18:12', priority: 'normal' },
-                    { id: 3, text: 'Dale. Estoy a la espera.', sender: 'received', time: '18:16', priority: 'normal' }
-                ],
-                'conv2': [
-                    { id: 1, text: '¿Podría enviarme los documentos requeridos?', sender: 'received', time: '09:45', priority: 'normal' },
-                    { id: 2, text: 'Por supuesto, ¿cuáles documentos necesita específicamente?', sender: 'sent', time: '09:47', priority: 'normal' }
-                ],
-                'conv3': [
-                    { id: 1, text: 'Confirmamos la reunión para mañana a las 14:00', sender: 'received', time: 'Ayer', priority: 'normal' },
-                    { id: 2, text: 'Perfecto, estaré allí puntual. Gracias por confirmar', sender: 'sent', time: 'Ayer', priority: 'normal' }
-                ]
-            };
-
-            window.messages = sampleMessages[conversationId] || [];
-            renderMessages();
-        }
-
-        // Función para renderizar mensajes
-        function renderMessages() {
-            const messagesContainer = document.getElementById('messages-container');
-            
-            messagesContainer.innerHTML = window.messages.map(message => {
-                if (message.sender === 'system') {
-                    return `
-                        <div class="message-date">
-                            <span class="date-badge">${message.text}</span>
-                        </div>
-                    `;
-                }
-                
-                const priorityClass = message.priority && message.priority !== 'normal' ? `priority-${message.priority}` : '';
-                const priorityBadge = message.priority && message.priority !== 'normal' ? 
-                    `<span class="priority-badge ${message.priority}">${message.priority.toUpperCase()}</span>` : '';
-                
-                return `
-                    <div class="message ${message.sender}">
-                        <div class="message-bubble ${priorityClass}">
-                            <div class="message-text">${message.text}</div>
-                            <div class="message-time">${message.time} ${priorityBadge}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Scroll al final
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Función para enviar mensaje
-        function sendMessage() {
-            const messageInput = document.getElementById('message-input');
-            const prioritySelect = document.getElementById('message-priority');
-            const messageText = messageInput.value.trim();
-
-            if (!messageText || !window.currentConversation) return;
-
-            // Obtener prioridad seleccionada
-            const priority = prioritySelect ? prioritySelect.value : 'normal';
-
-            // Crear nuevo mensaje
-            const newMessage = {
-                id: Date.now(),
-                text: messageText,
-                sender: 'sent',
-                time: new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
-                priority: priority
-            };
-
-            // Agregar mensaje
-            window.messages.push(newMessage);
-            renderMessages();
-
-            // Limpiar input
-            messageInput.value = '';
-            
-            // Resetear prioridad a normal
-            if (prioritySelect) {
-                prioritySelect.value = 'normal';
-            }
-
-            // Actualizar última conversación con la prioridad
-            const conversation = window.conversations.find(conv => conv.id === window.currentConversation.id);
-            if (conversation) {
-                conversation.lastMessage = messageText;
-                conversation.time = newMessage.time;
-                // Actualizar prioridad de la conversación si el mensaje tiene prioridad alta o media
-                if (priority === 'alta' || priority === 'media') {
-                    conversation.priority = priority;
-                }
-                renderConversations();
-            }
-        }
-
-        // Event listener para enviar mensaje con Enter
-        document.addEventListener('DOMContentLoaded', function() {
-            const messageInput = document.getElementById('message-input');
-            if (messageInput) {
-                messageInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        sendMessage();
-                    }
-                });
-            }
-
-            // Cargar conversaciones al inicializar
-            loadConversations();
-        });
+  
 
         // ===== FUNCIONES DE GESTIÓN DE SOPORTE =====
         
@@ -3592,6 +3643,7 @@
                 loadSupportRequests();
             }
         };
+        
     </script>
 </body>
 </html>
