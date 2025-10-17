@@ -1184,6 +1184,38 @@
         // Marcar Firebase como inicializado
         window.firebaseInitialized = true;
         
+        // ===== FUNCIONES DE MENSAJERÍA (deben estar disponibles globalmente desde el inicio) =====
+        
+        // Abrir modal de nuevo mensaje
+        window.openNewMessageModal = function() {
+            if (window.messagingUI) {
+                window.messagingUI.openNewMessageModal();
+            } else {
+                console.warn('Sistema de mensajería no inicializado');
+                alert('El sistema de mensajería aún se está cargando. Por favor, intenta de nuevo en un momento.');
+            }
+        };
+        
+        // Actualizar color del selector de prioridad
+        window.updatePriorityColor = function(selectElement) {
+            if (window.messagingUI && window.messagingUI.updatePriorityColor) {
+                window.messagingUI.updatePriorityColor(selectElement);
+            } else {
+                const value = selectElement.value;
+                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
+                selectElement.classList.add(value);
+            }
+        };
+        
+        // Seleccionar conversación
+        window.selectConversation = function(conversationId) {
+            if (window.messagingUI && window.messagingUI.selectConversation) {
+                window.messagingUI.selectConversation(conversationId);
+            } else {
+                console.warn('Sistema de mensajería no inicializado');
+            }
+        };
+        
         // Verificar autenticación
         auth.onAuthStateChanged((user) => {
             if (user) {
@@ -1207,16 +1239,6 @@
             try {
                 console.log('🔄 Inicializando sistema de mensajería...');
                 
-                // Obtener usuario actual
-                const currentUser = window.currentUser || {
-                    id: 'admin_user',
-                    name: 'Administrador',
-                    email: 'admin@zephia.com',
-                    role: 'admin'
-                };
-                
-                console.log('👤 Usuario actual:', currentUser);
-                
                 // Verificar que messagingUI esté disponible
                 if (typeof window.messagingUI === 'undefined') {
                     console.error('❌ messagingUI no está disponible');
@@ -1228,6 +1250,55 @@
                     console.error('❌ Firestore (db) no está disponible');
                     return;
                 }
+                
+                // Obtener usuario autenticado de Firebase Auth
+                const authUser = window.auth.currentUser;
+                if (!authUser) {
+                    console.warn('⚠️ No hay usuario autenticado');
+                    return;
+                }
+                
+                console.log('🔐 Usuario autenticado:', authUser.email, '(UID:', authUser.uid + ')');
+                
+                // Cargar datos del usuario desde Firestore
+                const userDoc = await window.db.collection('users').doc(authUser.uid).get();
+                
+                let currentUser;
+                if (userDoc.exists) {
+                    // Usuario existe en Firestore
+                    const userData = userDoc.data();
+                    currentUser = {
+                        id: authUser.uid,
+                        name: userData.fullName || userData.name || authUser.displayName || authUser.email,
+                        email: authUser.email,
+                        role: userData.type || userData.role || 'admin'
+                    };
+                    console.log('✅ Datos de usuario cargados desde Firestore:', currentUser);
+                } else {
+                    // Usuario no existe en Firestore, crear documento básico
+                    console.warn('⚠️ Usuario no existe en Firestore, creando documento...');
+                    currentUser = {
+                        id: authUser.uid,
+                        name: authUser.displayName || authUser.email,
+                        email: authUser.email,
+                        role: 'admin'
+                    };
+                    
+                    // Crear documento del usuario en Firestore
+                    await window.db.collection('users').doc(authUser.uid).set({
+                        name: currentUser.name,
+                        email: currentUser.email,
+                        role: currentUser.role,
+                        online: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log('✅ Documento de usuario creado en Firestore');
+                }
+                
+                // Guardar usuario en window para uso global
+                window.currentUser = currentUser;
+                
+                console.log('👤 Usuario para mensajería:', currentUser);
                 
                 // Inicializar el sistema de mensajería (pasar currentUser y db)
                 await window.messagingUI.initialize(currentUser, window.db);
@@ -3623,38 +3694,6 @@
             originalShowSection(sectionName);
             if (sectionName === 'support') {
                 loadSupportRequests();
-            }
-        };
-        
-        // ===== FUNCIONES DE MENSAJERÍA =====
-        
-        // Abrir modal de nuevo mensaje
-        window.openNewMessageModal = function() {
-            if (window.messagingUI) {
-                window.messagingUI.openNewMessageModal();
-            } else {
-                console.warn('Sistema de mensajería no inicializado');
-                alert('El sistema de mensajería aún se está cargando. Por favor, intenta de nuevo en un momento.');
-            }
-        };
-        
-        // Actualizar color del selector de prioridad
-        window.updatePriorityColor = function(selectElement) {
-            if (window.messagingUI && window.messagingUI.updatePriorityColor) {
-                window.messagingUI.updatePriorityColor(selectElement);
-            } else {
-                const value = selectElement.value;
-                selectElement.classList.remove('normal', 'baja', 'media', 'alta');
-                selectElement.classList.add(value);
-            }
-        };
-        
-        // Seleccionar conversación
-        window.selectConversation = function(conversationId) {
-            if (window.messagingUI && window.messagingUI.selectConversation) {
-                window.messagingUI.selectConversation(conversationId);
-            } else {
-                console.warn('Sistema de mensajería no inicializado');
             }
         };
         

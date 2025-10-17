@@ -16,6 +16,14 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    // Verificar si el usuario es administrador
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+
     // ========================================
     // COLECCIÓN: users - PERMISOS AMPLIADOS TEMPORALMENTE
     // ========================================
@@ -90,6 +98,20 @@ service cloud.firestore {
     // ========================================
     match /reports/{reportId} {
       allow read, write: if isAuthenticated();
+    }
+    
+    // ========================================
+    // COLECCIÓN: support_requests (Solicitudes de soporte)
+    // ========================================
+    match /support_requests/{requestId} {
+      // Todos pueden crear solicitudes de soporte
+      allow create: if true;
+      
+      // Solo usuarios autenticados pueden leer y actualizar
+      allow read, update: if isAuthenticated();
+      
+      // Solo admin puede eliminar
+      allow delete: if isAdmin();
     }
     
     // ========================================
