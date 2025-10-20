@@ -304,8 +304,12 @@ class MessagingUI {
             console.log('📎 Renderizando adjunto:', message.attachment);
             const fileIcon = this.getFileIcon(message.attachment.name);
             const fileSize = this.formatFileSize(message.attachment.size);
+            
+            // Para Base64, crear un enlace de descarga
+            const downloadFunction = `downloadBase64File('${message.attachment.url}', '${message.attachment.name}')`;
+            
             attachmentHtml = `
-                <div class="message-attachment" onclick="window.open('${message.attachment.url}', '_blank')">
+                <div class="message-attachment" onclick="${downloadFunction}">
                     <div class="message-attachment-icon">
                         <i class="fas ${fileIcon}"></i>
                     </div>
@@ -346,7 +350,9 @@ class MessagingUI {
             'ods': 'fa-file-excel',
             'ppt': 'fa-file-powerpoint',
             'pptx': 'fa-file-powerpoint',
-            'odp': 'fa-file-powerpoint'
+            'odp': 'fa-file-powerpoint',
+            'pdf': 'fa-file-pdf',
+            'zip': 'fa-file-archive'
         };
         return icons[ext] || 'fa-file';
     }
