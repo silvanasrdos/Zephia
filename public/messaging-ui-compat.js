@@ -298,15 +298,68 @@ class MessagingUI {
         const priorityIndicator = message.priority && message.priority !== 'normal' ?
             `<span class="message-priority priority-${message.priority}">${message.priority.toUpperCase()}</span>` : '';
 
+        // HTML para el archivo adjunto si existe
+        let attachmentHtml = '';
+        if (message.attachment) {
+            console.log('📎 Renderizando adjunto:', message.attachment);
+            const fileIcon = this.getFileIcon(message.attachment.name);
+            const fileSize = this.formatFileSize(message.attachment.size);
+            attachmentHtml = `
+                <div class="message-attachment" onclick="window.open('${message.attachment.url}', '_blank')">
+                    <div class="message-attachment-icon">
+                        <i class="fas ${fileIcon}"></i>
+                    </div>
+                    <div class="message-attachment-info">
+                        <p class="message-attachment-name">${this.escapeHtml(message.attachment.name)}</p>
+                        <p class="message-attachment-size">${fileSize}</p>
+                    </div>
+                    <i class="fas fa-download message-attachment-download"></i>
+                </div>
+            `;
+        } else {
+            console.log('❌ No hay adjunto en el mensaje:', message);
+        }
+
         div.innerHTML = `
             <div class="message-bubble">
                 ${priorityIndicator}
                 <p>${this.escapeHtml(message.text)}</p>
+                ${attachmentHtml}
                 <span class="message-time">${timeFormatted}</span>
             </div>
         `;
 
         return div;
+    }
+    
+    /**
+     * Obtener icono según tipo de archivo
+     */
+    getFileIcon(fileName) {
+        const ext = fileName.toLowerCase().split('.').pop();
+        const icons = {
+            'doc': 'fa-file-word',
+            'docx': 'fa-file-word',
+            'odt': 'fa-file-word',
+            'xls': 'fa-file-excel',
+            'xlsx': 'fa-file-excel',
+            'ods': 'fa-file-excel',
+            'ppt': 'fa-file-powerpoint',
+            'pptx': 'fa-file-powerpoint',
+            'odp': 'fa-file-powerpoint'
+        };
+        return icons[ext] || 'fa-file';
+    }
+    
+    /**
+     * Formatear tamaño del archivo
+     */
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     }
 
     /**
@@ -319,13 +372,31 @@ class MessagingUI {
         if (!chatInput || !this.currentConversationId) return;
 
         const text = chatInput.value.trim();
-        if (!text) return;
+        const hasAttachment = window.selectedFile !== null;
+        
+        // Validar que haya texto o archivo
+        if (!text && !hasAttachment) return;
 
         const priority = prioritySelector ? prioritySelector.value : 'normal';
 
         try {
-            // Enviar mensaje
-            await window.messagingService.sendMessage(this.currentConversationId, text, priority);
+            let attachmentData = null;
+            
+            // Si hay archivo adjunto, subirlo primero
+            if (hasAttachment) {
+                const uploadFunction = window.uploadFile;
+                if (uploadFunction && typeof uploadFunction === 'function') {
+                    attachmentData = await uploadFunction(window.selectedFile, this.currentConversationId);
+                }
+            }
+
+            // Enviar mensaje (con o sin adjunto)
+            await window.messagingService.sendMessage(
+                this.currentConversationId, 
+                text || (hasAttachment ? '📎 Archivo adjunto' : ''), 
+                priority,
+                attachmentData
+            );
 
             // Limpiar input
             chatInput.value = '';
@@ -335,12 +406,17 @@ class MessagingUI {
                 prioritySelector.value = 'normal';
                 this.updatePriorityColor(prioritySelector);
             }
+            
+            // Limpiar archivo adjunto
+            if (window.removeAttachment && typeof window.removeAttachment === 'function') {
+                window.removeAttachment();
+            }
 
             // Scroll al final
             this.scrollToBottom();
         } catch (error) {
             console.error('Error al enviar mensaje:', error);
-            this.showError('Error al enviar el mensaje');
+            this.showError('Error al enviar el mensaje. Por favor intenta de nuevo.');
         }
     }
 

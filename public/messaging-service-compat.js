@@ -187,13 +187,14 @@ class MessagingService {
     /**
      * Enviar un mensaje
      */
-    async sendMessage(conversationId, text, priority = 'normal') {
+    async sendMessage(conversationId, text, priority = 'normal', attachment = null) {
         if (!this.currentUser) {
             throw new Error('Usuario no inicializado');
         }
 
-        if (!text || !text.trim()) {
-            throw new Error('El mensaje no puede estar vacío');
+        // Validar que haya texto o archivo adjunto
+        if ((!text || !text.trim()) && !attachment) {
+            throw new Error('El mensaje debe contener texto o un archivo adjunto');
         }
 
         try {
@@ -202,11 +203,22 @@ class MessagingService {
                 conversationId,
                 senderId: this.currentUser.id,
                 senderName: this.currentUser.name,
-                text: text.trim(),
+                text: text ? text.trim() : '',
                 priority,
                 read: false,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
+
+            // Agregar archivo adjunto si existe
+            if (attachment) {
+                message.attachment = {
+                    name: attachment.name,
+                    url: attachment.url,
+                    size: attachment.size,
+                    type: attachment.type || '',
+                    path: attachment.path || ''
+                };
+            }
 
             const messageDoc = await this.db.collection('messages').add(message);
 
@@ -219,12 +231,21 @@ class MessagingService {
                     id => id !== this.currentUser.id
                 );
 
+                // Texto para preview en la lista de conversaciones
+                let previewText = text ? text.trim() : '';
+                if (attachment && !previewText) {
+                    previewText = `📎 ${attachment.name}`;
+                } else if (attachment && previewText) {
+                    previewText = `📎 ${previewText}`;
+                }
+
                 await this.db.collection('conversations').doc(conversationId).update({
                     lastMessage: {
-                        text: text.trim(),
+                        text: previewText,
                         senderId: this.currentUser.id,
                         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        priority
+                        priority,
+                        hasAttachment: attachment !== null
                     },
                     [`unreadCount.${otherUserId}`]: (conversationData.unreadCount?.[otherUserId] || 0) + 1,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()

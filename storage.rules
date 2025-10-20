@@ -1,0 +1,31 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Reglas para archivos adjuntos del chat
+    match /chat-attachments/{conversationId}/{fileName} {
+      // Permitir lectura si el usuario está autenticado
+      allow read: if request.auth != null;
+      
+      // Permitir escritura si el usuario está autenticado y el archivo cumple con:
+      // - Tamaño máximo de 10MB
+      // - Tipo de archivo permitido (documentos de oficina)
+      allow write: if request.auth != null
+                   && request.resource.size <= 10 * 1024 * 1024
+                   && (
+                     request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.*') ||
+                     request.resource.contentType.matches('application/msword') ||
+                     request.resource.contentType.matches('application/vnd.ms-.*') ||
+                     request.resource.contentType.matches('application/vnd.oasis.opendocument.*')
+                   );
+      
+      // Permitir eliminar archivos propios
+      allow delete: if request.auth != null;
+    }
+    
+    // Denegar acceso a todo lo demás por defecto
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
