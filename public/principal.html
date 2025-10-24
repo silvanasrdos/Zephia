@@ -46,6 +46,10 @@
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </li>
+                <li class="nav-item" onclick="showSection('users')">
+                    <i class="fas fa-users"></i>
+                    <span>Usuarios</span>
+                </li>
                 <li class="nav-item" onclick="showSection('schools')">
                     <i class="fas fa-school"></i>
                     <span>Escuelas</span>
@@ -53,10 +57,6 @@
                 <li class="nav-item" onclick="showSection('teachers')">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>Docentes</span>
-                </li>
-                <li class="nav-item" onclick="showSection('users')">
-                    <i class="fas fa-users"></i>
-                    <span>Usuarios</span>
                 </li>
                 <li class="nav-item" onclick="showSection('reports')">
                     <i class="fas fa-chart-bar"></i>
@@ -1469,11 +1469,38 @@
             }
         }
         
+        // Variable para manejar el cambio temporal de sesión
+        let isCreatingUser = false;
+        let adminSessionData = null;
+
         // Verificar autenticación
-        auth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
                 console.log('Usuario autenticado:', user.email);
-                initializeAppData();
+                
+                // Si estamos creando un usuario y el usuario actual no es el admin
+                if (isCreatingUser && adminSessionData && user.email !== adminSessionData.email) {
+                    console.log('🔄 Detectado cambio de sesión durante creación de usuario, volviendo al admin...');
+                    
+                    // Hacer logout del usuario recién creado
+                    await auth.signOut();
+                    
+                    // Volver a la sesión del admin
+                    try {
+                        await auth.signInWithEmailAndPassword(adminSessionData.email, adminSessionData.password);
+                        console.log('✅ Sesión del admin restaurada');
+                        
+                        // Limpiar datos temporales
+                        isCreatingUser = false;
+                        adminSessionData = null;
+                    } catch (error) {
+                        console.error('❌ Error al restaurar sesión del admin:', error);
+                        alert('Error al restaurar la sesión del administrador. Por favor, inicia sesión nuevamente.');
+                        window.location.href = 'login.html';
+                    }
+                } else {
+                    initializeAppData();
+                }
             } else {
                 console.log('❌ Usuario no autenticado');
                 window.location.href = 'login.html';
@@ -2957,6 +2984,23 @@
                         }
                         
                         try {
+                            // Guardar información del admin actual antes de crear el usuario
+                            const currentAdmin = window.auth.currentUser;
+                            const adminEmail = currentAdmin.email;
+                            const adminPassword = prompt('Para crear el usuario, necesito confirmar tu contraseña de administrador:');
+                            
+                            if (!adminPassword) {
+                                alert('Se requiere la contraseña del administrador para crear usuarios.');
+                                return;
+                            }
+
+                            // Configurar el sistema de sesión temporal
+                            isCreatingUser = true;
+                            adminSessionData = {
+                                email: adminEmail,
+                                password: adminPassword
+                            };
+                            
                             // Crear usuario en Firebase Auth primero
                             const userCredential = await window.auth.createUserWithEmailAndPassword(email, password);
                     
@@ -2975,6 +3019,8 @@
                                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
+
+                            // El onAuthStateChanged se encargará de volver a la sesión del admin
                             
                             showSuccessModal({
                                 type: 'user-added',
