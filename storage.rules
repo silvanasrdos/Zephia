@@ -8,14 +8,17 @@ service firebase.storage {
       
       // Permitir escritura si el usuario está autenticado y el archivo cumple con:
       // - Tamaño máximo de 10MB
-      // - Tipo de archivo permitido (documentos de oficina)
+      // - Tipo de archivo permitido (documentos de oficina, PDF y ZIP)
       allow write: if request.auth != null
                    && request.resource.size <= 10 * 1024 * 1024
                    && (
                      request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.*') ||
                      request.resource.contentType.matches('application/msword') ||
                      request.resource.contentType.matches('application/vnd.ms-.*') ||
-                     request.resource.contentType.matches('application/vnd.oasis.opendocument.*')
+                     request.resource.contentType.matches('application/vnd.oasis.opendocument.*') ||
+                     request.resource.contentType == 'application/pdf' ||
+                     request.resource.contentType == 'application/zip' ||
+                     request.resource.contentType == 'application/x-zip-compressed'
                    );
       
       // Permitir eliminar archivos propios

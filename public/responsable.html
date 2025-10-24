@@ -47,6 +47,10 @@
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </li>
+                <li class="nav-item" onclick="openAppearanceModal()">
+                    <i class="fas fa-palette"></i>
+                    <span>Apariencia</span>
+                </li>
             </ul>
         </nav>
 
@@ -166,9 +170,6 @@
                     <!-- Panel Izquierdo: Lista de Conversaciones -->
                     <div class="conversations-panel">
                         <div class="conversations-header">
-                            <button class="header-icon-btn" title="Menu">
-                                <i class="fas fa-bars"></i>
-                            </button>
                             <h3>Mensajes</h3>
                             <div class="header-actions">
                                 <button class="header-icon-btn" title="Nuevo mensaje" onclick="openNewMessageModal()">
@@ -176,9 +177,6 @@
                                 </button>
                                 <button class="header-icon-btn" title="Actualizar">
                                     <i class="fas fa-sync-alt"></i>
-                                </button>
-                                <button class="header-icon-btn" title="Más opciones">
-                                    <i class="fas fa-ellipsis-v"></i>
                                 </button>
                             </div>
                         </div>
@@ -189,57 +187,7 @@
                         </div>
                         
                         <div class="conversations-list" id="conversations-list">
-                            <!-- Conversaciones de ejemplo -->
-                            <div class="conversation-item priority-alta active" onclick="selectConversation(1)">
-                                <div class="conversation-avatar">
-                                    <i class="fas fa-user"></i>
-                                    <span class="online-indicator"></span>
-                                </div>
-                                <div class="conversation-info">
-                                    <div class="conversation-header">
-                                        <h4>Lucas Ramírez (R.C)</h4>
-                                        <span class="priority-badge alta">ALTA</span>
-                                    </div>
-                                    <p class="conversation-preview">Calificaciones 5TO C</p>
-                                </div>
-                                <div class="conversation-meta">
-                                    <span class="conversation-time">19:48</span>
-                                </div>
-                            </div>
-                            
-                            <div class="conversation-item priority-media" onclick="selectConversation(2)">
-                                <div class="conversation-avatar">
-                                    <i class="fas fa-user"></i>
-                                    <span class="online-indicator"></span>
-                                </div>
-                                <div class="conversation-info">
-                                    <div class="conversation-header">
-                                        <h4>Secretaría</h4>
-                                        <span class="priority-badge media">MEDIA</span>
-                                    </div>
-                                    <p class="conversation-preview">Enseguida te envío los papeles.</p>
-                                </div>
-                                <div class="conversation-meta">
-                                    <span class="conversation-time">18:30</span>
-                                </div>
-                            </div>
-                            
-                            <div class="conversation-item priority-baja" onclick="selectConversation(3)">
-                                <div class="conversation-avatar">
-                                    <i class="fas fa-user"></i>
-                                    <span class="online-indicator"></span>
-                                </div>
-                                <div class="conversation-info">
-                                    <div class="conversation-header">
-                                        <h4>Maria Gonzalez (Docente)</h4>
-                                        <span class="priority-badge baja">BAJA</span>
-                                    </div>
-                                    <p class="conversation-preview">Necesito reportes.</p>
-                                </div>
-                                <div class="conversation-meta">
-                                    <span class="conversation-time">18:16</span>
-                                </div>
-                            </div>
+                            <!-- Las conversaciones se cargarán dinámicamente aquí -->
                         </div>
                     </div>
 
@@ -259,38 +207,22 @@
                                 <button class="header-icon-btn" title="Buscar">
                                     <i class="fas fa-search"></i>
                                 </button>
-                                <button class="header-icon-btn" title="Más opciones">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
                             </div>
                         </div>
 
                         <div class="chat-messages" id="chat-messages">
-                            <!-- Mensajes -->
-                            <div class="message received">
-                                <div class="message-bubble">
-                                    <p>Confirmamos la reunión para mañana a las 14:00</p>
-                                    <span class="message-time">Ayer</span>
-                                </div>
-                            </div>
-                            
-                            <div class="message sent">
-                                <div class="message-bubble">
-                                    <p>Perfecto, estaré allí puntual. Gracias por confirmar</p>
-                                    <span class="message-time">Ayer</span>
-                                </div>
-                            </div>
+                            <!-- Los mensajes se cargarán dinámicamente aquí -->
                         </div>
 
                         <div class="chat-input-container">
-                            <button class="emoji-btn" title="Emojis">
-                                <i class="fas fa-smile"></i>
-                            </button>
                             <button class="attachment-btn" title="Adjuntar archivo" onclick="openFileSelector()">
                                 <i class="fas fa-paperclip"></i>
                             </button>
                             <input type="file" id="file-input" class="file-input-hidden" accept=".odt,.ods,.odp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.zip" onchange="handleFileSelect(event)">
-                            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+                            <div class="chat-input-wrapper">
+                                <textarea class="chat-input" placeholder="Escribe un mensaje..." maxlength="200" rows="1"></textarea>
+                                <span class="char-counter" id="char-counter">200</span>
+                            </div>
                             <select class="priority-selector-input normal" id="priority-selector" title="Prioridad" onchange="updatePriorityColor(this)">
                                 <option value="normal">Normal</option>
                                 <option value="baja">Baja</option>
@@ -1212,5 +1144,68 @@
             }
         });
     </script>
+
+    <!-- Modal de Apariencia -->
+    <div id="appearance-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-palette"></i> Personalizar Apariencia</h3>
+                <button class="modal-close" onclick="closeAppearanceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="appearance-section">
+                    <h4><i class="fas fa-moon"></i> Modo de Visualización</h4>
+                    <div class="theme-selector">
+                        <button class="theme-option" data-theme="light" onclick="setTheme('light')">
+                            <i class="fas fa-sun"></i>
+                            <span>Modo Claro</span>
+                        </button>
+                        <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
+                            <i class="fas fa-moon"></i>
+                            <span>Modo Oscuro</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="appearance-section">
+                    <h4><i class="fas fa-comment-dots"></i> Color de los Chats</h4>
+                    <p class="appearance-description">Selecciona el color para tus mensajes enviados</p>
+                    <div class="color-selector">
+                        <button class="color-option" data-color="#8b4513" onclick="setChatColor('#8b4513', '#5a2d0f')" style="background: linear-gradient(135deg, #8b4513, #5a2d0f);">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="color-option" data-color="#667eea" onclick="setChatColor('#667eea', '#764ba2')" style="background: linear-gradient(135deg, #667eea, #764ba2);"></button>
+                        <button class="color-option" data-color="#f093fb" onclick="setChatColor('#f093fb', '#f5576c')" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></button>
+                        <button class="color-option" data-color="#4facfe" onclick="setChatColor('#4facfe', '#00f2fe')" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></button>
+                        <button class="color-option" data-color="#43e97b" onclick="setChatColor('#43e97b', '#38f9d7')" style="background: linear-gradient(135deg, #43e97b, #38f9d7);"></button>
+                        <button class="color-option" data-color="#fa709a" onclick="setChatColor('#fa709a', '#fee140')" style="background: linear-gradient(135deg, #fa709a, #fee140);"></button>
+                        <button class="color-option" data-color="#30cfd0" onclick="setChatColor('#30cfd0', '#330867')" style="background: linear-gradient(135deg, #30cfd0, #330867);"></button>
+                        <button class="color-option" data-color="#a8edea" onclick="setChatColor('#a8edea', '#fed6e3')" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></button>
+                        <button class="color-option" data-color="#ff6a00" onclick="setChatColor('#ff6a00', '#ee0979')" style="background: linear-gradient(135deg, #ff6a00, #ee0979);"></button>
+                        <button class="color-option" data-color="#2c3e50" onclick="setChatColor('#2c3e50', '#2c3e50')" style="background: #2c3e50;"></button>
+                        <button class="color-option" data-color="#27ae60" onclick="setChatColor('#27ae60', '#27ae60')" style="background: #27ae60;"></button>
+                        <button class="color-option" data-color="#8e44ad" onclick="setChatColor('#8e44ad', '#8e44ad')" style="background: #8e44ad;"></button>
+                        <button class="color-option" data-color="#e74c3c" onclick="setChatColor('#e74c3c', '#e74c3c')" style="background: #e74c3c;"></button>
+                        <button class="color-option" data-color="#f39c12" onclick="setChatColor('#f39c12', '#f39c12')" style="background: #f39c12;"></button>
+                        <button class="color-option" data-color="#16a085" onclick="setChatColor('#16a085', '#16a085')" style="background: #16a085;"></button>
+                    </div>
+                </div>
+
+                <div class="appearance-section">
+                    <button class="reset-appearance-btn" onclick="resetAppearance()">
+                        <i class="fas fa-undo"></i> Restaurar valores predeterminados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Apariencia -->
+    <script src="appearance.js"></script>
+
+    <!-- Script de Funcionalidad Móvil -->
+    <script src="mobile.js"></script>
+
+
 </body>
 </html>

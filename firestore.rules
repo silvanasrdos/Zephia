@@ -19,13 +19,13 @@ service cloud.firestore {
     // Verificar si el usuario es administrador
     function isAdmin() {
       return isAuthenticated() && 
-             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+             exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.tipoUsuario == 'admin';
     }
     
 
     // ========================================
-    // COLECCIÓN: users - PERMISOS AMPLIADOS TEMPORALMENTE
+    // COLECCIÓN: users - PERMISOS AMPLIADOS TEMPORALMENTE (Legacy)
     // ========================================
     match /users/{userId} {
       // Todos pueden leer usuarios (necesario para mensajería)
@@ -37,6 +37,22 @@ service cloud.firestore {
       
       // Solo el propio usuario puede eliminar (por seguridad)
       allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // ========================================
+    // COLECCIÓN: usuarios (Usuarios del sistema)
+    // ========================================
+    match /usuarios/{userId} {
+      // Todos pueden leer usuarios (necesario para mensajería y reportes)
+      allow read: if isAuthenticated();
+      
+      // Admin puede crear y actualizar cualquier usuario
+      // Los usuarios pueden actualizar su propio perfil
+      allow create, update: if isAuthenticated() && 
+                               (isAdmin() || request.auth.uid == userId);
+      
+      // Solo Admin puede eliminar usuarios
+      allow delete: if isAdmin();
     }
     
     // ========================================
@@ -57,9 +73,9 @@ service cloud.firestore {
     // COLECCIÓN: conversations (Conversaciones)
     // ========================================
     match /conversations/{conversationId} {
-      // Solo participantes pueden leer la conversación
-      allow read: if isAuthenticated() && 
-                     request.auth.uid in resource.data.participants;
+      // TEMPORAL: Todos los usuarios autenticados pueden leer todas las conversaciones
+      // (Necesario para reportes del admin y funcionamiento general)
+      allow read: if isAuthenticated();
       
       // Cualquier usuario autenticado puede crear conversaciones
       allow create: if isAuthenticated() && 
@@ -135,6 +151,7 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && 
                        (isAdmin() || resource.data.userId == request.auth.uid);
     }
+    
     
     // ========================================
     // REGLA POR DEFECTO: DENEGAR TODO LO DEMÁS

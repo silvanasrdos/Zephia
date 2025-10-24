@@ -22,6 +22,7 @@ class MessagingUI {
             // Inicializar el servicio
             window.messagingService.initialize(currentUser, db);
 
+
             // Configurar event listeners
             this.setupEventListeners();
 
@@ -50,14 +51,23 @@ class MessagingUI {
         // Botón de enviar mensaje
         const sendBtn = document.querySelector('.send-btn');
         const chatInput = document.querySelector('.chat-input');
+        const charCounter = document.getElementById('char-counter');
 
         if (sendBtn && chatInput) {
             sendBtn.addEventListener('click', () => this.handleSendMessage());
-            chatInput.addEventListener('keypress', (e) => {
+            
+            // Manejar Enter para enviar (Shift+Enter para nueva línea)
+            chatInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     this.handleSendMessage();
                 }
+            });
+
+            // Actualizar contador de caracteres y auto-expandir
+            chatInput.addEventListener('input', (e) => {
+                this.updateCharCounter(e.target.value.length, charCounter);
+                this.autoExpandTextarea(e.target);
             });
         }
 
@@ -73,6 +83,45 @@ class MessagingUI {
         const refreshBtn = document.querySelector('.header-icon-btn[title="Actualizar"]');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', () => this.refreshConversations());
+        }
+
+        // Botón de búsqueda en chat
+        const chatSearchBtn = document.querySelector('.chat-header-actions .header-icon-btn[title="Buscar"]');
+        if (chatSearchBtn) {
+            chatSearchBtn.addEventListener('click', () => this.toggleChatSearch());
+        }
+    }
+
+    /**
+     * Auto-expandir textarea según el contenido
+     */
+    autoExpandTextarea(textarea) {
+        if (!textarea) return;
+        
+        // Resetear altura para calcular correctamente
+        textarea.style.height = 'auto';
+        
+        // Calcular nueva altura
+        const newHeight = Math.min(textarea.scrollHeight, 120); // Máximo 120px
+        textarea.style.height = newHeight + 'px';
+    }
+
+    /**
+     * Actualizar contador de caracteres
+     */
+    updateCharCounter(currentLength, counterElement) {
+        if (!counterElement) return;
+
+        const maxLength = 200;
+        const remaining = maxLength - currentLength;
+        counterElement.textContent = remaining;
+
+        // Cambiar color según caracteres restantes
+        counterElement.classList.remove('warning', 'danger');
+        if (remaining <= 20 && remaining > 10) {
+            counterElement.classList.add('warning');
+        } else if (remaining <= 10) {
+            counterElement.classList.add('danger');
         }
     }
 
@@ -130,6 +179,11 @@ class MessagingUI {
             const conversationEl = this.createConversationElement(conversation);
             conversationsList.appendChild(conversationEl);
         });
+
+        // Seleccionar automáticamente la primera conversación si no hay ninguna seleccionada
+        if (!this.currentConversationId && conversations.length > 0) {
+            this.selectConversation(conversations[0].id);
+        }
     }
 
     /**
@@ -158,7 +212,6 @@ class MessagingUI {
         div.innerHTML = `
             <div class="conversation-avatar">
                 <i class="fas fa-user"></i>
-                ${otherParticipant?.online ? '<span class="online-indicator"></span>' : ''}
             </div>
             <div class="conversation-info">
                 <div class="conversation-header">
@@ -172,9 +225,10 @@ class MessagingUI {
                 ${unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : ''}
             </div>
         `;
-
+        
         return div;
     }
+
 
     /**
      * Seleccionar una conversación
@@ -228,10 +282,10 @@ class MessagingUI {
         }
 
         if (chatUserStatus) {
-            chatUserStatus.textContent = otherParticipant?.online ? 'En línea' : 'Desconectado';
-            chatUserStatus.classList.toggle('online', otherParticipant?.online);
+            chatUserStatus.textContent = '-';
         }
     }
+
 
     /**
      * Cargar mensajes de una conversación
@@ -291,6 +345,13 @@ class MessagingUI {
         const isSent = message.senderId === window.messagingService.currentUser.id;
         const div = document.createElement('div');
         div.className = `message ${isSent ? 'sent' : 'received'}`;
+        
+        // Debug: verificar alineación de mensajes
+        console.log(`💬 Mensaje ${isSent ? 'ENVIADO' : 'RECIBIDO'}:`, {
+            senderId: message.senderId,
+            currentUserId: window.messagingService.currentUser.id,
+            isSent: isSent
+        });
 
         const timeFormatted = message.timestamp ? 
             window.messagingService.formatTime(message.timestamp) : '';
@@ -374,6 +435,7 @@ class MessagingUI {
     async handleSendMessage() {
         const chatInput = document.querySelector('.chat-input');
         const prioritySelector = document.getElementById('priority-selector');
+        const charCounter = document.getElementById('char-counter');
 
         if (!chatInput || !this.currentConversationId) return;
 
@@ -382,6 +444,12 @@ class MessagingUI {
         
         // Validar que haya texto o archivo
         if (!text && !hasAttachment) return;
+
+        // Validar límite de caracteres
+        if (text.length > 200) {
+            this.showError('El mensaje no puede superar los 200 caracteres');
+            return;
+        }
 
         const priority = prioritySelector ? prioritySelector.value : 'normal';
 
@@ -406,6 +474,14 @@ class MessagingUI {
 
             // Limpiar input
             chatInput.value = '';
+
+            // Resetear altura del textarea
+            chatInput.style.height = 'auto';
+
+            // Resetear contador de caracteres
+            if (charCounter) {
+                this.updateCharCounter(0, charCounter);
+            }
 
             // Resetear prioridad
             if (prioritySelector) {
@@ -590,6 +666,240 @@ class MessagingUI {
             console.error('Error al refrescar conversaciones:', error);
             this.showError('Error al actualizar las conversaciones');
         }
+    }
+
+    /**
+     * Alternar búsqueda en chat
+     */
+    toggleChatSearch() {
+        const chatHeader = document.querySelector('.chat-header');
+        const existingSearch = document.querySelector('.chat-search-container');
+        
+        if (existingSearch) {
+            // Si ya existe, ocultarlo
+            existingSearch.remove();
+            return;
+        }
+
+        // Crear contenedor de búsqueda
+        const searchContainer = document.createElement('div');
+        searchContainer.className = 'chat-search-container';
+        searchContainer.innerHTML = `
+            <div class="chat-search-input-wrapper">
+                <input type="text" id="chat-search-input" placeholder="Buscar en esta conversación..." autocomplete="off">
+                <button class="chat-search-close" title="Cerrar búsqueda">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chat-search-results" id="chat-search-results"></div>
+        `;
+
+        // Insertar después del header
+        chatHeader.insertAdjacentElement('afterend', searchContainer);
+
+        // Configurar event listeners
+        const searchInput = document.getElementById('chat-search-input');
+        const closeBtn = document.querySelector('.chat-search-close');
+        const resultsContainer = document.getElementById('chat-search-results');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.searchInChat(e.target.value, resultsContainer);
+            });
+            
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.closeChatSearch();
+                }
+            });
+
+            // Focus en el input
+            searchInput.focus();
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => this.closeChatSearch());
+        }
+    }
+
+    /**
+     * Cerrar búsqueda en chat
+     */
+    closeChatSearch() {
+        const searchContainer = document.querySelector('.chat-search-container');
+        if (searchContainer) {
+            searchContainer.remove();
+        }
+        
+        // Limpiar resaltado de mensajes
+        this.clearMessageHighlights();
+    }
+
+    /**
+     * Buscar texto en la conversación actual
+     */
+    searchInChat(searchText, resultsContainer) {
+        if (!searchText.trim()) {
+            resultsContainer.innerHTML = '';
+            this.clearMessageHighlights();
+            return;
+        }
+
+        const messages = document.querySelectorAll('.message-bubble');
+        const searchLower = searchText.toLowerCase();
+        const matches = [];
+
+        messages.forEach((message, index) => {
+            const messageText = message.textContent.toLowerCase();
+            if (messageText.includes(searchLower)) {
+                matches.push({
+                    element: message,
+                    index: index,
+                    text: message.textContent
+                });
+            }
+        });
+
+        // Mostrar resultados
+        this.displaySearchResults(matches, searchText, resultsContainer);
+        
+        // Resaltar coincidencias
+        this.highlightMatches(messages, searchText);
+    }
+
+    /**
+     * Mostrar resultados de búsqueda
+     */
+    displaySearchResults(matches, searchText, container) {
+        if (matches.length === 0) {
+            container.innerHTML = `
+                <div class="search-no-results">
+                    <i class="fas fa-search"></i>
+                    <p>No se encontraron resultados para "${searchText}"</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="search-results-header">
+                <span class="search-results-count">${matches.length} resultado${matches.length !== 1 ? 's' : ''} encontrado${matches.length !== 1 ? 's' : ''}</span>
+                <div class="search-navigation">
+                    <button class="search-nav-btn" id="search-prev" title="Anterior">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    <button class="search-nav-btn" id="search-next" title="Siguiente">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Configurar navegación
+        this.setupSearchNavigation(matches);
+    }
+
+    /**
+     * Configurar navegación de búsqueda
+     */
+    setupSearchNavigation(matches) {
+        let currentMatch = 0;
+        
+        const prevBtn = document.getElementById('search-prev');
+        const nextBtn = document.getElementById('search-next');
+
+        const navigateToMatch = (index) => {
+            if (matches.length === 0) return;
+            
+            // Limpiar resaltado anterior
+            matches.forEach(match => {
+                match.element.classList.remove('search-current-match');
+            });
+
+            // Resaltar coincidencia actual
+            const currentMatchElement = matches[index].element;
+            currentMatchElement.classList.add('search-current-match');
+            
+            // Scroll a la coincidencia
+            currentMatchElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        };
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                currentMatch = currentMatch > 0 ? currentMatch - 1 : matches.length - 1;
+                navigateToMatch(currentMatch);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                currentMatch = currentMatch < matches.length - 1 ? currentMatch + 1 : 0;
+                navigateToMatch(currentMatch);
+            });
+        }
+
+        // Navegar con teclado
+        document.addEventListener('keydown', (e) => {
+            if (document.querySelector('.chat-search-container')) {
+                if (e.key === 'F3' || (e.ctrlKey && e.key === 'g')) {
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        // Shift+F3 o Ctrl+Shift+G: anterior
+                        currentMatch = currentMatch > 0 ? currentMatch - 1 : matches.length - 1;
+                    } else {
+                        // F3 o Ctrl+G: siguiente
+                        currentMatch = currentMatch < matches.length - 1 ? currentMatch + 1 : 0;
+                    }
+                    navigateToMatch(currentMatch);
+                }
+            }
+        });
+
+        // Ir a la primera coincidencia
+        if (matches.length > 0) {
+            navigateToMatch(0);
+        }
+    }
+
+    /**
+     * Resaltar coincidencias en mensajes
+     */
+    highlightMatches(messages, searchText) {
+        messages.forEach(message => {
+            const messageText = message.textContent;
+            const searchLower = searchText.toLowerCase();
+            
+            if (messageText.toLowerCase().includes(searchLower)) {
+                // Crear HTML con resaltado
+                const highlightedText = messageText.replace(
+                    new RegExp(`(${searchText})`, 'gi'),
+                    '<mark class="search-highlight">$1</mark>'
+                );
+                
+                // Solo actualizar si hay cambios
+                if (message.innerHTML !== highlightedText) {
+                    message.innerHTML = highlightedText;
+                }
+            }
+        });
+    }
+
+    /**
+     * Limpiar resaltado de mensajes
+     */
+    clearMessageHighlights() {
+        const messages = document.querySelectorAll('.message-bubble');
+        messages.forEach(message => {
+            message.classList.remove('search-current-match');
+            // Restaurar texto original (sin <mark>)
+            const marks = message.querySelectorAll('mark.search-highlight');
+            marks.forEach(mark => {
+                mark.replaceWith(mark.textContent);
+            });
+        });
     }
 
     /**

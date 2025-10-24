@@ -66,6 +66,10 @@
                     <i class="fas fa-life-ring"></i>
                     <span>Soporte</span>
                 </li>
+                <li class="nav-item" onclick="openAppearanceModal()">
+                    <i class="fas fa-palette"></i>
+                    <span>Apariencia</span>
+                </li>
             </ul>
         </nav>
 
@@ -249,9 +253,6 @@
                     <!-- Panel Izquierdo: Lista de Conversaciones -->
                     <div class="conversations-panel">
                         <div class="conversations-header">
-                            <button class="header-icon-btn" title="Menu">
-                                <i class="fas fa-bars"></i>
-                            </button>
                             <h3>Mensajes</h3>
                             <div class="header-actions">
                                 <button class="header-icon-btn" title="Nuevo mensaje" onclick="openNewMessageModal()">
@@ -259,9 +260,6 @@
                                 </button>
                                 <button class="header-icon-btn" title="Actualizar">
                                     <i class="fas fa-sync-alt"></i>
-                                </button>
-                                <button class="header-icon-btn" title="Más opciones">
-                                    <i class="fas fa-ellipsis-v"></i>
                                 </button>
                             </div>
                         </div>
@@ -297,9 +295,6 @@
                                 <button class="header-icon-btn" title="Buscar">
                                     <i class="fas fa-search"></i>
                                 </button>
-                                <button class="header-icon-btn" title="Más opciones">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
                             </div>
                         </div>
 
@@ -313,14 +308,14 @@
                         </div>
 
                         <div class="chat-input-container">
-                            <button class="emoji-btn" title="Emojis">
-                                <i class="fas fa-smile"></i>
-                            </button>
                             <button class="attachment-btn" title="Adjuntar archivo" onclick="openFileSelector()">
                                 <i class="fas fa-paperclip"></i>
                             </button>
                             <input type="file" id="file-input" class="file-input-hidden" accept=".odt,.ods,.odp,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.zip" onchange="handleFileSelect(event)">
-                            <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+                            <div class="chat-input-wrapper">
+                                <textarea class="chat-input" placeholder="Escribe un mensaje..." maxlength="200" rows="1"></textarea>
+                                <span class="char-counter" id="char-counter">200</span>
+                            </div>
                             <select class="priority-selector-input normal" id="priority-selector" title="Prioridad" onchange="updatePriorityColor(this)">
                                 <option value="normal">Normal</option>
                                 <option value="baja">Baja</option>
@@ -3961,7 +3956,12 @@
                 // Obtener todas las conversaciones (sin filtro inicial para evitar problemas de índices)
                 const snapshot = await db.collection('conversations').get();
                 
-                console.log('Conversaciones obtenidas:', snapshot.size);
+                console.log('📊 Conversaciones obtenidas:', snapshot.size);
+                
+                // Mostrar algunas conversaciones de ejemplo para debugging
+                if (snapshot.size > 0) {
+                    console.log('📋 Ejemplo de conversación:', snapshot.docs[0].data());
+                }
                 
                 if (snapshot.empty) {
                     console.log('No hay conversaciones en la base de datos');
@@ -4030,6 +4030,7 @@
                 const db = firebase.firestore();
                 
                 console.log('Generando estadísticas por rol...');
+                console.log('Conversaciones a procesar:', conversations.length);
                 
                 // Contar conversaciones por rol de los participantes
                 for (const conv of conversations) {
@@ -4038,90 +4039,116 @@
                     try {
                         // Obtener información de cada participante
                         for (const userId of conv.participants) {
-                            const userDoc = await db.collection('usuarios').doc(userId).get();
+                            // Intentar primero con la colección 'users'
+                            let userDoc = await db.collection('users').doc(userId).get();
+                            
+                            // Si no existe, intentar con 'usuarios'
+                            if (!userDoc.exists) {
+                                userDoc = await db.collection('usuarios').doc(userId).get();
+                            }
+                            
                             if (userDoc.exists) {
                                 const userData = userDoc.data();
-                                const role = userData.tipoUsuario || 'Desconocido';
+                                // Intentar diferentes campos de rol
+                                const role = userData.role || userData.tipoUsuario || userData.type || 'Desconocido';
                                 roleCount[role] = (roleCount[role] || 0) + 1;
+                                console.log(`Usuario ${userId} tiene rol: ${role}`);
+                            } else {
+                                console.log(`Usuario ${userId} no encontrado en ninguna colección`);
+                                roleCount['Desconocido'] = (roleCount['Desconocido'] || 0) + 1;
                             }
                         }
                     } catch (error) {
                         console.error('Error al obtener usuario:', userId, error);
+                        roleCount['Error'] = (roleCount['Error'] || 0) + 1;
                     }
                 }
                 
-                console.log('Conteo de roles:', roleCount);
-            
-            // Mapear nombres de roles a nombres amigables
-            const roleNames = {
-                'admin': 'Administrador',
-                'responsable': 'Responsable',
-                'docente': 'Docente',
-                'secretaria': 'Secretaria',
-                'soporte': 'Soporte'
-            };
-            
-            const labels = Object.keys(roleCount).map(role => roleNames[role] || role);
-            const data = Object.values(roleCount);
-            const colors = [
-                'rgba(139, 69, 19, 0.8)',     // Marrón - Admin
-                'rgba(210, 105, 30, 0.8)',    // Chocolate - Responsable
-                'rgba(205, 133, 63, 0.8)',    // Peru - Docente
-                'rgba(244, 164, 96, 0.8)',    // Sandy Brown - Secretaria
-                'rgba(23, 162, 184, 0.8)'     // Info - Soporte
-            ];
-            
-            // Destruir gráfico anterior si existe
-            if (chartRoles) {
-                chartRoles.destroy();
-            }
-            
-            // Crear nuevo gráfico
-            const ctx = document.getElementById('chartRoles').getContext('2d');
-            chartRoles = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Conversaciones por Rol',
-                        data: data,
-                        backgroundColor: colors,
-                        borderColor: colors.map(c => c.replace('0.8', '1')),
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                font: {
-                                    size: 12,
-                                    family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                console.log('Conteo de roles final:', roleCount);
+                
+                // Si no hay datos, mostrar mensaje
+                if (Object.keys(roleCount).length === 0) {
+                    console.log('No se encontraron datos de roles');
+                    showNoDataChart('chartRoles', 'No hay datos de roles disponibles');
+                    return;
+                }
+                
+                // Mapear nombres de roles a nombres amigables
+                const roleNames = {
+                    'admin': 'Administrador',
+                    'responsable': 'Responsable',
+                    'docente': 'Docente',
+                    'secretaria': 'Secretaria',
+                    'soporte': 'Soporte',
+                    'Desconocido': 'Desconocido',
+                    'Error': 'Error de datos'
+                };
+                
+                const labels = Object.keys(roleCount).map(role => roleNames[role] || role);
+                const data = Object.values(roleCount);
+                const colors = [
+                    'rgba(139, 69, 19, 0.8)',     // Marrón - Admin
+                    'rgba(210, 105, 30, 0.8)',    // Chocolate - Responsable
+                    'rgba(205, 133, 63, 0.8)',    // Peru - Docente
+                    'rgba(244, 164, 96, 0.8)',    // Sandy Brown - Secretaria
+                    'rgba(23, 162, 184, 0.8)',    // Info - Soporte
+                    'rgba(108, 117, 125, 0.8)',   // Gris - Desconocido
+                    'rgba(220, 53, 69, 0.8)'      // Rojo - Error
+                ];
+                
+                // Destruir gráfico anterior si existe
+                if (chartRoles) {
+                    chartRoles.destroy();
+                }
+                
+                // Crear nuevo gráfico
+                const ctx = document.getElementById('chartRoles').getContext('2d');
+                chartRoles = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Conversaciones por Rol',
+                            data: data,
+                            backgroundColor: colors.slice(0, labels.length),
+                            borderColor: colors.slice(0, labels.length).map(c => c.replace('0.8', '1')),
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 12,
+                                        family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+                                    }
                                 }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((value / total) * 100).toFixed(1);
-                                    return `${label}: ${value} conversaciones (${percentage}%)`;
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return `${label}: ${value} conversaciones (${percentage}%)`;
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+                
             } catch (error) {
                 console.error('Error en generateRoleStats:', error);
                 // Mostrar gráfico vacío en caso de error
                 if (chartRoles) chartRoles.destroy();
+                showNoDataChart('chartRoles', 'Error al cargar datos de roles');
             }
         }
 
@@ -4354,7 +4381,81 @@
             if (chartDays) chartDays.destroy();
             if (chartPriorities) chartPriorities.destroy();
         }
+
+        // Función para mostrar mensaje de "sin datos" en un gráfico específico
+        function showNoDataChart(canvasId, message) {
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Mostrar mensaje en el canvas
+                ctx.fillStyle = '#666';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+            }
+        }
         
     </script>
+
+    <!-- Modal de Apariencia -->
+    <div id="appearance-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-palette"></i> Personalizar Apariencia</h3>
+                <button class="modal-close" onclick="closeAppearanceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="appearance-section">
+                    <h4><i class="fas fa-moon"></i> Modo de Visualización</h4>
+                    <div class="theme-selector">
+                        <button class="theme-option" data-theme="light" onclick="setTheme('light')">
+                            <i class="fas fa-sun"></i>
+                            <span>Modo Claro</span>
+                        </button>
+                        <button class="theme-option" data-theme="dark" onclick="setTheme('dark')">
+                            <i class="fas fa-moon"></i>
+                            <span>Modo Oscuro</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="appearance-section">
+                    <h4><i class="fas fa-comment-dots"></i> Color de los Chats</h4>
+                    <p class="appearance-description">Selecciona el color para tus mensajes enviados</p>
+                    <div class="color-selector">
+                        <button class="color-option" data-color="#8b4513" onclick="setChatColor('#8b4513', '#5a2d0f')" style="background: linear-gradient(135deg, #8b4513, #5a2d0f);">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="color-option" data-color="#667eea" onclick="setChatColor('#667eea', '#764ba2')" style="background: linear-gradient(135deg, #667eea, #764ba2);"></button>
+                        <button class="color-option" data-color="#f093fb" onclick="setChatColor('#f093fb', '#f5576c')" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></button>
+                        <button class="color-option" data-color="#4facfe" onclick="setChatColor('#4facfe', '#00f2fe')" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></button>
+                        <button class="color-option" data-color="#43e97b" onclick="setChatColor('#43e97b', '#38f9d7')" style="background: linear-gradient(135deg, #43e97b, #38f9d7);"></button>
+                        <button class="color-option" data-color="#fa709a" onclick="setChatColor('#fa709a', '#fee140')" style="background: linear-gradient(135deg, #fa709a, #fee140);"></button>
+                        <button class="color-option" data-color="#30cfd0" onclick="setChatColor('#30cfd0', '#330867')" style="background: linear-gradient(135deg, #30cfd0, #330867);"></button>
+                        <button class="color-option" data-color="#a8edea" onclick="setChatColor('#a8edea', '#fed6e3')" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></button>
+                        <button class="color-option" data-color="#ff6a00" onclick="setChatColor('#ff6a00', '#ee0979')" style="background: linear-gradient(135deg, #ff6a00, #ee0979);"></button>
+                        <button class="color-option" data-color="#2c3e50" onclick="setChatColor('#2c3e50', '#2c3e50')" style="background: #2c3e50;"></button>
+                        <button class="color-option" data-color="#27ae60" onclick="setChatColor('#27ae60', '#27ae60')" style="background: #27ae60;"></button>
+                        <button class="color-option" data-color="#8e44ad" onclick="setChatColor('#8e44ad', '#8e44ad')" style="background: #8e44ad;"></button>
+                        <button class="color-option" data-color="#e74c3c" onclick="setChatColor('#e74c3c', '#e74c3c')" style="background: #e74c3c;"></button>
+                        <button class="color-option" data-color="#f39c12" onclick="setChatColor('#f39c12', '#f39c12')" style="background: #f39c12;"></button>
+                        <button class="color-option" data-color="#16a085" onclick="setChatColor('#16a085', '#16a085')" style="background: #16a085;"></button>
+                    </div>
+                </div>
+
+                <div class="appearance-section">
+                    <button class="reset-appearance-btn" onclick="resetAppearance()">
+                        <i class="fas fa-undo"></i> Restaurar valores predeterminados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Apariencia -->
+    <script src="appearance.js"></script>
+
 </body>
 </html>
